@@ -1,6 +1,5 @@
 package com.ktc.togetherPet.model.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,14 +20,15 @@ public class User {
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
-    @Column(name = "pet_id", nullable = false)
-    private Long petId;
+    @ManyToOne(targetEntity = Pet.class)
+    @JoinColumn(name = "pet_id", nullable = false)
+    private Pet pet;
 
     public User() {
     }
 
-    public User(Region region, Long petId) {
+    public User(Region region, Pet pet) {
         this.region = region;
-        this.petId = petId;
+        this.pet = pet;
     }
 }
