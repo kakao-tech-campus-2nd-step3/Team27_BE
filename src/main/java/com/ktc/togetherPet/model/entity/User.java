@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,8 +17,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "region_id", nullable = false)
-    private Long regionId;
+    @ManyToOne(targetEntity = Region.class)
+    @JoinColumn(name = "region_id", nullable = false)
+    private Region region;
 
     @Column(name = "pet_id", nullable = false)
     private Long petId;
@@ -24,8 +27,8 @@ public class User {
     public User() {
     }
 
-    public User(Long regionId, Long petId) {
-        this.regionId = regionId;
+    public User(Region region, Long petId) {
+        this.region = region;
         this.petId = petId;
     }
 }
