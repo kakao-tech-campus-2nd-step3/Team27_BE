@@ -1,14 +1,20 @@
 package com.ktc.togetherPet.model.entity;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "imageRelation")
 public class ImageRelation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long imageRelationId;
+    private Long id;
 
     @Column(name = "entity_type", nullable = false)
     private Enum entityType;
@@ -28,9 +34,11 @@ public class ImageRelation {
     @Column(name = "report_id", nullable = true)
     private Long reportId;
 
-    public ImageRelation() {}
+    public ImageRelation() {
+    }
 
-    public ImageRelation(Enum entityType, Long entityId, Long imageId, Long petId, Long missingAnimalId, Long reportId) {
+    public ImageRelation(Enum entityType, Long entityId, Long imageId, Long petId,
+        Long missingAnimalId, Long reportId) {
         this.entityType = entityType;
         this.entityId = entityId;
         this.imageId = imageId;
