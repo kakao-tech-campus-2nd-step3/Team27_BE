@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -16,8 +18,9 @@ public class Missing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "pet_id", nullable = false)
-    private Long petId;
+    @ManyToOne(targetEntity = Pet.class)
+    @JoinColumn(name = "pet_id", nullable = false)
+    private Pet pet;
 
     @Column(name = "is_missing", nullable = false)
     private Boolean isMissing;
@@ -34,9 +37,9 @@ public class Missing {
     public Missing() {
     }
 
-    public Missing(Long petId, Boolean isMissing, LocalDateTime timestamp, Float latitude,
+    public Missing(Pet pet, Boolean isMissing, LocalDateTime timestamp, Float latitude,
         Float longitude) {
-        this.petId = petId;
+        this.pet = pet;
         this.isMissing = isMissing;
         this.timestamp = timestamp;
         this.latitude = latitude;
