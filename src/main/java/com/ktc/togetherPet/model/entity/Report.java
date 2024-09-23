@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -16,8 +19,9 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @OneToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timeStamp;
@@ -28,18 +32,19 @@ public class Report {
     @Column(name = "longitude", nullable = false)
     private Float longitude;
 
-    @Column(name = "missing_animal_id", nullable = true)
-    private Long missingAnimalId;
+    @ManyToOne(targetEntity = Missing.class)
+    @JoinColumn(name = "mssing_id", nullable = true)
+    private Missing missing;
 
     public Report() {
     }
 
-    public Report(Long userId, LocalDateTime timestamp, Float latitude, Float longitude,
-        Long missingAnimalId) {
-        this.userId = userId;
+    public Report(User user, LocalDateTime timestamp, Float latitude, Float longitude,
+        Missing missing) {
+        this.user = user;
         this.timeStamp = timestamp;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.missingAnimalId = missingAnimalId;
+        this.missing = missing;
     }
 }
