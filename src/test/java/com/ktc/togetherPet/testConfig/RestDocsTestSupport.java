@@ -1,5 +1,6 @@
 package com.ktc.togetherPet.testConfig;
 
+import com.google.gson.Gson;
 import javax.management.Attribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -42,5 +43,9 @@ public class RestDocsTestSupport {
             .alwaysDo(MockMvcResultHandlers.print())
             .alwaysDo(restDocs)
             .build();
+    }
+
+    protected static String toJson(final Object obj) {
+        return new Gson().toJson(obj);
     }
 }
