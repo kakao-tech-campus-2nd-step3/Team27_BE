@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/api/login")
 public class OauthController {
+
     private final UserService userService;
 
     public OauthController(UserService userService) {
@@ -21,7 +22,8 @@ public class OauthController {
     }
 
     @GetMapping("/{provider}")
-    public ResponseEntity<?> handleOauth(@PathVariable String provider, @OauthUser Object oauthDTO) {
+    public ResponseEntity<?> handleOauth(@PathVariable String provider,
+        @OauthUser Object oauthDTO) {
         if (oauthDTO instanceof OauthUserDTO) {
             return ResponseEntity.ok().build();
         }
