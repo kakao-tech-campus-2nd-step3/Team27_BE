@@ -1,4 +1,4 @@
-package com.ktc.togetherPet.config;
+package com.ktc.togetherPet.config.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -8,4 +8,6 @@ public record KakaoProperties(String clientId,
                               String loginUrl,
                               String tokenUrl,
                               String userInfoUrl,
-                              String messageUrl) { }
+                              String messageUrl) {
+
+}
