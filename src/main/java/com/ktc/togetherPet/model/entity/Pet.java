@@ -1,5 +1,6 @@
 package com.ktc.togetherPet.model.entity;
 
+import com.ktc.togetherPet.model.vo.BirthMonth;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +13,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "pet")
 public class Pet {
-  
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +22,7 @@ public class Pet {
     private String name;
 
     @Column(name = "birth_month", nullable = false)
-    private Long birthMonth;
+    private BirthMonth birthMonth;
 
     @ManyToOne(targetEntity = Breed.class)
     @JoinColumn(name = "breed_id", nullable = true)
@@ -33,7 +34,7 @@ public class Pet {
     public Pet() {
     }
 
-    public Pet(String name, Long birthMonth, Breed breed, Boolean isNeutering) {
+    public Pet(String name, BirthMonth birthMonth, Breed breed, Boolean isNeutering) {
         this.name = name;
         this.birthMonth = birthMonth;
         this.breed = breed;

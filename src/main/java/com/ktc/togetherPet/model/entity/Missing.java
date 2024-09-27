@@ -1,6 +1,8 @@
 package com.ktc.togetherPet.model.entity;
 
+import com.ktc.togetherPet.model.vo.Location;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,21 +30,16 @@ public class Missing {
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 
-    @Column(name = "latitude", nullable = false)
-    private Float latitude;
-
-    @Column(name = "longitude", nullable = false)
-    private Float longitude;
+    @Embedded
+    private Location location;
 
     public Missing() {
     }
 
-    public Missing(Pet pet, Boolean isMissing, LocalDateTime timestamp, Float latitude,
-        Float longitude) {
+    public Missing(Pet pet, Boolean isMissing, LocalDateTime timestamp, Location location) {
         this.pet = pet;
         this.isMissing = isMissing;
         this.timestamp = timestamp;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.location = location;
     }
 }

@@ -42,4 +42,12 @@ public class User {
     public void setPet(Pet pet) {
         this.pet = pet;
     }
+
+    public Pet getPet() {
+        return pet;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }
