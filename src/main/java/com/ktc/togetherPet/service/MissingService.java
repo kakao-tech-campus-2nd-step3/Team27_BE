@@ -6,6 +6,7 @@ import com.ktc.togetherPet.model.dto.user.UserDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
+import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.PetRepository;
@@ -56,8 +57,7 @@ public class MissingService {
                 pet,
                 true,
                 missingPetDTO.lostTime(),
-                missingPetDTO.lostLatitude(),
-                missingPetDTO.lostLongitude()
+                new Location(missingPetDTO.lostLatitude(), missingPetDTO.lostLongitude())
             )
         );
     }
