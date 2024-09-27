@@ -1,10 +1,8 @@
 package com.ktc.togetherPet.annotation;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.oauth.OauthRegisterDTO;
+import com.ktc.togetherPet.jwtUtil.JwtUtil;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.entity.User;
-import com.ktc.togetherPet.service.KakaoOauthService;
 import com.ktc.togetherPet.service.UserService;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -16,51 +14,53 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 public class OauthUserArgumentResolver implements HandlerMethodArgumentResolver {
-    private final KakaoOauthService kakaoOauthService;
+
+    private final JwtUtil jwtUtil;
     private final UserService userService;
 
-    public OauthUserArgumentResolver(KakaoOauthService kakaoOauthService, UserService userService) {
-        this.kakaoOauthService = kakaoOauthService;
+    public OauthUserArgumentResolver(JwtUtil jwtUtil, UserService userService) {
+        this.jwtUtil = jwtUtil;
         this.userService = userService;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(OauthUser.class)
-                && (OauthUserDTO.class.isAssignableFrom(parameter.getParameterType())
-                || OauthRegisterDTO.class.isAssignableFrom(parameter.getParameterType()));
+            && (OauthUserDTO.class.isAssignableFrom(parameter.getParameterType()));
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         String authorizationHeader = webRequest.getHeader("Authorization");
-        String provider = (String) webRequest.getAttribute("provider", NativeWebRequest.SCOPE_REQUEST);
+        validateAuthorizationHeader(authorizationHeader);
 
-        if (isTokenPresent(authorizationHeader)) {
-            String accessToken = extractToken(authorizationHeader);
-            String email = getEmailFromProvider(provider, accessToken);
-            User user = userService.findUser(email).user();
+        String jwtToken = extractToken(authorizationHeader);
+        validateToken(jwtToken);
 
-            if (user != null) {
-                return new OauthUserDTO(email);
-            }
-            else {
-                return new OauthRegisterDTO(email);
-            }
-        }
-        else {
+        String email = jwtUtil.getSubject(jwtToken);
+        validateUserExists(email);
+
+        return new OauthUserDTO(email);
+    }
+
+    private void validateAuthorizationHeader(String authorizationHeader) {
+        if (!isTokenPresent(authorizationHeader)) {
             throw CustomException.invalidHeaderException();
         }
     }
 
-    private String getEmailFromProvider(String provider, String accessToken) {
-        if ("kakao".equals(provider)) {
-            return kakaoOauthService.getEmailFromToken(accessToken);
+    private void validateToken(String jwtToken) {
+        if (!jwtUtil.validateToken(jwtToken)) {
+            throw CustomException.invalidTokenException();
         }
+    }
 
-        throw CustomException.invalidProviderException();
+    private void validateUserExists(String email) {
+        if (!userService.userExists(email)) {
+            throw CustomException.invalidTokenException();
+        }
     }
 
     private boolean isTokenPresent(String authorizationHeader) {
