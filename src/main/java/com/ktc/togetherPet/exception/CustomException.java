@@ -33,6 +33,10 @@ public class CustomException extends RuntimeException {
         return new CustomException(ErrorMessage.apiInvalid, httpStatus);
     }
 
+    public static CustomException invalidTokenException() {
+        return new CustomException(ErrorMessage.tokenInvalid, HttpStatus.BAD_REQUEST);
+    }
+
     public static CustomException invalidProviderException() {
         return new CustomException(ErrorMessage.providerInvalid, HttpStatus.BAD_REQUEST);
     }
