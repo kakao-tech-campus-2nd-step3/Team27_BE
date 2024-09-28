@@ -1,9 +1,11 @@
 package com.ktc.togetherPet.controller;
 
 import static com.ktc.togetherPet.exception.CustomException.breedNotFoundException;
+import static com.ktc.togetherPet.exception.CustomException.expiredTokenException;
 import static com.ktc.togetherPet.exception.CustomException.invalidDateException;
 import static com.ktc.togetherPet.exception.CustomException.invalidLocaltionException;
 import static com.ktc.togetherPet.exception.CustomException.invalidPetBirthMonthException;
+import static com.ktc.togetherPet.exception.CustomException.invalidTokenException;
 import static com.ktc.togetherPet.exception.CustomException.invalidUserException;
 import static com.ktc.togetherPet.exception.ErrorMessage.BREED_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.EXPIRED_TOKEN;
@@ -11,18 +13,26 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
+import static com.ktc.togetherPet.exception.ErrorMessage.tokenInvalid;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
+import com.ktc.togetherPet.exception.ErrorResponse;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.vo.BirthMonthDTO;
+import com.ktc.togetherPet.model.dto.vo.LocationDTO;
 import com.ktc.togetherPet.service.MissingService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
 import java.time.LocalDateTime;
@@ -40,33 +50,32 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.headers.HeaderDocumentation;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.snippet.Snippet;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @WebMvcTest(MissingController.class)
 class MissingControllerTest extends RestDocsTestSupport {
 
-    // TODO 인증 관련 로직 완성 후 수정 필요
     @MockBean
-    private AuthorizationArgumentResolver authorizationArgumentResolver;
+    private OauthUserArgumentResolver oauthUserArgumentResolver;
 
     @MockBean
     private MissingService missingService;
 
     //given
-    // TODO 인증 관련 로직 완성 후 수정 필요
-    private UserDTO userDTO;
+    private OauthUserDTO oauthUserDTO;
     private MissingPetDTO missingPetDTO;
 
     @BeforeEach
     void setUp() {
-        userDTO = new UserDTO(1, "test@email.com");
+        oauthUserDTO = new OauthUserDTO("test@email.com");
         missingPetDTO = new MissingPetDTO(
             "testPetName",
             "testPetGender",
-            1,
+            new BirthMonthDTO(1),
             "testPetSpecies",
             LocalDateTime.of(2024, 9, 25, 13, 19, 33),
-            35.17F,
-            126.90F,
+            new LocationDTO(35.17F, 126.90F),
             "testPetFeature",
             true
         );
@@ -82,12 +91,13 @@ class MissingControllerTest extends RestDocsTestSupport {
         return PayloadDocumentation.requestFields(
             fieldWithPath("pet_name").description("실종 동물의 이름"),
             fieldWithPath("pet_gender").description("실종 동물의 성별"),
-            fieldWithPath("pet_age").description("실종 동물의 개월수"),
-            fieldWithPath("pet_species").description("실종 동물의 종"),
+            fieldWithPath("birth_month.birth_month").description("실종 동물의 개월수"),
+            fieldWithPath("pet_breed").description("실종 동물의 종"),
             fieldWithPath("lost_time").description("실종 시각"),
-            fieldWithPath("lost_latitude").description("실종 위도"),
-            fieldWithPath("lost_longitude").description("실종 경도"),
-            fieldWithPath("pet_features").description("실종 동물의 특징")
+            fieldWithPath("location.latitude").description("실종 위도"),
+            fieldWithPath("location.longitude").description("실종 경도"),
+            fieldWithPath("pet_features").description("실종 동물의 특징"),
+            fieldWithPath("is_neutering").description("중성화 여부")
         );
     }
 
@@ -99,14 +109,14 @@ class MissingControllerTest extends RestDocsTestSupport {
         @DisplayName("registerMissingPet 201 Created")
         void registerMissingPet_201() throws Exception {
             // when
-            when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(userDTO);
+            when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(oauthUserDTO);
 
             // then
             mockMvc.perform(
                     post("/api/missing")
                         .contentType(APPLICATION_JSON)
-                        .header("Authorization: Bearer testTokens")
+                        .header("Authorization", "Bearer testTokens")
                         .content(toJson(missingPetDTO))
                 )
                 .andExpect(status().isCreated())
@@ -115,6 +125,9 @@ class MissingControllerTest extends RestDocsTestSupport {
                         petDTORequestSnippet()
                     )
                 );
+
+            verify(missingService, times(1))
+                .registerMissingPet(any(OauthUserDTO.class), any(MissingPetDTO.class));
         }
 
         @Nested
@@ -124,45 +137,51 @@ class MissingControllerTest extends RestDocsTestSupport {
             @ParameterizedTest
             @DisplayName("Age에 0이하의 값이 입력된 경우")
             @ValueSource(ints = {-100, -10, 0})
-            void under0Age(int petAge) throws Exception {
+            void under0Age(int petBirthMonth) throws Exception {
                 //given
                 missingPetDTO = new MissingPetDTO(
                     "testPetName",
                     "testPetGender",
-                    petAge, // 애완동물의 개월수에 따른 오류 발생 체크
+                    new BirthMonthDTO(petBirthMonth), // 애완동물의 개월수에 따른 오류 발생 체크
                     "testPetSpecies",
                     LocalDateTime.of(2024, 9, 25, 13, 19, 33),
-                    35.17F,
-                    126.90F,
+                    new LocationDTO(
+                        35.17F, 126.90F
+                    ),
                     "testPetFeature",
                     true
                 );
 
                 // when
-                when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenReturn(userDTO));
+                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                    .thenReturn(oauthUserDTO);
 
                 doThrow(invalidPetBirthMonthException())
                     .when(missingService)
-                    .registerMissingPet(userDTO, missingPetDTO);
+                    .registerMissingPet(
+                        any(oauthUserDTO.getClass()),
+                        any(missingPetDTO.getClass())
+                    );
 
                 // then
                 mockMvc.perform(
                         post("/api/missing")
                             .contentType(APPLICATION_JSON)
-                            .header("Authorization: Bearer testTokens")
+                            .header("Authorization", "Bearer testTokens")
                             .content(toJson(missingPetDTO))
                     )
                     .andExpectAll(
                         status().isBadRequest(),
-                        // TODO Error Message Template 재정의 후 contentType 선정
-                        // content().contentType(APPLICATION_JSON),
-                        content().json(toJson(INVALID_PET_MONTH))
+                        content().contentType(APPLICATION_JSON),
+                        content().json(toJson(new ErrorResponse(INVALID_PET_MONTH)))
                     )
                     .andDo(restDocs.document(
                         authorizationSnippet(),
                         petDTORequestSnippet()
                     ));
+
+                verify(missingService, times(1))
+                    .registerMissingPet(any(OauthUserDTO.class), any(MissingPetDTO.class));
             }
 
             @ParameterizedTest
@@ -173,35 +192,36 @@ class MissingControllerTest extends RestDocsTestSupport {
                 missingPetDTO = new MissingPetDTO(
                     "testPetName",
                     "testPetGender",
-                    1,
+                    new BirthMonthDTO(1),
                     "testPetSpecies",
                     lostTime,
-                    35.17F,
-                    126.90F,
+                    new LocationDTO(35.17F, 126.90F),
                     "testPetFeature",
                     true
                 );
 
                 // when
-                when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenReturn(userDTO);
+                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                    .thenReturn(oauthUserDTO);
 
                 doThrow(invalidDateException())
                     .when(missingService)
-                    .registerMissingPet(userDTO, missingPetDTO);
+                    .registerMissingPet(
+                        any(oauthUserDTO.getClass()),
+                        any(missingPetDTO.getClass())
+                    );
 
                 // then
                 mockMvc.perform(
                         post("/api/missing")
                             .contentType(APPLICATION_JSON)
-                            .header("Authorization: Bearer testTokens")
+                            .header("Authorization", "Bearer testTokens")
                             .content(toJson(missingPetDTO))
                     )
                     .andExpectAll(
                         status().isBadRequest(),
-                        // TODO Error Message Template 재정의 후 contentType 선정
-                        // content().contentType(APPLICATION_JSON),
-                        content().json(toJson(INVALID_DATE))
+                        content().contentType(APPLICATION_JSON),
+                        content().json(toJson(new ErrorResponse(INVALID_DATE)))
                     )
                     .andDo(restDocs.document(
                             authorizationSnippet(),
@@ -228,35 +248,39 @@ class MissingControllerTest extends RestDocsTestSupport {
                 missingPetDTO = new MissingPetDTO(
                     "testPetName",
                     "testPetGender",
-                    1,
+                    new BirthMonthDTO(1),
                     "testPetSpecies",
                     LocalDateTime.of(2024, 9, 25, 13, 19, 33),
-                    lostLatitude,
-                    lostLongitude,
+                    new LocationDTO(
+                        lostLatitude,
+                        lostLongitude
+                    ),
                     "testPetFeature",
                     true
                 );
 
                 // when
-                when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenReturn(userDTO);
+                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                    .thenReturn(oauthUserDTO);
 
                 doThrow(invalidLocaltionException())
                     .when(missingService)
-                    .registerMissingPet(userDTO, missingPetDTO);
+                    .registerMissingPet(
+                        any(oauthUserDTO.getClass()),
+                        any(missingPetDTO.getClass())
+                    );
 
                 // then
                 mockMvc.perform(
                         post("/api/missing")
                             .contentType(APPLICATION_JSON)
-                            .header("Authorization: Bearer testTokens")
+                            .header("Authorization", "Bearer testTokens")
                             .content(toJson(missingPetDTO))
                     )
                     .andExpectAll(
                         status().isBadRequest(),
-                        // TODO Error Message Template 재정의 후 contentType 선정
-                        // content().contentType(APPLICATION_JSON),
-                        content().json(toJson(INVALID_LOCATION))
+                        content().contentType(APPLICATION_JSON),
+                        content().json(toJson(new ErrorResponse(INVALID_LOCATION)))
                     )
                     .andDo(restDocs.document(
                             authorizationSnippet(),
@@ -272,61 +296,69 @@ class MissingControllerTest extends RestDocsTestSupport {
                     Arguments.of(0, -181),
                     Arguments.of(0, 181),
                     Arguments.of(-91, 181),
-                    Arguments.of(-90.0000001, 0)
+                    Arguments.of(-90.00001F, 0)
                 );
             }
         }
 
         @Nested
         @DisplayName("registerMissingPet 401 Unauthorization")
+        @DirtiesContext(classMode = BEFORE_CLASS)
         class registerMissingPet_401 {
+
+            @BeforeEach
+            public void setup() {
+                when(oauthUserArgumentResolver.supportsParameter(any()))
+                    .thenReturn(true);
+            }
 
             @Test
             @DisplayName("not include Bearer")
             public void notIncludeBearer() throws Exception {
                 // when
-                when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenThrow(invalidUserException());
+                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                    .thenThrow(invalidTokenException());
 
                 // then
                 mockMvc.perform(
                         post("/api/missing")
                             .contentType(APPLICATION_JSON)
-                            .header("Authorization: testTokens")
+                            .header("Authorization", "testTokens")
                             .content(toJson(missingPetDTO))
                     )
                     .andExpectAll(
                         status().isUnauthorized(),
-                        // TODO Error Message Template 재정의 후 contentType 선정
-                        // content().contentType(APPLICATION_JSON),
-                        content().json(toJson(INVALID_USER))
+                        content().contentType(APPLICATION_JSON),
+                        content().json(toJson(new ErrorResponse(tokenInvalid)))
                     )
                     .andDo(restDocs.document(
                             authorizationSnippet(),
                             petDTORequestSnippet()
                         )
                     );
+
+                verify(oauthUserArgumentResolver, times(1)).resolveArgument(any(), any(), any(),
+                    any());
             }
 
             @Test
             @DisplayName("expired Token")
             public void expiredToken() throws Exception {
                 // when
-                when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenThrow(CustomException::expiredTokenException);
+                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                    .thenThrow(expiredTokenException());
 
                 // then
                 mockMvc.perform(
                         post("/api/missing")
                             .contentType(APPLICATION_JSON)
-                            .header("Authorization: testTokens")
+                            .header("Authorization", "bearer testTokens")
                             .content(toJson(missingPetDTO))
                     )
                     .andExpectAll(
                         status().isUnauthorized(),
-                        // TODO Error Message Template 재정의 후 contentType 선정
-                        // content().contentType(APPLICATION_JSON),
-                        content().json(toJson(EXPIRED_TOKEN))
+                        content().contentType(APPLICATION_JSON),
+                        content().json(toJson(new ErrorResponse(EXPIRED_TOKEN)))
                     ).andDo(restDocs.document(
                             authorizationSnippet(),
                             petDTORequestSnippet()
@@ -338,21 +370,20 @@ class MissingControllerTest extends RestDocsTestSupport {
             @DisplayName("invalid user")
             public void invalidUser() throws Exception {
                 // when
-                when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenThrow(CustomException::invalidUserException);
+                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                    .thenThrow(invalidUserException());
 
                 // then
                 mockMvc.perform(
                         post("/api/missing")
                             .contentType(APPLICATION_JSON)
-                            .header("Authorization: testTokens")
+                            .header("Authorization", "Bearer testTokens")
                             .content(toJson(missingPetDTO))
                     )
                     .andExpectAll(
                         status().isUnauthorized(),
-                        // TODO Error Message Template 재정의 후 contentType 선정
-                        // content().contentType(APPLICATION_JSON),
-                        content().json(toJson(INVALID_USER))
+                        content().contentType(APPLICATION_JSON),
+                        content().json(toJson(new ErrorResponse(INVALID_USER)))
                     ).andDo(restDocs.document(
                             authorizationSnippet(),
                             petDTORequestSnippet()
@@ -366,24 +397,24 @@ class MissingControllerTest extends RestDocsTestSupport {
         @DisplayName("registerMissingPet 404 Not Found")
         void registerMissingPet_404() throws Exception {
             // when
-            when(authorizationArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(userDTO);
+            when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(oauthUserDTO);
 
             doThrow(breedNotFoundException())
                 .when(missingService)
-                .registerMissingPet(userDTO, missingPetDTO);
+                .registerMissingPet(any(oauthUserDTO.getClass()), any(missingPetDTO.getClass()));
 
             // then
             mockMvc.perform(
                     post("/api/missing")
                         .contentType(APPLICATION_JSON)
-                        .header("Authorization: Bearer testTokens")
+                        .header("Authorization", "Bearer testTokens")
+                        .content(toJson(missingPetDTO))
                 )
                 .andExpectAll(
-                    status().isBadRequest(),
-                    // TODO Error Message Template 재정의 후 contentType 선정
-                    // content().contentType(APPLICATION_JSON),
-                    content().json(toJson(BREED_NOT_FOUND))
+                    status().isNotFound(),
+                    content().contentType(APPLICATION_JSON),
+                    content().json(toJson(new ErrorResponse(BREED_NOT_FOUND)))
                 )
                 .andDo(restDocs.document(
                     authorizationSnippet(),
