@@ -34,7 +34,7 @@ public class CustomException extends RuntimeException {
     }
 
     public static CustomException invalidTokenException() {
-        return new CustomException(ErrorMessage.tokenInvalid, HttpStatus.BAD_REQUEST);
+        return new CustomException(ErrorMessage.tokenInvalid, UNAUTHORIZED);
     }
 
     public static CustomException invalidProviderException() {

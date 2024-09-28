@@ -1,7 +1,5 @@
 package com.ktc.togetherPet.exception;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,11 +8,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<Map<String, String>> handleCustomException(
-        CustomException customException) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", customException.getMessage());
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException customException) {
 
-        return new ResponseEntity<>(response, customException.getStatus());
+        return new ResponseEntity<>(
+            new ErrorResponse(customException.getMessage()),
+            customException.getStatus()
+        );
     }
 }
