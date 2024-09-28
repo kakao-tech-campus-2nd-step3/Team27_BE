@@ -1,10 +1,11 @@
 package com.ktc.togetherPet.controller;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import com.ktc.togetherPet.annotation.OauthUser;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.MissingService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +27,8 @@ public class MissingController {
         @OauthUser OauthUserDTO oauthUserDTO,
         @RequestBody MissingPetDTO missingPetDTO
     ) {
-        missingService.registerMissingPet(oauthUserDTO, missingPetDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        missingService.registerMissingPet(oauthUserDTO, missingPetDTO);
+        return ResponseEntity.status(CREATED).build();
     }
 }
