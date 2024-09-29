@@ -14,8 +14,10 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
 import static com.ktc.togetherPet.exception.ErrorMessage.tokenInvalid;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,8 +33,6 @@ import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.exception.ErrorResponse;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.vo.BirthMonthDTO;
-import com.ktc.togetherPet.model.dto.vo.LocationDTO;
 import com.ktc.togetherPet.service.MissingService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
 import java.time.LocalDateTime;
@@ -51,7 +51,6 @@ import org.springframework.restdocs.headers.HeaderDocumentation;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @WebMvcTest(MissingController.class)
 class MissingControllerTest extends RestDocsTestSupport {
@@ -62,56 +61,61 @@ class MissingControllerTest extends RestDocsTestSupport {
     @MockBean
     private MissingService missingService;
 
-    //given
-    private OauthUserDTO oauthUserDTO;
-    private MissingPetDTO missingPetDTO;
-
-    @BeforeEach
-    void setUp() {
-        oauthUserDTO = new OauthUserDTO("test@email.com");
-        missingPetDTO = new MissingPetDTO(
-            "testPetName",
-            "testPetGender",
-            new BirthMonthDTO(1),
-            "testPetSpecies",
-            LocalDateTime.of(2024, 9, 25, 13, 19, 33),
-            new LocationDTO(35.17F, 126.90F),
-            "testPetFeature",
-            true
-        );
-    }
-
-    private static Snippet authorizationSnippet() {
-        return HeaderDocumentation.requestHeaders(
-            headerWithName("Authorization").description("인증을 위한 Bearer 토큰")
-        );
-    }
-
-    private static Snippet petDTORequestSnippet() {
-        return PayloadDocumentation.requestFields(
-            fieldWithPath("pet_name").description("실종 동물의 이름"),
-            fieldWithPath("pet_gender").description("실종 동물의 성별"),
-            fieldWithPath("birth_month.birth_month").description("실종 동물의 개월수"),
-            fieldWithPath("pet_breed").description("실종 동물의 종"),
-            fieldWithPath("lost_time").description("실종 시각"),
-            fieldWithPath("location.latitude").description("실종 위도"),
-            fieldWithPath("location.longitude").description("실종 경도"),
-            fieldWithPath("pet_features").description("실종 동물의 특징"),
-            fieldWithPath("is_neutering").description("중성화 여부")
-        );
-    }
-
     @Nested
     @DisplayName("[같이 찾기] registerMissingPet 테스트")
     class registerMissingPet {
 
+        //given
+        private OauthUserDTO oauthUserDTO;
+        private MissingPetDTO missingPetDTO;
+
+        @BeforeEach
+        void setUp() throws Exception {
+            //given
+            oauthUserDTO = new OauthUserDTO("test@email.com");
+            missingPetDTO = new MissingPetDTO(
+                "testPetName",
+                "testPetGender",
+                1L,
+                "testPetSpecies",
+                LocalDateTime.of(2024, 9, 25, 13, 19, 33),
+                35.17F,
+                126.90F,
+                "testPetFeature",
+                true
+            );
+
+            //when
+            when(oauthUserArgumentResolver.supportsParameter(any()))
+                .thenReturn(true);
+
+            when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(oauthUserDTO);
+        }
+
+        private static Snippet authorizationSnippet() {
+            return HeaderDocumentation.requestHeaders(
+                headerWithName("Authorization").description("인증을 위한 Bearer 토큰")
+            );
+        }
+
+        private static Snippet petDTORequestSnippet() {
+            return PayloadDocumentation.requestFields(
+                fieldWithPath("pet_name").description("실종 동물의 이름"),
+                fieldWithPath("pet_gender").description("실종 동물의 성별"),
+                fieldWithPath("birth_month").description("실종 동물의 개월수"),
+                fieldWithPath("pet_breed").description("실종 동물의 종"),
+                fieldWithPath("lost_time").description("실종 시각"),
+                fieldWithPath("latitude").description("실종 위도"),
+                fieldWithPath("longitude").description("실종 경도"),
+                fieldWithPath("pet_features").description("실종 동물의 특징"),
+                fieldWithPath("is_neutering").description("중성화 여부")
+            );
+        }
+
         @Test
         @DisplayName("registerMissingPet 201 Created")
         void registerMissingPet_201() throws Exception {
-            // when
-            when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(oauthUserDTO);
-
             // then
             mockMvc.perform(
                     post("/api/missing")
@@ -127,7 +131,7 @@ class MissingControllerTest extends RestDocsTestSupport {
                 );
 
             verify(missingService, times(1))
-                .registerMissingPet(any(OauthUserDTO.class), any(MissingPetDTO.class));
+                .registerMissingPet(oauthUserDTO, missingPetDTO);
         }
 
         @Nested
@@ -142,26 +146,18 @@ class MissingControllerTest extends RestDocsTestSupport {
                 missingPetDTO = new MissingPetDTO(
                     "testPetName",
                     "testPetGender",
-                    new BirthMonthDTO(petBirthMonth), // 애완동물의 개월수에 따른 오류 발생 체크
+                    petBirthMonth, // 애완동물의 개월수에 따른 오류 발생 체크
                     "testPetSpecies",
                     LocalDateTime.of(2024, 9, 25, 13, 19, 33),
-                    new LocationDTO(
-                        35.17F, 126.90F
-                    ),
+                    35.17F,
+                    126.90F,
                     "testPetFeature",
                     true
                 );
 
                 // when
-                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenReturn(oauthUserDTO);
-
                 doThrow(invalidPetBirthMonthException())
-                    .when(missingService)
-                    .registerMissingPet(
-                        any(oauthUserDTO.getClass()),
-                        any(missingPetDTO.getClass())
-                    );
+                    .when(missingService).registerMissingPet(oauthUserDTO, missingPetDTO);
 
                 // then
                 mockMvc.perform(
@@ -181,7 +177,7 @@ class MissingControllerTest extends RestDocsTestSupport {
                     ));
 
                 verify(missingService, times(1))
-                    .registerMissingPet(any(OauthUserDTO.class), any(MissingPetDTO.class));
+                    .registerMissingPet(oauthUserDTO, missingPetDTO);
             }
 
             @ParameterizedTest
@@ -192,24 +188,18 @@ class MissingControllerTest extends RestDocsTestSupport {
                 missingPetDTO = new MissingPetDTO(
                     "testPetName",
                     "testPetGender",
-                    new BirthMonthDTO(1),
+                    1L,
                     "testPetSpecies",
                     lostTime,
-                    new LocationDTO(35.17F, 126.90F),
+                    35.17F,
+                    126.90F,
                     "testPetFeature",
                     true
                 );
 
                 // when
-                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenReturn(oauthUserDTO);
-
                 doThrow(invalidDateException())
-                    .when(missingService)
-                    .registerMissingPet(
-                        any(oauthUserDTO.getClass()),
-                        any(missingPetDTO.getClass())
-                    );
+                    .when(missingService).registerMissingPet(oauthUserDTO, missingPetDTO);
 
                 // then
                 mockMvc.perform(
@@ -228,12 +218,15 @@ class MissingControllerTest extends RestDocsTestSupport {
                             petDTORequestSnippet()
                         )
                     );
+
+                verify(missingService, times(1))
+                    .registerMissingPet(oauthUserDTO, missingPetDTO);
             }
 
             private static Stream<LocalDateTime> lateMoreThanNowMethodSource() {
                 return Stream.of(
-                    LocalDateTime.now().plusHours(1L),
-                    LocalDateTime.now().plusMinutes(10L)
+                    LocalDateTime.now().plusHours(1L).truncatedTo(SECONDS),
+                    LocalDateTime.now().plusMinutes(10L).truncatedTo(SECONDS)
                 );
             }
 
@@ -248,27 +241,19 @@ class MissingControllerTest extends RestDocsTestSupport {
                 missingPetDTO = new MissingPetDTO(
                     "testPetName",
                     "testPetGender",
-                    new BirthMonthDTO(1),
+                    1L,
                     "testPetSpecies",
                     LocalDateTime.of(2024, 9, 25, 13, 19, 33),
-                    new LocationDTO(
-                        lostLatitude,
-                        lostLongitude
-                    ),
+                    lostLatitude,
+                    lostLongitude,
                     "testPetFeature",
                     true
                 );
 
                 // when
-                when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                    .thenReturn(oauthUserDTO);
-
                 doThrow(invalidLocaltionException())
                     .when(missingService)
-                    .registerMissingPet(
-                        any(oauthUserDTO.getClass()),
-                        any(missingPetDTO.getClass())
-                    );
+                    .registerMissingPet(oauthUserDTO, missingPetDTO);
 
                 // then
                 mockMvc.perform(
@@ -287,6 +272,9 @@ class MissingControllerTest extends RestDocsTestSupport {
                             petDTORequestSnippet()
                         )
                     );
+
+                verify(missingService, times(1))
+                    .registerMissingPet(oauthUserDTO, missingPetDTO);
             }
 
             private static Stream<Arguments> incorrectRangeOfLatitudeAndLongitudeMethodSource() {
@@ -302,15 +290,9 @@ class MissingControllerTest extends RestDocsTestSupport {
         }
 
         @Nested
-        @DisplayName("registerMissingPet 401 Unauthorization")
+        @DisplayName("registerMissingPet 401 Unauthorized")
         @DirtiesContext(classMode = BEFORE_CLASS)
         class registerMissingPet_401 {
-
-            @BeforeEach
-            public void setup() {
-                when(oauthUserArgumentResolver.supportsParameter(any()))
-                    .thenReturn(true);
-            }
 
             @Test
             @DisplayName("not include Bearer")
@@ -337,8 +319,11 @@ class MissingControllerTest extends RestDocsTestSupport {
                         )
                     );
 
-                verify(oauthUserArgumentResolver, times(1)).resolveArgument(any(), any(), any(),
-                    any());
+                verify(oauthUserArgumentResolver, times(1))
+                    .resolveArgument(any(), any(), any(), any());
+
+                verify(missingService, never())
+                    .registerMissingPet(oauthUserDTO, missingPetDTO);
             }
 
             @Test
@@ -364,6 +349,12 @@ class MissingControllerTest extends RestDocsTestSupport {
                             petDTORequestSnippet()
                         )
                     );
+
+                verify(oauthUserArgumentResolver, times(1))
+                    .resolveArgument(any(), any(), any(), any());
+
+                verify(missingService, never())
+                    .registerMissingPet(oauthUserDTO, missingPetDTO);
             }
 
             @Test
@@ -389,6 +380,12 @@ class MissingControllerTest extends RestDocsTestSupport {
                             petDTORequestSnippet()
                         )
                     );
+
+                verify(oauthUserArgumentResolver, times(1))
+                    .resolveArgument(any(), any(), any(), any());
+
+                verify(missingService, never())
+                    .registerMissingPet(oauthUserDTO, missingPetDTO);
             }
 
         }
@@ -397,12 +394,9 @@ class MissingControllerTest extends RestDocsTestSupport {
         @DisplayName("registerMissingPet 404 Not Found")
         void registerMissingPet_404() throws Exception {
             // when
-            when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(oauthUserDTO);
-
             doThrow(breedNotFoundException())
                 .when(missingService)
-                .registerMissingPet(any(oauthUserDTO.getClass()), any(missingPetDTO.getClass()));
+                .registerMissingPet(oauthUserDTO, missingPetDTO);
 
             // then
             mockMvc.perform(
@@ -420,6 +414,9 @@ class MissingControllerTest extends RestDocsTestSupport {
                     authorizationSnippet(),
                     petDTORequestSnippet()
                 ));
+
+            verify(missingService, times(1))
+                .registerMissingPet(oauthUserDTO, missingPetDTO);
         }
     }
 }
