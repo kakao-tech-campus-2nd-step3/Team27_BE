@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "pet")
@@ -41,4 +42,24 @@ public class Pet {
         this.isNeutering = isNeutering;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Pet pet = (Pet) o;
+
+        return Objects.equals(id, pet.id) && Objects.equals(name, pet.name)
+            && Objects.equals(birthMonth, pet.birthMonth) && Objects.equals(breed,
+            pet.breed) && Objects.equals(isNeutering, pet.isNeutering);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, birthMonth, breed, isNeutering);
+    }
 }
