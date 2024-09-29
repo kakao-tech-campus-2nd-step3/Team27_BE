@@ -7,6 +7,7 @@ import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.BirthMonth;
+import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
@@ -35,20 +36,16 @@ public class MissingService {
         this.breedRepository = breedRepository;
     }
 
-    public void registerMissingPet(
-        OauthUserDTO oauthUserDTO,
-        MissingPetDTO missingPetDTO
-    ) {
-
+    public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetDTO missingPetDTO) {
         User user = userRepository.findByEmail(oauthUserDTO.email())
             .orElseThrow(CustomException::invalidUserException);
 
         Pet pet = Optional.ofNullable(user.getPet())
-            .orElse(
-                petRepository.save(
+            .orElseGet(
+                () -> petRepository.save(
                     new Pet(
                         missingPetDTO.petName(),
-                        new BirthMonth(missingPetDTO.birthMonth().birthMonth()),
+                        new BirthMonth(missingPetDTO.birthMonth()),
                         breedRepository.findByName(missingPetDTO.petBreed())
                             .orElseThrow(CustomException::breedNotFoundException),
                         missingPetDTO.isNeutering()
@@ -60,10 +57,10 @@ public class MissingService {
             new Missing(
                 pet,
                 true,
-                missingPetDTO.lostTime(),
+                new DateTime(missingPetDTO.lostTime()),
                 new Location(
-                    missingPetDTO.location().latitude(),
-                    missingPetDTO.location().longitude()
+                    missingPetDTO.latitude(),
+                    missingPetDTO.longitude()
                 )
             )
         );
