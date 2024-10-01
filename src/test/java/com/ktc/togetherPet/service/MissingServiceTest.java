@@ -128,7 +128,8 @@ class MissingServiceTest {
                 true,
                 new DateTime(missingPetDTO.lostTime()),
                 location,
-                regionCode
+                regionCode,
+                missingPetDTO.description()
             );
         }
 
@@ -147,11 +148,11 @@ class MissingServiceTest {
                 given(userRepository.findByEmail(oauthUserDTO.email()))
                     .willReturn(Optional.of(existPetUser));
 
-                given(missingRepository.save(missing))
-                    .willReturn(missing);
-
                 given(kakaoMapService.getRegionCodeFromKakao(location))
                     .willReturn(regionCode);
+
+                given(missingRepository.save(missing))
+                    .willReturn(missing);
 
                 //then
                 missingService.registerMissingPet(oauthUserDTO, missingPetDTO);
@@ -423,21 +424,24 @@ class MissingServiceTest {
                     true,
                     new DateTime(LocalDateTime.now()),
                     new Location(32.5F, 80.0F),
-                    regionCode
+                    regionCode,
+                    "test-description-1"
                 ),
                 new Missing(
                     pet2,
                     true,
                     new DateTime(LocalDateTime.now().minus(1, HOURS)),
                     new Location(33.5F, 81.0F),
-                    regionCode
+                    regionCode,
+                    "test-description-2"
                 ),
                 new Missing(
                     pet3,
                     false,
                     new DateTime(LocalDateTime.now().minus(1, MINUTES)),
                     new Location(33.0F, 126.0F),
-                    regionCode
+                    regionCode,
+                    "test-description-3"
                 )
             );
 
@@ -467,7 +471,8 @@ class MissingServiceTest {
             when(pet2.getId()).thenReturn(2L);
 
             //then
-            List<MissingPetNearByDTO> result = missingService.getMissingPetsNearBy(latitude, longitude);
+            List<MissingPetNearByDTO> result = missingService.getMissingPetsNearBy(latitude,
+                longitude);
             assertEquals(expects, result);
         }
     }

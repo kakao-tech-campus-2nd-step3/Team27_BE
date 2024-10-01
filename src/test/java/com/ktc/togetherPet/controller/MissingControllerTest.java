@@ -114,7 +114,7 @@ class MissingControllerTest extends RestDocsTestSupport {
                 fieldWithPath("lost_time").description("실종 시각"),
                 fieldWithPath("latitude").description("실종 위도"),
                 fieldWithPath("longitude").description("실종 경도"),
-                fieldWithPath("pet_features").description("실종 동물의 특징"),
+                fieldWithPath("description").description("실종 동물의 특징"),
                 fieldWithPath("is_neutering").description("중성화 여부")
             );
         }

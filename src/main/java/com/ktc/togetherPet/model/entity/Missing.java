@@ -37,6 +37,9 @@ public class Missing {
     @Column(name = "region_code", nullable = false)
     private long regionCode;
 
+    @Column(name = "description", nullable = true)
+    private String description;
+
     public Missing() {
     }
 
@@ -45,13 +48,15 @@ public class Missing {
         Boolean isMissing,
         DateTime dateTime,
         Location location,
-        long regionCode
+        long regionCode,
+        String description
     ) {
         this.pet = pet;
         this.isMissing = isMissing;
         this.lostTime = dateTime;
         this.location = location;
         this.regionCode = regionCode;
+        this.description = description;
     }
 
     public Pet getPet() {
@@ -66,6 +71,10 @@ public class Missing {
         return isMissing;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -75,14 +84,18 @@ public class Missing {
             return false;
         }
         Missing missing = (Missing) o;
-        return regionCode == missing.regionCode && Objects.equals(id, missing.id)
-            && Objects.equals(pet, missing.pet) && Objects.equals(isMissing,
-            missing.isMissing) && Objects.equals(lostTime, missing.lostTime)
-            && Objects.equals(location, missing.location);
+
+        return regionCode == missing.regionCode
+            && Objects.equals(id, missing.id)
+            && Objects.equals(pet, missing.pet)
+            && Objects.equals(isMissing, missing.isMissing)
+            && Objects.equals(lostTime, missing.lostTime)
+            && Objects.equals(location, missing.location)
+            && Objects.equals(description, missing.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pet, isMissing, lostTime, location, regionCode);
+        return Objects.hash(id, pet, isMissing, lostTime, location, regionCode, description);
     }
 }
