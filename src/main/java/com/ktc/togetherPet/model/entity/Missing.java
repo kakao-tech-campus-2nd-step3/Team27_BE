@@ -28,14 +28,14 @@ public class Missing {
     @Column(name = "is_missing", nullable = false)
     private Boolean isMissing;
 
-//    @Column(name = "timestamp", nullable = false)
-//    private LocalDateTime timestamp;
-
     @Embedded
     private DateTime lostTime;
 
     @Embedded
     private Location location;
+
+    @Column(name = "region_code", nullable = false)
+    private long regionCode;
 
     public Missing() {
     }
@@ -44,12 +44,22 @@ public class Missing {
         Pet pet,
         Boolean isMissing,
         DateTime dateTime,
-        Location location
+        Location location,
+        long regionCode
     ) {
         this.pet = pet;
         this.isMissing = isMissing;
         this.lostTime = dateTime;
         this.location = location;
+        this.regionCode = regionCode;
+    }
+
+    public Pet getPet() {
+        return pet;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     @Override
@@ -57,22 +67,18 @@ public class Missing {
         if (this == o) {
             return true;
         }
-
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Missing missing = (Missing) o;
-
-        return Objects.equals(id, missing.id)
-            && Objects.equals(pet, missing.pet)
-            && Objects.equals(isMissing, missing.isMissing)
-            && Objects.equals(lostTime, missing.lostTime)
+        return regionCode == missing.regionCode && Objects.equals(id, missing.id)
+            && Objects.equals(pet, missing.pet) && Objects.equals(isMissing,
+            missing.isMissing) && Objects.equals(lostTime, missing.lostTime)
             && Objects.equals(location, missing.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pet, isMissing, lostTime, location);
+        return Objects.hash(id, pet, isMissing, lostTime, location, regionCode);
     }
 }
