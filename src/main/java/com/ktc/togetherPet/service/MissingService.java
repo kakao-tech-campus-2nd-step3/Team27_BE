@@ -79,6 +79,7 @@ public class MissingService {
 
         return missingRepository.findAllByRegionCode(regionCode)
             .stream()
+            .filter(Missing::isMissing)
             .map(missing -> new MissingPetNearByDTO(
                 missing.getPet().getId(),
                 missing.getLocation().getLatitude(),

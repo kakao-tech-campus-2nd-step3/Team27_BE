@@ -62,6 +62,10 @@ public class Missing {
         return location;
     }
 
+    public boolean isMissing() {
+        return isMissing;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
