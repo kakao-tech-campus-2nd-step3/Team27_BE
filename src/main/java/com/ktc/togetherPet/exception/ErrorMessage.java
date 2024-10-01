@@ -13,4 +13,5 @@ public class ErrorMessage {
     public static final String INVALID_LOCATION = "올바르지 않은 위치 정보입니다.";
     public static final String BREED_NOT_FOUND = "해당 종을 찾을 수 없습니다.";
     public static final String PET_NOT_FOUND = "해당 펫을 찾을 수 없습니다.";
+    public static final String MISSING_NOT_FOUND = "해당 실종 정보를 찾을 수 없습니다.";
 }
