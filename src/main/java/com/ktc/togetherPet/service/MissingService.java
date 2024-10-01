@@ -2,6 +2,7 @@ package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Missing;
@@ -87,5 +88,23 @@ public class MissingService {
                 //TODO pet-image-url을 실제 경로로 받아오도록 수정해야함.
                 "pet-image-url"
             )).toList();
+    }
+
+    public MissingPetDetailDTO getMissingPetDetail(long missingId) {
+        Missing missing = missingRepository.findById(missingId)
+            .orElseThrow(CustomException::missingNotFound);
+
+        Pet pet = missing.getPet();
+
+        return new MissingPetDetailDTO(
+            pet.getName(),
+            pet.getBreed().getName(),
+            pet.getBirthMonth().getBirthMonth(),
+            missing.getLocation().getLatitude(),
+            missing.getLocation().getLongitude(),
+            missing.getDescription(),
+            //TODO 여기에 pet-image-url 리스트를 받아오도록 변경해야함
+            List.of("pet-image-url")
+        );
     }
 }
