@@ -64,6 +64,9 @@ class MissingServiceTest {
     @Mock
     private BreedRepository breedRepository;
 
+    @Mock
+    private KakaoMapService kakaoMapService;
+
     @InjectMocks
     private MissingService missingService;
 
@@ -76,6 +79,8 @@ class MissingServiceTest {
         private Missing missing;
         private Pet pet;
         private Breed breed;
+        private Location location;
+        private long regionCode;
 
         @BeforeEach
         void setUp() {
@@ -105,14 +110,19 @@ class MissingServiceTest {
                 missingPetDTO.isNeutering()
             );
 
+            location = new Location(
+                missingPetDTO.latitude(),
+                missingPetDTO.longitude()
+            );
+
+            regionCode = 1;
+
             missing = new Missing(
                 pet,
                 true,
                 new DateTime(missingPetDTO.lostTime()),
-                new Location(
-                    missingPetDTO.latitude(),
-                    missingPetDTO.longitude()
-                )
+                location,
+                regionCode
             );
         }
 
@@ -133,6 +143,9 @@ class MissingServiceTest {
 
                 given(missingRepository.save(missing))
                     .willReturn(missing);
+
+                given(kakaoMapService.getRegionCodeFromKakao(location))
+                    .willReturn(regionCode);
 
                 //then
                 missingService.registerMissingPet(oauthUserDTO, missingPetDTO);
@@ -166,6 +179,8 @@ class MissingServiceTest {
                 given(breedRepository.findByName(missingPetDTO.petBreed()))
                     .willReturn(Optional.ofNullable(breed));
 
+                given(kakaoMapService.getRegionCodeFromKakao(location))
+                    .willReturn(regionCode);
                 //then
                 missingService.registerMissingPet(oauthUserDTO, missingPetDTO);
 
