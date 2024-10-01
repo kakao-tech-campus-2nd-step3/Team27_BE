@@ -14,7 +14,7 @@ public record MissingPetDTO(
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul") LocalDateTime lostTime,
     float latitude,
     float longitude,
-    String petFeatures,
+    String description,
     boolean isNeutering
 ) {
 
