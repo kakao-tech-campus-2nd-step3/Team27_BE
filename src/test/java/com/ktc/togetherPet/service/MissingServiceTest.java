@@ -7,20 +7,25 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
@@ -34,6 +39,7 @@ import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.PetRepository;
 import com.ktc.togetherPet.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -375,6 +381,94 @@ class MissingServiceTest {
                 () -> assertEquals(thrown.getStatus(), NOT_FOUND),
                 () -> assertEquals(thrown.getMessage(), BREED_NOT_FOUND)
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("[같이 찾기] getMissingPetsNearBy 테스트")
+    class getMissingPetsNearByTest {
+
+        @Test
+        @DisplayName("getMissingPetsNearBy_200")
+        void getMissingPetsNearBy_200() {
+            //given
+            float latitude = 35.12F;
+            float longitude = 126.90F;
+            long regionCode = 1L;
+
+            Pet pet1 = spy(new Pet(
+                "test-name-1",
+                new BirthMonth(1L),
+                new Breed(),
+                true
+            ));
+
+            Pet pet2 = spy(new Pet(
+                "test-name-2",
+                new BirthMonth(2L),
+                new Breed(),
+                false
+            ));
+
+            Pet pet3 = spy(new Pet(
+                "test-name-3",
+                new BirthMonth(3L),
+                new Breed(),
+                false
+            ));
+
+            List<Missing> missingList = List.of(
+                new Missing(
+                    pet1,
+                    true,
+                    new DateTime(LocalDateTime.now()),
+                    new Location(32.5F, 80.0F),
+                    regionCode
+                ),
+                new Missing(
+                    pet2,
+                    true,
+                    new DateTime(LocalDateTime.now().minus(1, HOURS)),
+                    new Location(33.5F, 81.0F),
+                    regionCode
+                ),
+                new Missing(
+                    pet3,
+                    false,
+                    new DateTime(LocalDateTime.now().minus(1, MINUTES)),
+                    new Location(33.0F, 126.0F),
+                    regionCode
+                )
+            );
+
+            List<MissingPetNearByDTO> expects = List.of(
+                new MissingPetNearByDTO(
+                    1L,
+                    32.5F,
+                    80.0F,
+                    "pet-image-url"
+                ),
+                new MissingPetNearByDTO(
+                    2L,
+                    33.5F,
+                    81.0F,
+                    "pet-image-url"
+                )
+            );
+
+            //when
+            when(kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude)))
+                .thenReturn(regionCode);
+
+            when(missingRepository.findAllByRegionCode(regionCode))
+                .thenReturn(missingList);
+
+            when(pet1.getId()).thenReturn(1L);
+            when(pet2.getId()).thenReturn(2L);
+
+            //then
+            List<MissingPetNearByDTO> result = missingService.getMissingPetsNearBy(latitude, longitude);
+            assertEquals(expects, result);
         }
     }
 }
