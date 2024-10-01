@@ -18,6 +18,10 @@ public class BirthMonth {
         this.birthMonth = birthMonth;
     }
 
+    public long getBirthMonth() {
+        return birthMonth;
+    }
+
     private void validate(long birthMonth) {
         if (birthMonth <= 0) {
             throw invalidPetBirthMonthException();

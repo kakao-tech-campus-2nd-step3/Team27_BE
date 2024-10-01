@@ -35,6 +35,18 @@ public class Pet {
     @Column(name = "image_src", nullable = true)
     private String imageSrc;
 
+    public String getName() {
+        return name;
+    }
+
+    public BirthMonth getBirthMonth() {
+        return birthMonth;
+    }
+
+    public Breed getBreed() {
+        return breed;
+    }
+
     public Pet() {
     }
 
