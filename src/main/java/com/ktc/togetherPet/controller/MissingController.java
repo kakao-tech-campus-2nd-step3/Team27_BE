@@ -5,12 +5,14 @@ import static org.springframework.http.HttpStatus.OK;
 
 import com.ktc.togetherPet.annotation.OauthUser;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.MissingService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,5 +47,14 @@ public class MissingController {
         return ResponseEntity
             .status(OK)
             .body(missingService.getMissingPetsNearBy(latitude, longitude));
+    }
+
+    @GetMapping("/{missing-id}")
+    public ResponseEntity<MissingPetDetailDTO> getMissingPetById(
+        @PathVariable("missing-id") long missingId
+    ) {
+        return ResponseEntity
+            .status(OK)
+            .body(missingService.getMissingPetDetail(missingId));
     }
 }
