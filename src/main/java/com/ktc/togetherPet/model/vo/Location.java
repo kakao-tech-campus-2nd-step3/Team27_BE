@@ -20,6 +20,14 @@ public class Location {
         this.longitude = longitude;
     }
 
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
     private void validate(float latitude, float longitude) {
         if (!validateLatitude(latitude) || !validateLongitude(longitude)) {
             throw invalidLocaltionException();

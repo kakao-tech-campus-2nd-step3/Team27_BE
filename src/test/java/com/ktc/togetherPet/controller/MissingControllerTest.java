@@ -23,8 +23,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,10 +35,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.exception.ErrorResponse;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.MissingService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +54,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.headers.HeaderDocumentation;
 import org.springframework.restdocs.payload.PayloadDocumentation;
+import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -417,6 +423,105 @@ class MissingControllerTest extends RestDocsTestSupport {
 
             verify(missingService, times(1))
                 .registerMissingPet(oauthUserDTO, missingPetDTO);
+        }
+    }
+
+    @Nested
+    @DisplayName("[같이 찾기] getMissingPetsNearByRegion 테스트")
+    class getMissingPetsNearByRegion {
+
+        private static Snippet petDTORequestSnippet() {
+            return RequestDocumentation.queryParameters(
+                parameterWithName("latitude").description("가져오고자 하는 위치의 위도"),
+                parameterWithName("longitude").description("가져오고자 하는 위치의 경도")
+            );
+        }
+
+        @Test
+        @DisplayName("getMissingPetsNearByRegion 200 OK")
+        void getMissingPetsNearByRegion_200() throws Exception {
+            //given
+            float latitude = 37.5F;
+            float longitude = 80.1F;
+
+            List<MissingPetNearByDTO> expects = List.of(
+                new MissingPetNearByDTO(
+                    1L,
+                    32.5F,
+                    80.0F,
+                    "test-pet-image-url-1"
+                ),
+                new MissingPetNearByDTO(
+                    2L,
+                    33.5F,
+                    81.0F,
+                    "test-pet-image-url-2"
+                ),
+                new MissingPetNearByDTO(
+                    3L,
+                    34.5F,
+                    82.0F,
+                    "test-pet-image-url-3"
+                )
+            );
+
+            //when
+            when(missingService.getMissingPetsNearBy(latitude, longitude))
+                .thenReturn(expects);
+
+            //then
+            mockMvc.perform(
+                get("/api/missing")
+                    .contentType(APPLICATION_JSON)
+                    .param("latitude", String.valueOf(latitude))
+                    .param("longitude", String.valueOf(longitude))
+            ).andExpectAll(
+                status().isOk(),
+                content().json(toJson(expects))
+            ).andDo(restDocs.document(
+                petDTORequestSnippet(),
+                responseFields(
+                    fieldWithPath("[].pet_id").description("해당 애완동물의 id"),
+                    fieldWithPath("[].latitude").description("실종 위도"),
+                    fieldWithPath("[].longitude").description("실종 경도"),
+                    fieldWithPath("[].pet_image_url").description("애완동물의 사진 url")
+                )
+            ));
+
+            verify(missingService, times(1))
+                .getMissingPetsNearBy(latitude, longitude);
+        }
+
+        @Test
+        @DisplayName("getMissingPetsNearByRegion 400 BadRequest")
+        void getMissingPetsNearByRegion_400() throws Exception {
+            //given
+            float latitude = 37.5F;
+            float longitude = 80.1F;
+
+            //when
+            when(missingService.getMissingPetsNearBy(latitude, longitude))
+                .thenThrow(invalidLocaltionException());
+
+            //then
+            mockMvc.perform(
+                get("/api/missing")
+                    .contentType(APPLICATION_JSON)
+                    .param("latitude", String.valueOf(latitude))
+                    .param("longitude", String.valueOf(longitude))
+            ).andExpectAll(
+                status().isBadRequest(),
+                content().json(toJson(new ErrorResponse(INVALID_LOCATION)))
+            ).andDo(restDocs.document(
+                    petDTORequestSnippet(),
+                    responseFields(
+                        fieldWithPath("message").description("에러 메시지")
+                    )
+                )
+            );
+
+            verify(missingService, times(1))
+                .getMissingPetsNearBy(latitude, longitude);
         }
     }
 }

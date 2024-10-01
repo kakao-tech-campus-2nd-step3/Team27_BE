@@ -2,6 +2,7 @@ package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
@@ -13,6 +14,7 @@ import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.PetRepository;
 import com.ktc.togetherPet.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +25,20 @@ public class MissingService {
     private final UserRepository userRepository;
     private final PetRepository petRepository;
     private final BreedRepository breedRepository;
+    private final KakaoMapService kakaoMapService;
 
     public MissingService(
         MissingRepository missingRepository,
         UserRepository userRepository,
         PetRepository petRepository,
-        BreedRepository breedRepository
+        BreedRepository breedRepository,
+        KakaoMapService kakaoMapService
     ) {
         this.missingRepository = missingRepository;
         this.userRepository = userRepository;
         this.petRepository = petRepository;
         this.breedRepository = breedRepository;
+        this.kakaoMapService = kakaoMapService;
     }
 
     public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetDTO missingPetDTO) {
@@ -53,16 +58,34 @@ public class MissingService {
                 )
             );
 
+        Location location = new Location(
+            missingPetDTO.latitude(),
+            missingPetDTO.longitude()
+        );
+
         missingRepository.save(
             new Missing(
                 pet,
                 true,
                 new DateTime(missingPetDTO.lostTime()),
-                new Location(
-                    missingPetDTO.latitude(),
-                    missingPetDTO.longitude()
-                )
+                location,
+                kakaoMapService.getRegionCodeFromKakao(location)
             )
         );
+    }
+
+    public List<MissingPetNearByDTO> getMissingPetsNearBy(float latitude, float longitude) {
+        long regionCode = kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude));
+
+        return missingRepository.findAllByRegionCode(regionCode)
+            .stream()
+            .filter(Missing::isMissing)
+            .map(missing -> new MissingPetNearByDTO(
+                missing.getPet().getId(),
+                missing.getLocation().getLatitude(),
+                missing.getLocation().getLongitude(),
+                //TODO pet-image-url을 실제 경로로 받아오도록 수정해야함.
+                "pet-image-url"
+            )).toList();
     }
 }

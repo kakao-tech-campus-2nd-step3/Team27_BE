@@ -32,6 +32,10 @@ public class Pet {
     @Column(name = "is_neutering", nullable = true)
     private Boolean isNeutering;
 
+    public Long getId() {
+        return id;
+    }
+
     public Pet() {
     }
 
