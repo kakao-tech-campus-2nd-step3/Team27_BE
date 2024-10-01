@@ -70,7 +70,8 @@ public class MissingService {
                 true,
                 new DateTime(missingPetDTO.lostTime()),
                 location,
-                kakaoMapService.getRegionCodeFromKakao(location)
+                kakaoMapService.getRegionCodeFromKakao(location),
+                missingPetDTO.description()
             )
         );
     }
