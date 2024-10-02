@@ -91,7 +91,7 @@ public class MissingService {
             )).toList();
     }
 
-    public MissingPetDetailDTO getMissingPetDetailById(long missingId) {
+    public MissingPetDetailDTO getMissingPetDetailByMissingId(long missingId) {
         Missing missing = missingRepository.findById(missingId)
             .orElseThrow(CustomException::missingNotFound);
 

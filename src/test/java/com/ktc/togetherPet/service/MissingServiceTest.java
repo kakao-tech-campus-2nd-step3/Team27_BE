@@ -56,7 +56,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
 class MissingServiceTest {
@@ -519,7 +518,7 @@ class MissingServiceTest {
                 .thenReturn(Optional.of(expectMissing));
 
             // then
-            MissingPetDetailDTO result = missingService.getMissingPetDetailById(missingId);
+            MissingPetDetailDTO result = missingService.getMissingPetDetailByMissingId(missingId);
             assertEquals(expect, result);
 
             verify(missingRepository, times(1))
@@ -536,7 +535,7 @@ class MissingServiceTest {
             // then
             CustomException thrown = assertThrows(
                 CustomException.class,
-                () -> missingService.getMissingPetDetailById(missingId)
+                () -> missingService.getMissingPetDetailByMissingId(missingId)
             );
 
             assertAll(

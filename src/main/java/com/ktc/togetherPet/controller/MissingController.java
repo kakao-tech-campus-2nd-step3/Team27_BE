@@ -55,6 +55,6 @@ public class MissingController {
     ) {
         return ResponseEntity
             .status(OK)
-            .body(missingService.getMissingPetDetailById(missingId));
+            .body(missingService.getMissingPetDetailByMissingId(missingId));
     }
 }

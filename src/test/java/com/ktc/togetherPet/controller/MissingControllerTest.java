@@ -555,7 +555,7 @@ class MissingControllerTest extends RestDocsTestSupport {
         @DisplayName("getMissingPetDetailByMissingId")
         void getMissingPetDetailByMissingId_200() throws Exception {
             // when
-            when(missingService.getMissingPetDetailById(missingId))
+            when(missingService.getMissingPetDetailByMissingId(missingId))
                 .thenReturn(missingPetDetailDTO);
 
             // then
@@ -579,14 +579,14 @@ class MissingControllerTest extends RestDocsTestSupport {
             ));
 
             verify(missingService, times(1))
-                .getMissingPetDetailById(missingId);
+                .getMissingPetDetailByMissingId(missingId);
         }
 
         @Test
         @DisplayName("getMissingPetDetailByMissingId_404")
         void getMissingPetDetailByMissingId_404() throws Exception {
             // when
-            when(missingService.getMissingPetDetailById(missingId))
+            when(missingService.getMissingPetDetailByMissingId(missingId))
                 .thenThrow(missingNotFound());
 
             // then
@@ -603,7 +603,7 @@ class MissingControllerTest extends RestDocsTestSupport {
             ));
 
             verify(missingService, times(1))
-                .getMissingPetDetailById(missingId);
+                .getMissingPetDetailByMissingId(missingId);
         }
     }
 }
