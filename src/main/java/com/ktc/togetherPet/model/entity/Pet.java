@@ -32,9 +32,8 @@ public class Pet {
     @Column(name = "is_neutering", nullable = true)
     private Boolean isNeutering;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "image_src", nullable = true)
+    private String imageSrc;
 
     public Pet() {
     }
@@ -65,5 +64,11 @@ public class Pet {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, birthMonth, breed, isNeutering);
+    }
+    public Long getId() {
+        return id;
+    }
+    public void setImageSrc(String imageSrc) {
+        this.imageSrc = imageSrc;
     }
 }
