@@ -31,6 +31,9 @@ public class Pet {
     @Column(name = "is_neutering", nullable = true)
     private Boolean isNeutering;
 
+    @Column(name = "image_src", nullable = true)
+    private String imageSrc;
+
     public Pet() {
     }
 
@@ -41,4 +44,11 @@ public class Pet {
         this.isNeutering = isNeutering;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setImageSrc(String imageSrc) {
+        this.imageSrc = imageSrc;
+    }
 }
