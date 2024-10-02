@@ -50,11 +50,11 @@ public class MissingController {
     }
 
     @GetMapping("/{missing-id}")
-    public ResponseEntity<MissingPetDetailDTO> getMissingPetById(
+    public ResponseEntity<MissingPetDetailDTO> getMissingPetDetailByMissingId(
         @PathVariable("missing-id") long missingId
     ) {
         return ResponseEntity
             .status(OK)
-            .body(missingService.getMissingPetDetail(missingId));
+            .body(missingService.getMissingPetDetailById(missingId));
     }
 }
