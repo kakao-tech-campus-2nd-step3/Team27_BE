@@ -7,6 +7,7 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
+import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Breed;
@@ -54,6 +56,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
 class MissingServiceTest {
@@ -474,6 +477,72 @@ class MissingServiceTest {
             List<MissingPetNearByDTO> result = missingService.getMissingPetsNearBy(latitude,
                 longitude);
             assertEquals(expects, result);
+        }
+    }
+
+    @Nested
+    @DisplayName("[같이 찾기] getMissingPetDetailById 테스트")
+    class getMissingPetDetatilByIdTest {
+
+        private final long missingId = 1L;
+
+        @Test
+        @DisplayName("getMissingPetDetailById_200")
+        void getMissingPetDetailById_200() {
+            // given
+            Missing expectMissing = new Missing(
+                new Pet(
+                    "test-pet-name",
+                    new BirthMonth(1L),
+                    new Breed("test-breed-name"),
+                    true
+                ),
+                true,
+                new DateTime(LocalDateTime.now()),
+                new Location(10.0F, 15.0F),
+                15,
+                "test-description-1"
+            );
+            MissingPetDetailDTO expect = new MissingPetDetailDTO(
+                "test-pet-name",
+                "test-breed-name",
+                1L,
+                10.0F,
+                15.0F,
+                "test-description-1",
+                // TODO 실제 펫의 image-url로 변경하도록 수정 필요
+                List.of("pet-image-url")
+            );
+
+            // when
+            when(missingRepository.findById(missingId))
+                .thenReturn(Optional.of(expectMissing));
+
+            // then
+            MissingPetDetailDTO result = missingService.getMissingPetDetailById(missingId);
+            assertEquals(expect, result);
+
+            verify(missingRepository, times(1))
+                .findById(missingId);
+        }
+
+        @Test
+        @DisplayName("getMissingPetDetailById_404")
+        void getMissingPetDetailById_404() {
+            // when
+            when(missingRepository.findById(missingId))
+                .thenThrow(CustomException.missingNotFound());
+
+            // then
+            CustomException thrown = assertThrows(
+                CustomException.class,
+                () -> missingService.getMissingPetDetailById(missingId)
+            );
+
+            assertAll(
+                () -> assertEquals(thrown.getStatus(), NOT_FOUND),
+                () -> assertEquals(thrown.getMessage(), MISSING_NOT_FOUND)
+            );
         }
     }
 }
