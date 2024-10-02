@@ -19,6 +19,13 @@ public class Breed {
     @Column(name = "name", nullable = false)
     private String name;
 
+    public Breed() {
+    }
+
+    public Breed(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
