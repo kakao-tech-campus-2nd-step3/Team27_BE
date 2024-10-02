@@ -20,6 +20,9 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = true)
+    private String name;
+
     @ManyToOne(targetEntity = Region.class)
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
@@ -49,5 +52,9 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
