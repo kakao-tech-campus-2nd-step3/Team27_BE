@@ -17,4 +17,8 @@ public class Breed {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    public Breed(String name) {
+        this.name = name;
+    }
 }
