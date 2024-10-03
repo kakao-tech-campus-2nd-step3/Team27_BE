@@ -4,7 +4,6 @@ import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.pet.PetRegisterDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Pet;
-import com.ktc.togetherPet.model.vo.BirthMonth;
 import com.ktc.togetherPet.repository.PetRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +21,9 @@ public class PetService {
     }
 
     public Long createPet(PetRegisterDTO petRegisterDTO) {
-        BirthMonth birthMonth = new BirthMonth(petRegisterDTO.petBirthMonth());
         Breed breed = new Breed(petRegisterDTO.petType());
 
-        Pet pet = new Pet(petRegisterDTO.petName(), birthMonth,
+        Pet pet = new Pet(petRegisterDTO.petName(), petRegisterDTO.petBirthMonth(),
             breed, petRegisterDTO.isNeutering());
         Pet savedPet = petRepository.save(pet);
 

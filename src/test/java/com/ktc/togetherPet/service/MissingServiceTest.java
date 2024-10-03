@@ -33,7 +33,6 @@ import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
-import com.ktc.togetherPet.model.vo.BirthMonth;
 import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
@@ -111,9 +110,7 @@ class MissingServiceTest {
 
             pet = new Pet(
                 missingPetDTO.petName(),
-                new BirthMonth(
-                    missingPetDTO.birthMonth()
-                ),
+                missingPetDTO.birthMonth(),
                 breed,
                 missingPetDTO.isNeutering()
             );
@@ -213,8 +210,8 @@ class MissingServiceTest {
 
             @ParameterizedTest
             @DisplayName("개월수가 0이하인 값이 입력된 경우")
-            @ValueSource(ints = {-100, -1, 0})
-            void underAgeZero(int petBirthMonth) {
+            @ValueSource(longs = {-100L, -1L, 0L})
+            void underAgeZero(long petBirthMonth) {
                 //given
                 User user = new User(oauthUserDTO.email());
 
@@ -233,6 +230,9 @@ class MissingServiceTest {
                 //when
                 given(userRepository.findByEmail(oauthUserDTO.email()))
                     .willReturn(Optional.of(user));
+
+                given(breedRepository.findByName(missingPetDTO.petBreed()))
+                    .willReturn(Optional.ofNullable(breed));
 
                 //then
                 CustomException thrown = assertThrows(
@@ -401,21 +401,21 @@ class MissingServiceTest {
 
             Pet pet1 = spy(new Pet(
                 "test-name-1",
-                new BirthMonth(1L),
+                1L,
                 new Breed(),
                 true
             ));
 
             Pet pet2 = spy(new Pet(
                 "test-name-2",
-                new BirthMonth(2L),
+                2L,
                 new Breed(),
                 false
             ));
 
             Pet pet3 = spy(new Pet(
                 "test-name-3",
-                new BirthMonth(3L),
+                3L,
                 new Breed(),
                 false
             ));
@@ -492,7 +492,7 @@ class MissingServiceTest {
             Missing expectMissing = new Missing(
                 new Pet(
                     "test-pet-name",
-                    new BirthMonth(1L),
+                    1L,
                     new Breed("test-breed-name"),
                     true
                 ),

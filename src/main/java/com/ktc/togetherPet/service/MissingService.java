@@ -8,7 +8,6 @@ import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
-import com.ktc.togetherPet.model.vo.BirthMonth;
 import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
@@ -51,7 +50,7 @@ public class MissingService {
                 () -> petRepository.save(
                     new Pet(
                         missingPetDTO.petName(),
-                        new BirthMonth(missingPetDTO.birthMonth()),
+                        missingPetDTO.birthMonth(),
                         breedRepository.findByName(missingPetDTO.petBreed())
                             .orElseThrow(CustomException::breedNotFoundException),
                         missingPetDTO.isNeutering()
@@ -100,7 +99,7 @@ public class MissingService {
         return new MissingPetDetailDTO(
             pet.getName(),
             pet.getBreed().getName(),
-            pet.getBirthMonth().getBirthMonth(),
+            pet.getBirthMonth(),
             missing.getLocation().getLatitude(),
             missing.getLocation().getLongitude(),
             missing.getDescription(),

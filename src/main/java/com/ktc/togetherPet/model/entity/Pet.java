@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.model.entity;
 
-import com.ktc.togetherPet.model.vo.BirthMonth;
+import static com.ktc.togetherPet.exception.CustomException.invalidPetBirthMonthException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +24,7 @@ public class Pet {
     private String name;
 
     @Column(name = "birth_month", nullable = false)
-    private BirthMonth birthMonth;
+    private long birthMonth;
 
     @ManyToOne(targetEntity = Breed.class)
     @JoinColumn(name = "breed_id", nullable = true)
@@ -35,11 +36,15 @@ public class Pet {
     @Column(name = "image_src", nullable = true)
     private String imageSrc;
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
 
-    public BirthMonth getBirthMonth() {
+    public long getBirthMonth() {
         return birthMonth;
     }
 
@@ -47,14 +52,26 @@ public class Pet {
         return breed;
     }
 
+    public void setImageSrc(String imageSrc) {
+        this.imageSrc = imageSrc;
+    }
+
     public Pet() {
     }
 
-    public Pet(String name, BirthMonth birthMonth, Breed breed, Boolean isNeutering) {
+    public Pet(String name, long birthMonth, Breed breed, Boolean isNeutering) {
+        validateBirthMonth(birthMonth);
+
         this.name = name;
         this.birthMonth = birthMonth;
         this.breed = breed;
         this.isNeutering = isNeutering;
+    }
+
+    private void validateBirthMonth(long birthMonth) {
+        if (birthMonth <= 0) {
+            throw invalidPetBirthMonthException();
+        }
     }
 
     @Override
@@ -65,22 +82,17 @@ public class Pet {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Pet pet = (Pet) o;
-
-        return Objects.equals(id, pet.id) && Objects.equals(name, pet.name)
-            && Objects.equals(birthMonth, pet.birthMonth) && Objects.equals(breed,
-            pet.breed) && Objects.equals(isNeutering, pet.isNeutering);
+        return birthMonth == pet.birthMonth
+            && Objects.equals(id, pet.id)
+            && Objects.equals(name, pet.name)
+            && Objects.equals(breed, pet.breed)
+            && Objects.equals(isNeutering, pet.isNeutering)
+            && Objects.equals(imageSrc, pet.imageSrc);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, birthMonth, breed, isNeutering);
-    }
-    public Long getId() {
-        return id;
-    }
-    public void setImageSrc(String imageSrc) {
-        this.imageSrc = imageSrc;
+        return Objects.hash(id, name, birthMonth, breed, isNeutering, imageSrc);
     }
 }
