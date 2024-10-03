@@ -12,4 +12,5 @@ public class ErrorMessage {
     public static final String INVALID_DATE = "현재 시간보다 이후의 시간은 선택할 수 없습니다.";
     public static final String INVALID_LOCATION = "올바르지 않은 위치 정보입니다.";
     public static final String BREED_NOT_FOUND = "해당 종을 찾을 수 없습니다.";
+    public static final String PET_NOT_FOUND = "해당 펫을 찾을 수 없습니다.";
 }
