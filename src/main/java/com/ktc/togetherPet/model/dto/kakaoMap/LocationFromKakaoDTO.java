@@ -17,7 +17,7 @@ public record LocationFromKakaoDTO(
     }
 
     public long getAdministrativeCode() {
-        return Integer.parseInt(getAdministrativeDocuments().code());
+        return Long.parseLong(getAdministrativeDocuments().code());
     }
 
     private Documents getAdministrativeDocuments() {
