@@ -14,4 +14,5 @@ public class ErrorMessage {
     public static final String BREED_NOT_FOUND = "해당 종을 찾을 수 없습니다.";
     public static final String PET_NOT_FOUND = "해당 펫을 찾을 수 없습니다.";
     public static final String MISSING_NOT_FOUND = "해당 실종 정보를 찾을 수 없습니다.";
+    public static final String REPORT_NOT_FOUND = "해당 신고 정보를 찾을 수 없습니다.";
 }
