@@ -54,3 +54,31 @@ operation::register-missing-pet_401/invalid-user[snippets='http-request,http-res
 pet_breed는 db에 반드시 존재하는 값으로 입력해야 한다.
 
 operation::register-missing-pet/register-missing-pet_404[snippets='http-request,http-response']
+
+== 근처 실종 애완동물 가져오기
+
+operation::get-missing-pets-near-by-region/get-missing-pets-near-by-region_200[snippets='query-parameters,response-fields']
+
+=== 200 OK
+
+operation::get-missing-pets-near-by-region/get-missing-pets-near-by-region_200[snippets='http-request,response-body']
+
+=== 400 Bad Request
+
+위도 및 경도가 올바르지 않은 경우
+
+operation::get-missing-pets-near-by-region/get-missing-pets-near-by-region_400[snippets='http-request,response-body']
+
+== 실종 애완동물의 상세정보 보기
+
+operation::get-missing-pet-detail-by-missing-id/get-missing-pet-detail-by-missing-id_200[snippets='path-parameters,response-fields']
+
+=== 200 OK
+
+operation::get-missing-pet-detail-by-missing-id/get-missing-pet-detail-by-missing-id_200[snippets="http-request,response-body"]
+
+=== 404 Not Found
+
+해당 실종 id값이 존재하지 않는 경우
+
+operation::get-missing-pet-detail-by-missing-id/get-missing-pet-detail-by-missing-id_404[snippets="http-request,response-body"]

@@ -7,12 +7,14 @@ import static com.ktc.togetherPet.exception.CustomException.invalidLocaltionExce
 import static com.ktc.togetherPet.exception.CustomException.invalidPetBirthMonthException;
 import static com.ktc.togetherPet.exception.CustomException.invalidTokenException;
 import static com.ktc.togetherPet.exception.CustomException.invalidUserException;
+import static com.ktc.togetherPet.exception.CustomException.missingNotFound;
 import static com.ktc.togetherPet.exception.ErrorMessage.BREED_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.EXPIRED_TOKEN;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
+import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.tokenInvalid;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.exception.ErrorResponse;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.MissingService;
@@ -114,7 +117,7 @@ class MissingControllerTest extends RestDocsTestSupport {
                 fieldWithPath("lost_time").description("실종 시각"),
                 fieldWithPath("latitude").description("실종 위도"),
                 fieldWithPath("longitude").description("실종 경도"),
-                fieldWithPath("pet_features").description("실종 동물의 특징"),
+                fieldWithPath("description").description("실종 동물의 특징"),
                 fieldWithPath("is_neutering").description("중성화 여부")
             );
         }
@@ -522,6 +525,85 @@ class MissingControllerTest extends RestDocsTestSupport {
 
             verify(missingService, times(1))
                 .getMissingPetsNearBy(latitude, longitude);
+        }
+    }
+
+    @Nested
+    @DisplayName("[같이 찾기] getMissingPetDetailByMissingId 테스트")
+    class getMissingPetDetailByMissingId {
+
+        private static Snippet requestPathVariableSnippet() {
+            return RequestDocumentation.pathParameters(
+                parameterWithName("missing-id").description("실종 아이디")
+            );
+        }
+
+        private long missingId = 1L;
+
+        private MissingPetDetailDTO missingPetDetailDTO = new MissingPetDetailDTO(
+            "test-name",
+            "test-breed",
+            1L,
+            10.0F,
+            11.0F,
+            "test-description",
+            List.of("image-url-1", "image-url-2")
+        );
+
+
+        @Test
+        @DisplayName("getMissingPetDetailByMissingId")
+        void getMissingPetDetailByMissingId_200() throws Exception {
+            // when
+            when(missingService.getMissingPetDetailByMissingId(missingId))
+                .thenReturn(missingPetDetailDTO);
+
+            // then
+            mockMvc.perform(
+                get("/api/missing/{missing-id}", missingId)
+                    .contentType(APPLICATION_JSON)
+            ).andExpectAll(
+                status().isOk(),
+                content().json(toJson(missingPetDetailDTO))
+            ).andDo(restDocs.document(
+                requestPathVariableSnippet(),
+                responseFields(
+                    fieldWithPath("name").description("실종 애완동물의 이름"),
+                    fieldWithPath("breed").description("실종 애완동물의 종"),
+                    fieldWithPath("birth_month").description("실종 애완동물의 개월수"),
+                    fieldWithPath("latitude").description("실종 위도"),
+                    fieldWithPath("longitude").description("실종 경도"),
+                    fieldWithPath("description").description("실종 애완동물의 특징"),
+                    fieldWithPath("image_url").description("실종 애완동물의 이미지 url")
+                )
+            ));
+
+            verify(missingService, times(1))
+                .getMissingPetDetailByMissingId(missingId);
+        }
+
+        @Test
+        @DisplayName("getMissingPetDetailByMissingId_404")
+        void getMissingPetDetailByMissingId_404() throws Exception {
+            // when
+            when(missingService.getMissingPetDetailByMissingId(missingId))
+                .thenThrow(missingNotFound());
+
+            // then
+            mockMvc.perform(
+                get("/api/missing/{missing-id}", missingId)
+            ).andExpectAll(
+                status().isNotFound(),
+                content().json(toJson(new ErrorResponse(MISSING_NOT_FOUND)))
+            ).andDo(restDocs.document(
+                requestPathVariableSnippet(),
+                responseFields(
+                    fieldWithPath("message").description("에러 메시지")
+                )
+            ));
+
+            verify(missingService, times(1))
+                .getMissingPetDetailByMissingId(missingId);
         }
     }
 }

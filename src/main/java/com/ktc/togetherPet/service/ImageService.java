@@ -2,13 +2,15 @@ package com.ktc.togetherPet.service;
 
 import java.io.File;
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImageService {
 
-    private static final String FOLDER_PATH = "C:/petTogether/";
+    @Value("${image-folder-path}")
+    private String FOLDER_PATH;
 
     public String saveImage(Long petId, MultipartFile petImage) throws IOException {
         File directory = new File(FOLDER_PATH);
