@@ -39,4 +39,35 @@ public class ReportService {
 
         return report.getId();
     }
+
+    public void setBreed(Long reportId, String breed) {
+        Report report = reportRepository.findById(reportId)
+            .orElseThrow(CustomException::reportNotFoundException);
+        Breed breedEntity = new Breed(breed);
+
+        report.setBreed(breedEntity);
+
+        reportRepository.save(report);
+    }
+
+    public void setColor(Long reportId, String color) {
+        Report report = reportRepository.findById(reportId)
+            .orElseThrow(CustomException::reportNotFoundException);
+
+        report.setColor(color);
+
+        reportRepository.save(report);
+    }
+
+    public void setMissing(Long reportId, Long missingId) {
+        Report report = reportRepository.findById(reportId)
+            .orElseThrow(CustomException::reportNotFoundException);
+
+        Missing missing = missingRepository.findById(missingId)
+            .orElseThrow(CustomException::missingNotFound);
+
+        report.setMissing(missing);
+
+        reportRepository.save(report);
+    }
 }
