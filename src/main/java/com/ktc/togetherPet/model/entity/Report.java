@@ -1,7 +1,10 @@
 package com.ktc.togetherPet.model.entity;
 
+import com.ktc.togetherPet.model.entity.ImageRelation.ImageRelation;
 import com.ktc.togetherPet.model.vo.Location;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,9 +34,32 @@ public class Report {
     @Embedded
     private Location location;
 
+    @Column(name = "color", nullable = true)
+    private String color;
+
+    @ManyToOne(targetEntity = Breed.class)
+    @JoinColumn(name = "breed_id", nullable = true)
+    private Breed breed;
+
     @ManyToOne(targetEntity = Missing.class)
     @JoinColumn(name = "missing_id", nullable = true)
     private Missing missing;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setBreed(Breed breed) {
+        this.breed = breed;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setMissing(Missing missing) {
+        this.missing = missing;
+    }
 
     public Report() {
     }
