@@ -19,7 +19,7 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reportId;
+    private Long id;
 
     @OneToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id", nullable = false)
@@ -32,16 +32,15 @@ public class Report {
     private Location location;
 
     @ManyToOne(targetEntity = Missing.class)
-    @JoinColumn(name = "mssing_id", nullable = true)
+    @JoinColumn(name = "missing_id", nullable = true)
     private Missing missing;
 
     public Report() {
     }
 
-    public Report(User user, LocalDateTime timestamp, Location location, Missing missing) {
+    public Report(User user, LocalDateTime timestamp, Location location) {
         this.user = user;
         this.timeStamp = timestamp;
         this.location = location;
-        this.missing = missing;
     }
 }
