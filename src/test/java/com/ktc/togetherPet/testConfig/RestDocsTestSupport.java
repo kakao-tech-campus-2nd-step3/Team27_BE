@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.testConfig;
 
 import com.google.gson.Gson;
+import com.ktc.togetherPet.config.GsonConfig;
 import javax.management.Attribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -18,7 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @Disabled
-@Import({RestDocsConfiguration.class})
+@Import({RestDocsConfiguration.class, GsonConfig.class})
 @ExtendWith(RestDocumentationExtension.class)
 @WebMvcTest
 public class RestDocsTestSupport {
@@ -29,8 +30,12 @@ public class RestDocsTestSupport {
     @Autowired
     protected MockMvc mockMvc;
 
+    @Autowired
+    private Gson gson;
+
     protected static Attribute constraints(
-        final String value) {
+        final String value
+    ) {
         return new Attribute("constraints", value);
     }
 
@@ -45,7 +50,7 @@ public class RestDocsTestSupport {
             .build();
     }
 
-    protected static String toJson(final Object obj) {
-        return new Gson().toJson(obj);
+    protected String toJson(final Object obj) {
+        return gson.toJson(obj);
     }
 }

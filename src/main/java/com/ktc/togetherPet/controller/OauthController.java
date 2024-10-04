@@ -1,39 +1,42 @@
 package com.ktc.togetherPet.controller;
 
-import com.ktc.togetherPet.annotation.OauthUser;
-import com.ktc.togetherPet.model.dto.oauth.OauthRegisterDTO;
-import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.service.UserService;
-import org.springframework.http.HttpStatus;
+import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.service.OauthService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/api/login")
 public class OauthController {
 
-    private final UserService userService;
+    private final OauthService oauthService;
 
-    public OauthController(UserService userService) {
-        this.userService = userService;
+    public OauthController(OauthService oauthService) {
+        this.oauthService = oauthService;
     }
 
     @GetMapping("/{provider}")
-    public ResponseEntity<?> handleOauth(@PathVariable String provider,
-        @OauthUser Object oauthDTO) {
-        if (oauthDTO instanceof OauthUserDTO) {
-            return ResponseEntity.ok().build();
-        }
+    public ResponseEntity<?> handleOauth(@RequestHeader("Authorization") String authorizationHeader,
+        @PathVariable String provider) {
 
-        if (oauthDTO instanceof OauthRegisterDTO) {
-            userService.createUser((OauthRegisterDTO) oauthDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        }
+        String accessToken = extractAccessToken(authorizationHeader);
+        String jwtToken = oauthService.processOauth(provider, accessToken);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.ok()
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+            .build();
     }
 
+    private String extractAccessToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.replace("Bearer ", "");
+        }
+
+        throw CustomException.invalidHeaderException();
+    }
 }

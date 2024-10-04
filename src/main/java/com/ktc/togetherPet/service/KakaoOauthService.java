@@ -2,17 +2,21 @@ package com.ktc.togetherPet.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.ktc.togetherPet.config.KakaoProperties;
+import com.ktc.togetherPet.config.property.KakaoProperties;
 import com.ktc.togetherPet.exception.CustomException;
+import java.net.URI;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-
 @Service
 public class KakaoOauthService {
+
     private final KakaoProperties properties;
 
     private RestTemplate client = new RestTemplateBuilder().build();
@@ -26,7 +30,8 @@ public class KakaoOauthService {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
-        var request = new RequestEntity<>(headers, HttpMethod.GET, URI.create(properties.userInfoUrl()));
+        var request = new RequestEntity<>(headers, HttpMethod.GET,
+            URI.create(properties.userInfoUrl()));
         var response = client.exchange(request, String.class);
 
         if (!response.getStatusCode().equals(HttpStatus.OK)) {
