@@ -29,11 +29,12 @@ public class SuspectService {
     }
 
     @Transactional
-    public void createMissing(OauthUserDTO oauthUserDTO, SuspectRequestDTO suspectRequestDTO, List<MultipartFile> files) {
+    public void createMissing(OauthUserDTO oauthUserDTO, SuspectRequestDTO suspectRequestDTO, List<MultipartFile> files) throws IOException {
         User user = userRepository.findByEmail(oauthUserDTO.email())
             .orElseThrow(CustomException::invalidUserException);
 
         Long reportId = reportService.createReport(user, suspectRequestDTO);
+        imageService.saveImages(reportId, files);
 
         /** todo: Report 엔티티에 species / color 값이 nullable로 추가되어야 함
          */
