@@ -30,7 +30,7 @@ public class SuspectController {
         @RequestPart SuspectRequestDTO suspectRequestDTO,
         @RequestPart(required = false) List<MultipartFile> files,
         @OauthUser OauthUserDTO oauthUserDTO
-        ) {
+        ) throws IOException {
         suspectService.createMissing(oauthUserDTO, suspectRequestDTO, files);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
