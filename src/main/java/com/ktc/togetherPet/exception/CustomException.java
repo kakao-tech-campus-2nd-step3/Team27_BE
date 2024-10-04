@@ -8,6 +8,7 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
 import static com.ktc.togetherPet.exception.ErrorMessage.PET_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
+import static com.ktc.togetherPet.exception.ErrorMessage.REPORT_NOT_FOUND;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -69,6 +70,10 @@ public class CustomException extends RuntimeException {
 
     public static CustomException invalidDateException() {
         return new CustomException(INVALID_DATE, BAD_REQUEST);
+    }
+
+    public static CustomException reportNotFoundException() {
+        return new CustomException(REPORT_NOT_FOUND, NOT_FOUND);
     }
 
     public static CustomException missingNotFound(){
