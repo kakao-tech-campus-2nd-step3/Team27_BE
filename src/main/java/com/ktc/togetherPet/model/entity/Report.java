@@ -1,10 +1,7 @@
 package com.ktc.togetherPet.model.entity;
 
-import com.ktc.togetherPet.model.entity.ImageRelation.ImageRelation;
 import com.ktc.togetherPet.model.vo.Location;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

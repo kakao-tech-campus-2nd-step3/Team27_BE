@@ -10,7 +10,6 @@ import com.ktc.togetherPet.repository.ImageRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
