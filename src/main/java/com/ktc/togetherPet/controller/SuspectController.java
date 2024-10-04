@@ -1,7 +1,10 @@
 package com.ktc.togetherPet.controller;
 
+import com.ktc.togetherPet.annotation.OauthUser;
+import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.service.SuspectService;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,11 +28,10 @@ public class SuspectController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createSuspect(
         @RequestPart SuspectRequestDTO suspectRequestDTO,
-        @RequestPart(required = false) List<MultipartFile> files
+        @RequestPart(required = false) List<MultipartFile> files,
+        @OauthUser OauthUserDTO oauthUserDTO
         ) {
-        /** todo: MultipartFile에 대한 통일성을 지켜야 함. 이 부분 팀원들에게 고지
-         */
-        suspectService.createMissing(suspectRequestDTO, files);
+        suspectService.createMissing(oauthUserDTO, suspectRequestDTO, files);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
