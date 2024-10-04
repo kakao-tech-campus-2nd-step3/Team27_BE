@@ -36,6 +36,16 @@ public class SuspectService {
         Long reportId = reportService.createReport(user, suspectRequestDTO);
         imageService.saveImages(reportId, files);
 
+        if (suspectRequestDTO.breed() != null) {
+            reportService.setBreed(reportId, suspectRequestDTO.breed());
+        }
+        if (suspectRequestDTO.color() != null) {
+            reportService.setColor(reportId, suspectRequestDTO.color());
+        }
+        if (suspectRequestDTO.missingId() != null) {
+            reportService.setMissing(reportId, suspectRequestDTO.missingId());
+        }
+
         /** todo: Report 엔티티에 species / color 값이 nullable로 추가되어야 함
          */
 
