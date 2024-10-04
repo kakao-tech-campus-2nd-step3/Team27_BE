@@ -1,6 +1,6 @@
 package com.ktc.togetherPet.service;
 
-import com.ktc.togetherPet.model.dto.oauth.OauthRegisterDTO;
+import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.user.UserDTO;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
@@ -9,10 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private final UserRepository userRepository;
+    private final PetService petService;
+
+    public UserService(UserRepository userRepository, PetService petService) {
         this.userRepository = userRepository;
+        this.petService = petService;
     }
 
     public UserDTO findUser(String email) {
@@ -21,9 +24,30 @@ public class UserService {
         return new UserDTO(user);
     }
 
+    public boolean userExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     @Transactional
-    public void createUser(OauthRegisterDTO oauthRegisterDTO) {
-        User user = new User(oauthRegisterDTO.email());
+    public void createUser(String email) {
+        User user = new User(email);
+
+        userRepository.save(user);
+    }
+
+    public void setUserPet(Long petId, String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(CustomException::invalidUserException);
+        user.setPet(petService.findPetById(petId));
+
+        userRepository.save(user);
+    }
+
+    public void setUserName(String email, String userName) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(CustomException::invalidUserException);
+        user.setName(userName);
+
         userRepository.save(user);
     }
 }
