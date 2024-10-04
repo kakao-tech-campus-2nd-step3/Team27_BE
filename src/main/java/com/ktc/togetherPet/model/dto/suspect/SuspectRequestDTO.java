@@ -19,7 +19,8 @@ public record SuspectRequestDTO(
     LocalDateTime foundDate,
 
     String breed,
-    String gender
+    String gender,
+    Long missingId
 ) {
 
 }
