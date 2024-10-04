@@ -72,6 +72,7 @@ public class ImageService {
             Image image = new Image(imageFilePath);
             Image savedImage = imageRepository.save(image);
 
+            //todo: 이것도 지우고 QueryDSL로 report와 연관짓도록 하기
             Report report = reportRepository.findById(reportId)
                 .orElseThrow(CustomException::reportNotFoundException);
 
