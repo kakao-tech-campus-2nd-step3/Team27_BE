@@ -1,5 +1,6 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
 
 import com.ktc.togetherPet.exception.CustomException;
@@ -8,7 +9,7 @@ import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDTO;
-import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
+import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.Report;
@@ -42,7 +43,8 @@ public class MissingService {
         BreedRepository breedRepository,
         KakaoMapService kakaoMapService,
         ReportRepository reportRepository,
-        ImageService imageService) {
+        ImageService imageService
+    ) {
         this.missingRepository = missingRepository;
         this.userRepository = userRepository;
         this.petRepository = petRepository;
@@ -96,8 +98,7 @@ public class MissingService {
                 missing.getPet().getId(),
                 missing.getLocation().getLatitude(),
                 missing.getLocation().getLongitude(),
-                //TODO pet-image-url을 실제 경로로 받아오도록 수정해야함.
-                "pet-image-url"
+                imageService.getImageUrl(missing.getId(), MISSING).getFirst()
             )).toList();
     }
 
@@ -114,8 +115,7 @@ public class MissingService {
             missing.getLocation().getLatitude(),
             missing.getLocation().getLongitude(),
             missing.getDescription(),
-            //TODO 여기에 pet-image-url 리스트를 받아오도록 변경해야함
-            List.of("pet-image-url")
+            imageService.getImageUrl(missingId, MISSING)
         );
     }
 
@@ -137,5 +137,18 @@ public class MissingService {
                     imageService.getImageUrl(report.getId(), REPORT).getFirst()
                 )
             ).toList();
+    }
+
+    public ReportDetailResponseDTO getReportDetail(long reportId) {
+        Report report = reportRepository.findById(reportId)
+            .orElseThrow(CustomException::reportNotFoundException);
+
+        return new ReportDetailResponseDTO(
+            report.getUser().getName(),
+            report.getDescription(),
+            report.getLocation().getLatitude(),
+            report.getLocation().getLongitude(),
+            report.getTimeStamp()
+        );
     }
 }

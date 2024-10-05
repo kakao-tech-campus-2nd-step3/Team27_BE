@@ -59,6 +59,10 @@ public class Missing {
         this.description = description;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Pet getPet() {
         return pet;
     }
