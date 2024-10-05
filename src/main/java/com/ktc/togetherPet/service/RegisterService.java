@@ -1,7 +1,9 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.PET;
+
 import com.ktc.togetherPet.model.dto.pet.PetRegisterDTO;
-import java.io.IOException;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +24,15 @@ public class RegisterService {
 
     @Transactional
     public void create(PetRegisterDTO petRegisterDTO,
-        MultipartFile petImage, String email, String userName) throws IOException {
+        MultipartFile petImage, String email, String userName) {
         Long petId = petService.createPet(petRegisterDTO);
-        String imageFilePath = imageService.saveImage(petId, petImage);
-        petService.setImageSrc(petId, imageFilePath);
+
+        imageService.saveImages(petId, PET, List.of(petImage));
+
+        // TODO 여러장이 될 수 있음
+        List<String> imageFilePath = imageService.getImageUrl(petId, PET);
+
+//        petService.setImageSrc(petId, imageFilePath);
 
         userService.setUserPet(petId, email);
         userService.setUserName(email, userName);
