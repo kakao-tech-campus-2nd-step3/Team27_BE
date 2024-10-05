@@ -1,18 +1,24 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
+
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.report.ReportDTO;
+import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.PetRepository;
+import com.ktc.togetherPet.repository.ReportRepository;
 import com.ktc.togetherPet.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -26,19 +32,24 @@ public class MissingService {
     private final PetRepository petRepository;
     private final BreedRepository breedRepository;
     private final KakaoMapService kakaoMapService;
+    private final ReportRepository reportRepository;
+    private final ImageService imageService;
 
     public MissingService(
         MissingRepository missingRepository,
         UserRepository userRepository,
         PetRepository petRepository,
         BreedRepository breedRepository,
-        KakaoMapService kakaoMapService
-    ) {
+        KakaoMapService kakaoMapService,
+        ReportRepository reportRepository,
+        ImageService imageService) {
         this.missingRepository = missingRepository;
         this.userRepository = userRepository;
         this.petRepository = petRepository;
         this.breedRepository = breedRepository;
         this.kakaoMapService = kakaoMapService;
+        this.reportRepository = reportRepository;
+        this.imageService = imageService;
     }
 
     public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetDTO missingPetDTO) {
@@ -106,5 +117,25 @@ public class MissingService {
             //TODO 여기에 pet-image-url 리스트를 받아오도록 변경해야함
             List.of("pet-image-url")
         );
+    }
+
+    public List<ReportDTO> getMissingReports(OauthUserDTO oauthUserDTO) {
+        User user = userRepository.findByEmail(oauthUserDTO.email())
+            .orElseThrow(CustomException::invalidUserException);
+
+        Pet pet = user.getPet();
+
+        Missing missing = missingRepository.findByPet(pet);
+        List<Report> reports = reportRepository.findAllByMissing(missing);
+
+        return reports.stream()
+            .map(report ->
+                new ReportDTO(
+                    report.getId(),
+                    report.getLocation().getLatitude(),
+                    report.getLocation().getLongitude(),
+                    imageService.getImageUrl(report.getId(), REPORT).getFirst()
+                )
+            ).toList();
     }
 }
