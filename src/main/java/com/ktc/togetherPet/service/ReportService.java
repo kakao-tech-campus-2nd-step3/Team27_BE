@@ -16,10 +16,12 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final MissingRepository missingRepository;
+    private final KakaoMapService kakaoMapService;
 
-    public ReportService(ReportRepository reportRepository, MissingRepository missingRepository) {
+    public ReportService(ReportRepository reportRepository, MissingRepository missingRepository, KakaoMapService kakaoMapService) {
         this.reportRepository = reportRepository;
         this.missingRepository = missingRepository;
+        this.kakaoMapService = kakaoMapService;
     }
 
     public Long createReport(User user, SuspectRequestDTO suspectRequestDTO) {
@@ -33,7 +35,8 @@ public class ReportService {
             new Report(
                 user,
                 suspectRequestDTO.foundDate(),
-                location
+                location,
+                kakaoMapService.getRegionCodeFromKakao(location)
             )
         );
 
