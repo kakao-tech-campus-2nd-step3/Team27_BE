@@ -8,6 +8,7 @@ import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.service.ImageService;
 import com.ktc.togetherPet.service.MissingService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MissingController {
 
     private final MissingService missingService;
+    private final ImageService imageService;
 
-    public MissingController(MissingService missingService) {
+    public MissingController(MissingService missingService, ImageService imageService) {
         this.missingService = missingService;
+        this.imageService = imageService;
     }
 
     @PostMapping
@@ -56,5 +59,12 @@ public class MissingController {
         return ResponseEntity
             .status(OK)
             .body(missingService.getMissingPetDetailByMissingId(missingId));
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<Void> getMissingReports(
+        @OauthUser OauthUserDTO oauthUserDTO
+    ) {
+        return null;
     }
 }
