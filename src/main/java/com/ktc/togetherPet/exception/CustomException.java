@@ -7,13 +7,15 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
-import static com.ktc.togetherPet.exception.ErrorMessage.PET_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
+import static com.ktc.togetherPet.exception.ErrorMessage.PET_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.REPORT_NOT_FOUND;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import java.io.IOException;
 import org.springframework.http.HttpStatus;
 
 public class CustomException extends RuntimeException {
@@ -77,11 +79,16 @@ public class CustomException extends RuntimeException {
         return new CustomException(REPORT_NOT_FOUND, NOT_FOUND);
     }
 
-    public static CustomException missingNotFound(){
+    public static CustomException missingNotFound() {
         return new CustomException(MISSING_NOT_FOUND, NOT_FOUND);
     }
 
     public static CustomException imageNotFoundException(){
         return new CustomException(IMAGE_NOT_FOUND, NOT_FOUND);
+    }
+
+    public static CustomException IOException(IOException ioException) {
+        return new CustomException("파일 처리 중 오류가 발생했습니다: " + ioException.getMessage(),
+            INTERNAL_SERVER_ERROR);
     }
 }

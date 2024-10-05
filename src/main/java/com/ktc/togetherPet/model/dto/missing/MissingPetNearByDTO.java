@@ -9,6 +9,8 @@ public record MissingPetNearByDTO(
     float latitude,
     float longitude,
     String petImageUrl
+
+    //TODO Missing Id 추가
 ) {
 
 }
