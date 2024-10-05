@@ -1,28 +1,33 @@
 package com.ktc.togetherPet.model.entity;
 
-import jakarta.persistence.*;
+import com.ktc.togetherPet.model.vo.Location;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "region")
 public class Region {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long regionId;
+    private Long id;
 
-    @Column(name = "region_name", nullable = false)
-    private String regionName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "region_latitude", nullable = false)
-    private Float regionLatitude;
+    @Embedded
+    private Location location;
 
-    @Column(name = "region_longitude", nullable = false)
-    private Float regionLongitude;
+    public Region() {
+    }
 
-    public Region() {}
-
-    public Region(String regionName, Float regionLatitude, Float regionLongitude) {
-        this.regionName = regionName;
-        this.regionLatitude = regionLatitude;
-        this.regionLongitude = regionLongitude;
+    public Region(String name, Location location) {
+        this.name = name;
+        this.location = location;
     }
 }

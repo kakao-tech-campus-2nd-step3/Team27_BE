@@ -1,0 +1,84 @@
+= Connect API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 실종 애완동물 등록
+
+operation::register-missing-pet/register-missing-pet_201[snippets='request-headers,request-fields']
+
+=== 201 Created
+
+operation::register-missing-pet/register-missing-pet_201[snippets='http-request,http-response']
+
+=== 400 BadRequest
+
+==== 잘못된 위도 및 경도의 경우
+
+latitude는 -90이상 90이하, longitude는 -180이상 180이하여야 한다.
+
+operation::register-missing-pet_400/incorrect-range-of-latitude-and-longitude[snippets='http-request,http-response']
+
+==== 현재보다 늦은 시각에 실종 등록한 경우
+
+lost_time은 서버기준 현재 시각보다 늦게 등록할 수 없다.
+
+operation::register-missing-pet_400/late-more-than-now[snippets='http-request,http-response']
+
+==== 0개월 이하의 나이를 등록한 경우
+
+birth_month는 0이하의 값을 허용하지 않는다.
+
+operation::register-missing-pet_400/under0-age[snippets='http-request,http-response']
+
+=== 401 Unauthorized
+
+==== 토큰이 만료된 경우
+
+operation::register-missing-pet_401/expired-token[snippets='http-request,http-response']
+
+==== 토큰에 bearer을 포함시키지 않은 경우
+
+operation::register-missing-pet_401/not-include-bearer[snippets='http-request,http-response']
+
+==== 유효하지 않은 사용자의 경우
+
+operation::register-missing-pet_401/invalid-user[snippets='http-request,http-response']
+
+=== 404 NotFound
+
+==== 품종이 존재하지 않는 경우
+
+pet_breed는 db에 반드시 존재하는 값으로 입력해야 한다.
+
+operation::register-missing-pet/register-missing-pet_404[snippets='http-request,http-response']
+
+== 근처 실종 애완동물 가져오기
+
+operation::get-missing-pets-near-by-region/get-missing-pets-near-by-region_200[snippets='query-parameters,response-fields']
+
+=== 200 OK
+
+operation::get-missing-pets-near-by-region/get-missing-pets-near-by-region_200[snippets='http-request,response-body']
+
+=== 400 Bad Request
+
+위도 및 경도가 올바르지 않은 경우
+
+operation::get-missing-pets-near-by-region/get-missing-pets-near-by-region_400[snippets='http-request,response-body']
+
+== 실종 애완동물의 상세정보 보기
+
+operation::get-missing-pet-detail-by-missing-id/get-missing-pet-detail-by-missing-id_200[snippets='path-parameters,response-fields']
+
+=== 200 OK
+
+operation::get-missing-pet-detail-by-missing-id/get-missing-pet-detail-by-missing-id_200[snippets="http-request,response-body"]
+
+=== 404 Not Found
+
+해당 실종 id값이 존재하지 않는 경우
+
+operation::get-missing-pet-detail-by-missing-id/get-missing-pet-detail-by-missing-id_404[snippets="http-request,response-body"]
