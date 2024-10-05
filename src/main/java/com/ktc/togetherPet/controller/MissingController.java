@@ -8,6 +8,7 @@ import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.report.ReportDTO;
 import com.ktc.togetherPet.service.ImageService;
 import com.ktc.togetherPet.service.MissingService;
 import java.util.List;
@@ -62,9 +63,11 @@ public class MissingController {
     }
 
     @GetMapping("/report")
-    public ResponseEntity<Void> getMissingReports(
+    public ResponseEntity<List<ReportDTO>> getMissingReports(
         @OauthUser OauthUserDTO oauthUserDTO
     ) {
-        return null;
+        return ResponseEntity
+            .status(OK)
+            .body(missingService.getMissingReports(oauthUserDTO));
     }
 }
