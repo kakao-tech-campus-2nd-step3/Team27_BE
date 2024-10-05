@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,5 +36,16 @@ public class SuspectController {
         suspectService.createMissing(oauthUserDTO, suspectRequestDTO, files);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping
+    //todo: tempDTO를 정의해야 함
+    public ResponseEntity<List<tempDTO>> getSuspectReportsNearByRegion(
+        @RequestParam("latitude") float latitude,
+        @RequestParam("longitude") float longitude
+        ) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(suspectService.getSuspectReportsNearBy(latitude, longitude));
     }
 }
