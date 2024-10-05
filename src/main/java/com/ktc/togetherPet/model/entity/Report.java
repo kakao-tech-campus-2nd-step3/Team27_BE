@@ -31,6 +31,9 @@ public class Report {
     @Embedded
     private Location location;
 
+    @Column(name = "region_code", nullable = false)
+    private long regionCode;
+
     @Column(name = "color", nullable = true)
     private String color;
 
@@ -61,9 +64,10 @@ public class Report {
     public Report() {
     }
 
-    public Report(User user, LocalDateTime timestamp, Location location) {
+    public Report(User user, LocalDateTime timestamp, Location location, long regionCode) {
         this.user = user;
         this.timeStamp = timestamp;
         this.location = location;
+        this.regionCode = regionCode;
     }
 }
