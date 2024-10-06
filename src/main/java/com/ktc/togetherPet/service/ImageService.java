@@ -80,8 +80,14 @@ public class ImageService {
         }
     }
 
-    public String getRepresentativeImageById(ImageEntityType entityType,Long Id) {
+    public List<ImageRelation> getImageRelationsById(ImageEntityType entityType, Long Id) {
         List<ImageRelation> imageRelations = imageRelationRepository.findByImageEntityTypeAndEntityId(entityType, Id);
+
+        return imageRelations;
+    }
+
+    public String getRepresentativeImageById(ImageEntityType entityType,Long Id) {
+        List<ImageRelation> imageRelations = getImageRelationsById(entityType, Id);
 
         return imageRelations.stream()
             .findFirst()
