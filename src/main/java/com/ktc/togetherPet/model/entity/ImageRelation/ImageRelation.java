@@ -47,4 +47,8 @@ public class ImageRelation {
         this.imageEntityType = imageEntityType;
         this.image = image;
     }
+
+    public Image getImage() {
+        return image;
+    }
 }
