@@ -2,6 +2,7 @@ package com.ktc.togetherPet.exception;
 
 import static com.ktc.togetherPet.exception.ErrorMessage.BREED_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.EXPIRED_TOKEN;
+import static com.ktc.togetherPet.exception.ErrorMessage.IMAGE_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
@@ -78,5 +79,9 @@ public class CustomException extends RuntimeException {
 
     public static CustomException missingNotFound(){
         return new CustomException(MISSING_NOT_FOUND, NOT_FOUND);
+    }
+
+    public static CustomException imageNotFoundException(){
+        return new CustomException(IMAGE_NOT_FOUND, NOT_FOUND);
     }
 }
