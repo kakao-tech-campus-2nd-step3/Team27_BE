@@ -31,10 +31,10 @@ public class ImageRelation {
     @JoinColumn(name = "report_id", nullable = true)
     private Report report;
 
-    /**todo: Report, Pet, Missing 연관 관계를 entity_id로 통합 관리하도록 해야함
+    // todo: Report, Pet, Missing 연관 관계를 entity_id로 통합 관리하도록 해야함
     @Column(name = "entity_id", nullable = false)
     private Long entityId;
-     **/
+
 
     @ManyToOne(targetEntity = Image.class)
     @JoinColumn(name = "image_id", nullable = false)
