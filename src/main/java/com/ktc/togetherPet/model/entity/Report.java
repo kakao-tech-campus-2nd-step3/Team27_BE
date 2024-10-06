@@ -49,6 +49,10 @@ public class Report {
         return id;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
     public void setBreed(Breed breed) {
         this.breed = breed;
     }
