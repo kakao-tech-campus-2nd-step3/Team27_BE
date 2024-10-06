@@ -2,6 +2,7 @@ package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportNearByDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
@@ -50,5 +51,10 @@ public class SuspectService {
          */
 
         Report report = new Report();
+    }
+
+    public List<ReportNearByDTO> getSuspectReportsNearBy(float latitude, float longitude) {
+
+        return reportService.getReportsByLocation(latitude, longitude);
     }
 }
