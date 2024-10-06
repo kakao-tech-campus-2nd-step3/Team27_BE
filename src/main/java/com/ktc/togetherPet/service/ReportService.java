@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.model.dto.suspect.ReportDetailDTO;
 import com.ktc.togetherPet.model.dto.suspect.ReportNearByDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.model.entity.Breed;
@@ -74,6 +75,28 @@ public class ReportService {
 
     }
 
+    public ReportDetailDTO getReportById(long reportId) {
+        Report report = reportRepository.findById(reportId)
+            .orElseThrow(CustomException::reportNotFoundException);
+
+        Location location = report.getLocation();
+
+        return new ReportDetailDTO(
+            report.getBreed().getName(),
+            report.getColor(),
+            report.getGender(),
+            location.getLatitude(),
+            location.getLongitude(),
+            report.getDescription(),
+            report.getUser().getName(),
+            imageService.getImageRelationsById(ImageEntityType.REPORT, reportId)
+                .stream()
+                .map(imageRelation -> imageRelation.getImage().getPath())
+                .collect(Collectors.toList()),
+            report.getTimeStamp()
+        );
+    }
+
     public void setBreed(Long reportId, String breed) {
         Report report = reportRepository.findById(reportId)
             .orElseThrow(CustomException::reportNotFoundException);
@@ -84,11 +107,11 @@ public class ReportService {
         reportRepository.save(report);
     }
 
-    public void setColor(Long reportId, String color) {
+    public void setGender(Long reportId, String gender) {
         Report report = reportRepository.findById(reportId)
             .orElseThrow(CustomException::reportNotFoundException);
 
-        report.setColor(color);
+        report.setGender(gender);
 
         reportRepository.save(report);
     }
