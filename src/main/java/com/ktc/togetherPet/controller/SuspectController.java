@@ -2,6 +2,7 @@ package com.ktc.togetherPet.controller;
 
 import com.ktc.togetherPet.annotation.OauthUser;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportNearByDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.service.SuspectService;
 import java.io.IOException;
@@ -39,8 +40,7 @@ public class SuspectController {
     }
 
     @GetMapping
-    //todo: tempDTO를 정의해야 함
-    public ResponseEntity<List<tempDTO>> getSuspectReportsNearByRegion(
+    public ResponseEntity<List<ReportNearByDTO>> getSuspectReportsNearByRegion(
         @RequestParam("latitude") float latitude,
         @RequestParam("longitude") float longitude
         ) {
