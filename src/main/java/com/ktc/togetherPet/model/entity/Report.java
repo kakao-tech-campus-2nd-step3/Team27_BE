@@ -45,6 +45,9 @@ public class Report {
     @JoinColumn(name = "missing_id", nullable = true)
     private Missing missing;
 
+    @Column(name = "description", nullable = false)
+    private String description;
+
     public Long getId() {
         return id;
     }
@@ -68,10 +71,11 @@ public class Report {
     public Report() {
     }
 
-    public Report(User user, LocalDateTime timestamp, Location location, long regionCode) {
+    public Report(User user, LocalDateTime timestamp, Location location, long regionCode, String description) {
         this.user = user;
         this.timeStamp = timestamp;
         this.location = location;
         this.regionCode = regionCode;
+        this.description = description;
     }
 }
