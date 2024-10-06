@@ -48,6 +48,9 @@ public class Report {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "gender", nullable = false)
+    private String gender;
+
     public Long getId() {
         return id;
     }
@@ -56,12 +59,36 @@ public class Report {
         return location;
     }
 
+    public Breed getBreed() {
+        return breed;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
+    }
+
     public void setBreed(Breed breed) {
         this.breed = breed;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public void setMissing(Missing missing) {
