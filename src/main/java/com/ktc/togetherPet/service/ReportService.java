@@ -43,7 +43,8 @@ public class ReportService {
                 user,
                 suspectRequestDTO.foundDate(),
                 location,
-                kakaoMapService.getRegionCodeFromKakao(location)
+                kakaoMapService.getRegionCodeFromKakao(location),
+                suspectRequestDTO.description()
             )
         );
 
