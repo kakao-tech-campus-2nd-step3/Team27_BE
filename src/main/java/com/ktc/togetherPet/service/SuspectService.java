@@ -2,6 +2,8 @@ package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportDetailDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportNearByDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
@@ -29,18 +31,19 @@ public class SuspectService {
     }
 
     @Transactional
-    public void createMissing(OauthUserDTO oauthUserDTO, SuspectRequestDTO suspectRequestDTO, List<MultipartFile> files) throws IOException {
+    public void createSuspectReport(OauthUserDTO oauthUserDTO, SuspectRequestDTO suspectRequestDTO, List<MultipartFile> files) throws IOException {
         User user = userRepository.findByEmail(oauthUserDTO.email())
             .orElseThrow(CustomException::invalidUserException);
 
         Long reportId = reportService.createReport(user, suspectRequestDTO);
         imageService.saveImages(reportId, files);
 
+        //todo: Optional.ofNullable 을 사용하는 것으로 변경
         if (suspectRequestDTO.breed() != null) {
             reportService.setBreed(reportId, suspectRequestDTO.breed());
         }
-        if (suspectRequestDTO.color() != null) {
-            reportService.setColor(reportId, suspectRequestDTO.color());
+        if (suspectRequestDTO.gender() != null) {
+            reportService.setGender(reportId, suspectRequestDTO.gender());
         }
         if (suspectRequestDTO.missingId() != null) {
             reportService.setMissing(reportId, suspectRequestDTO.missingId());
@@ -50,5 +53,14 @@ public class SuspectService {
          */
 
         Report report = new Report();
+    }
+
+    public List<ReportNearByDTO> getSuspectReportsNearBy(float latitude, float longitude) {
+
+        return reportService.getReportsByLocation(latitude, longitude);
+    }
+
+    public ReportDetailDTO getSuspectReportDetailByReportId(long reportId) {
+        return reportService.getReportById(reportId);
     }
 }

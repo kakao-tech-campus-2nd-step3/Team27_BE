@@ -31,6 +31,9 @@ public class Report {
     @Embedded
     private Location location;
 
+    @Column(name = "region_code", nullable = false)
+    private long regionCode;
+
     @Column(name = "color", nullable = true)
     private String color;
 
@@ -42,16 +45,50 @@ public class Report {
     @JoinColumn(name = "missing_id", nullable = true)
     private Missing missing;
 
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "gender", nullable = false)
+    private String gender;
+
     public Long getId() {
         return id;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public Breed getBreed() {
+        return breed;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
     }
 
     public void setBreed(Breed breed) {
         this.breed = breed;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public void setMissing(Missing missing) {
@@ -61,9 +98,11 @@ public class Report {
     public Report() {
     }
 
-    public Report(User user, LocalDateTime timestamp, Location location) {
+    public Report(User user, LocalDateTime timestamp, Location location, long regionCode, String description) {
         this.user = user;
         this.timeStamp = timestamp;
         this.location = location;
+        this.regionCode = regionCode;
+        this.description = description;
     }
 }

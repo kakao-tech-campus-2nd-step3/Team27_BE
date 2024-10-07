@@ -17,6 +17,8 @@ public record SuspectRequestDTO(
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     LocalDateTime foundDate,
+    @NotNull
+    String description,
 
     String breed,
     String gender,

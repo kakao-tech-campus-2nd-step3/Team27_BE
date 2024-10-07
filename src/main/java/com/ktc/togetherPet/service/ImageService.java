@@ -80,6 +80,21 @@ public class ImageService {
         }
     }
 
+    public List<ImageRelation> getImageRelationsById(ImageEntityType entityType, Long Id) {
+        List<ImageRelation> imageRelations = imageRelationRepository.findByImageEntityTypeAndEntityId(entityType, Id);
+
+        return imageRelations;
+    }
+
+    public String getRepresentativeImageById(ImageEntityType entityType,Long Id) {
+        List<ImageRelation> imageRelations = getImageRelationsById(entityType, Id);
+
+        return imageRelations.stream()
+            .findFirst()
+            .map(imageRelation -> imageRelation.getImage().getPath())
+            .orElseThrow(CustomException::imageNotFoundException);
+    }
+
     private String getFileExtension(String filename) {
         if (filename != null && filename.contains(".")) {
             return filename.substring(filename.lastIndexOf("."));

@@ -46,6 +46,9 @@ public class User {
         this.pet = pet;
     }
 
+    public String getName() {
+        return name;
+    }
     public Pet getPet() {
         return pet;
     }
