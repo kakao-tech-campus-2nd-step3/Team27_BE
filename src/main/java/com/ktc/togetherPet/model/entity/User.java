@@ -49,16 +49,13 @@ public class User {
     public String getName() {
         return name;
     }
+
     public Pet getPet() {
         return pet;
     }
 
     public String getEmail() {
         return email;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setName(String name) {

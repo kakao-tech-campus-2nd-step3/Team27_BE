@@ -24,7 +24,8 @@ public class ReportService {
     private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
 
-    public ReportService(ReportRepository reportRepository, MissingRepository missingRepository, KakaoMapService kakaoMapService,
+    public ReportService(ReportRepository reportRepository, MissingRepository missingRepository,
+        KakaoMapService kakaoMapService,
         ImageService imageService) {
         this.reportRepository = reportRepository;
         this.missingRepository = missingRepository;
@@ -57,19 +58,20 @@ public class ReportService {
         long regionCode = kakaoMapService.getRegionCodeFromKakao(location);
 
         /** XXX: 이 부분 missing이 null인 경우에 받을 지 아니면 전체 리포트를 받을 지 상의 필요
-            * missing이 null인 것만 받아옴 = 실종신고자에게 제보한 것은 제외함 = findAllByRegionCodeAndMissingNotNull
-            * 전체 리포트를 받아옴 = 실종신고자에게 제보한 것도 포함함 = findAllByRegionCode
+         * missing이 null인 것만 받아옴 = 실종신고자에게 제보한 것은 제외함 = findAllByRegionCodeAndMissingNotNull
+         * 전체 리포트를 받아옴 = 실종신고자에게 제보한 것도 포함함 = findAllByRegionCode
          **/
         return reportRepository.findAllByRegionCode(regionCode)
             .stream()
             .map(report -> {
-                    String representImagePath = imageService.getRepresentativeImageById(ImageEntityType.REPORT, report.getId());
-                    return new ReportNearByDTO(
-                        report.getId(),
-                        report.getLocation().getLatitude(),
-                        report.getLocation().getLongitude(),
-                        representImagePath
-                    );
+                String representImagePath = imageService.getRepresentativeImageById(
+                    ImageEntityType.REPORT, report.getId());
+                return new ReportNearByDTO(
+                    report.getId(),
+                    report.getLocation().getLatitude(),
+                    report.getLocation().getLongitude(),
+                    representImagePath
+                );
             })
             .collect(Collectors.toList());
 
@@ -89,10 +91,7 @@ public class ReportService {
             location.getLongitude(),
             report.getDescription(),
             report.getUser().getName(),
-            imageService.getImageRelationsById(ImageEntityType.REPORT, reportId)
-                .stream()
-                .map(imageRelation -> imageRelation.getImage().getPath())
-                .collect(Collectors.toList()),
+            imageService.getImageUrl(reportId, ImageEntityType.REPORT),
             report.getTimeStamp()
         );
     }

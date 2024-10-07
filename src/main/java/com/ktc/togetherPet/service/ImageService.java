@@ -3,6 +3,7 @@ package com.ktc.togetherPet.service;
 import static com.ktc.togetherPet.exception.CustomException.IOException;
 import static java.util.UUID.randomUUID;
 
+import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.entity.Image;
 import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
 import com.ktc.togetherPet.model.entity.ImageRelation.ImageRelation;
@@ -74,19 +75,15 @@ public class ImageService {
         return FOLDER_PATH + randomUUID() + getFileExtension(file.getOriginalFilename());
     }
 
-    public List<ImageRelation> getImageRelationsById(ImageEntityType entityType, Long Id) {
-        List<ImageRelation> imageRelations = imageRelationRepository.findByImageEntityTypeAndEntityId(entityType, Id);
-
-        return imageRelations;
-    }
-
-    public String getRepresentativeImageById(ImageEntityType entityType,Long Id) {
-        List<ImageRelation> imageRelations = getImageRelationsById(entityType, Id);
-
-        return imageRelations.stream()
-            .findFirst()
-            .map(imageRelation -> imageRelation.getImage().getPath())
+    public String getRepresentativeImageById(ImageEntityType entityType, Long id) {
+        ImageRelation representationImageRelation = imageRelationRepository
+            .findFirstByImageEntityTypeAndEntityId(entityType, id)
             .orElseThrow(CustomException::imageNotFoundException);
+
+        String localImagePath = new File(
+            representationImageRelation.getImage().getPath()).getName();
+
+        return localImagePath2RemoteImagePath(localImagePath);
     }
 
     private String getFileExtension(String filename) {
@@ -101,19 +98,21 @@ public class ImageService {
         long entityId,
         ImageEntityType imageEntityType
     ) {
-
-        // TODO profile별로 실행 환경을 다르게 해서 수정해야함
-        // 현재는 로컬 환경을 기준으로 작성했음
-        String IMAGE_SOURCE_PREFIX = "http://localhost:8080/image/";
-
         return imageRelationRepository
             .findAllByImageEntityTypeAndEntityId(imageEntityType, entityId)
             .stream()
             .map(ImageRelation::getImage)
             .map(Image::getPath)
-            .map(path -> new File(path).getName())
-            .map(fileName -> IMAGE_SOURCE_PREFIX + fileName)
+            .map(this::localImagePath2RemoteImagePath)
             .toList();
+    }
+
+    private String localImagePath2RemoteImagePath(String localImagePath) {
+        // TODO profile별로 실행 환경을 다르게 해서 수정해야함
+        // 현재는 로컬 환경을 기준으로 작성했음
+        String IMAGE_SOURCE_PREFIX = "http://localhost:8080/image/";
+
+        return IMAGE_SOURCE_PREFIX + new File(localImagePath).getName();
     }
 
     public byte[] getImageBytesFromFileName(String fileName) {
