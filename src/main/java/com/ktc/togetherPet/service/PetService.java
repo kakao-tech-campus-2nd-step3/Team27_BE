@@ -1,7 +1,7 @@
 package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.pet.PetRegisterDTO;
+import com.ktc.togetherPet.model.dto.pet.PetRegisterRequestDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.repository.PetRepository;
@@ -20,7 +20,7 @@ public class PetService {
         return petRepository.findById(petId).orElseThrow(CustomException::petNotFoundException);
     }
 
-    public Long createPet(PetRegisterDTO petRegisterDTO) {
+    public Long createPet(PetRegisterRequestDTO petRegisterDTO) {
         Breed breed = new Breed(petRegisterDTO.petType());
 
         Pet pet = new Pet(petRegisterDTO.petName(), petRegisterDTO.petBirthMonth(),

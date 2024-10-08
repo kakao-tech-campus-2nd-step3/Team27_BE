@@ -8,37 +8,37 @@ import java.util.Objects;
 @Embeddable
 public class Location {
 
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
 
     public Location() {
     }
 
-    public Location(float latitude, float longitude) {
+    public Location(double latitude, double longitude) {
         validate(latitude, longitude);
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    private void validate(float latitude, float longitude) {
+    private void validate(double latitude, double longitude) {
         if (!validateLatitude(latitude) || !validateLongitude(longitude)) {
             throw invalidLocaltionException();
         }
     }
 
-    private boolean validateLatitude(float latitude) {
+    private boolean validateLatitude(double latitude) {
         return latitude <= 90 && latitude >= -90;
     }
 
-    private boolean validateLongitude(float longitude) {
+    private boolean validateLongitude(double longitude) {
         return longitude <= 180 && longitude >= -180;
     }
 
@@ -51,8 +51,8 @@ public class Location {
             return false;
         }
         Location location = (Location) o;
-        return Float.compare(latitude, location.latitude) == 0
-            && Float.compare(longitude, location.longitude) == 0;
+        return Double.compare(latitude, location.latitude) == 0
+            && Double.compare(longitude, location.longitude) == 0;
     }
 
     @Override

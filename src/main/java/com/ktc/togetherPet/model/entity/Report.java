@@ -98,7 +98,13 @@ public class Report {
     public Report() {
     }
 
-    public Report(User user, LocalDateTime timestamp, Location location, long regionCode, String description) {
+    public Report(
+        User user,
+        LocalDateTime timestamp,
+        Location location,
+        long regionCode,
+        String description
+    ) {
         this.user = user;
         this.timeStamp = timestamp;
         this.location = location;

@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record ReportDetailDTO(
+public record ReportDetailResponseDTO(
     String petBreed,
     String petColor,
     String petGender,
-    float latitude,
-    float longitude,
+    double latitude,
+    double longitude,
     String description,
     String reporterName,
     List<String> imageUrl,

@@ -5,7 +5,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import com.ktc.togetherPet.config.property.KakaoProperties;
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.kakaoMap.LocationFromKakaoDTO;
+import com.ktc.togetherPet.model.dto.kakaoMap.LocationFromKakaoResponseDTO;
 import com.ktc.togetherPet.model.vo.Location;
 import java.net.URI;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -41,11 +41,11 @@ public class KakaoMapService {
             .toUri();
 
         RequestEntity<Void> request = new RequestEntity<>(headers, GET, uri);
-        ResponseEntity<LocationFromKakaoDTO> response = restTemplate
-            .exchange(request, LocationFromKakaoDTO.class);
+        ResponseEntity<LocationFromKakaoResponseDTO> response = restTemplate
+            .exchange(request, LocationFromKakaoResponseDTO.class);
 
         if (response.getStatusCode().isSameCodeAs(OK)) {
-            LocationFromKakaoDTO locationFromKakaoDTO = response.getBody();
+            LocationFromKakaoResponseDTO locationFromKakaoDTO = response.getBody();
 
             assert locationFromKakaoDTO != null;
             return locationFromKakaoDTO.getAdministrativeCode();

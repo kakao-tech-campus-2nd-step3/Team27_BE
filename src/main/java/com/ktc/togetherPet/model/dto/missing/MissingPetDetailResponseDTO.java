@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.List;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record MissingPetDetailDTO(
+public record MissingPetDetailResponseDTO(
     String name,
     String breed,
     long birthMonth,
-    float latitude,
-    float longitude,
+    double latitude,
+    double longitude,
     String description,
     List<String> imageUrl
 ) {
