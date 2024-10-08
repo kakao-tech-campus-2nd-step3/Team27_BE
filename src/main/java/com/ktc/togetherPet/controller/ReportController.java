@@ -47,12 +47,12 @@ public class ReportController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<ReportResponseDTO>> getPersonalReports(
+    public ResponseEntity<List<ReportResponseDTO>> getReceivedReports(
         @OauthUser OauthUserDTO oauthUserDTO
     ) {
         return ResponseEntity
             .status(OK)
-            .body(missingService.getMissingReports(oauthUserDTO));
+            .body(reportService.getReceivedReports(oauthUserDTO));
     }
 
     @GetMapping("/location")

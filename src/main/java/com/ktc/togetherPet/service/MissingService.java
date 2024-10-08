@@ -104,26 +104,6 @@ public class MissingService {
         );
     }
 
-//    public List<ReportResponseDTO> getMissingReports(OauthUserDTO oauthUserDTO) {
-//        User user = userRepository.findByEmail(oauthUserDTO.email())
-//            .orElseThrow(CustomException::invalidUserException);
-//
-//        Pet pet = user.getPet();
-//
-//        Missing missing = missingRepository.findByPet(pet);
-//        List<Report> reports = reportRepository.findAllByMissing(missing);
-//
-//        return reports.stream()
-//            .map(report ->
-//                new ReportResponseDTO(
-//                    report.getId(),
-//                    report.getLocation().getLatitude(),
-//                    report.getLocation().getLongitude(),
-//                    imageService.getImageUrl(report.getId(), REPORT).getFirst()
-//                )
-//            ).toList();
-//    }
-
 //    public ReportDetailResponseDTO getReportDetail(long reportId) {
 //        Report report = reportRepository.findById(reportId)
 //            .orElseThrow(CustomException::reportNotFoundException);

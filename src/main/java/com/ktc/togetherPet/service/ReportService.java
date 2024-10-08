@@ -5,11 +5,12 @@ import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REP
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
+import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
-import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
+import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
@@ -72,6 +73,28 @@ public class ReportService {
 
         long reportId = reportRepository.save(report).getId();
         imageService.saveImages(reportId, REPORT, files);
+    }
+
+    public List<ReportResponseDTO> getReceivedReports(OauthUserDTO oauthUserDTO) {
+        User user = userRepository.findByEmail(oauthUserDTO.email())
+            .orElseThrow(CustomException::invalidUserException);
+
+        Pet pet = user.getPet();
+
+        Missing missing = missingRepository.findByPet(pet);
+        List<Report> reports = reportRepository.findAllByMissing(missing);
+
+        return reports.stream()
+            .map(report ->
+                new ReportResponseDTO(
+                    report.getId(),
+                    report.getLocation().getLatitude(),
+                    report.getLocation().getLongitude(),
+
+                    // TODO 이 부분 최적화 필요
+                    imageService.getImageUrl(report.getId(), REPORT).getFirst()
+                )
+            ).toList();
     }
 
     public List<ReportNearByResponseDTO> getReportsByLocation(double latitude, double longitude) {
