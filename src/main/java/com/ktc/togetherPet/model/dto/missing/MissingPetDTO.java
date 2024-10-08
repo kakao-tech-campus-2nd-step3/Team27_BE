@@ -12,8 +12,8 @@ public record MissingPetDTO(
     long birthMonth,
     String petBreed,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul") LocalDateTime lostTime,
-    float latitude,
-    float longitude,
+    double latitude,
+    double longitude,
     String description,
     boolean isNeutering
 ) {

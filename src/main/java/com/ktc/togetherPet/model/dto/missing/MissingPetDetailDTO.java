@@ -9,8 +9,8 @@ public record MissingPetDetailDTO(
     String name,
     String breed,
     long birthMonth,
-    float latitude,
-    float longitude,
+    double latitude,
+    double longitude,
     String description,
     List<String> imageUrl
 ) {

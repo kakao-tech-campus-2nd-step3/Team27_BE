@@ -8,8 +8,8 @@ import java.util.Objects;
 @Embeddable
 public class Location {
 
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
 
     public Location() {
     }
@@ -20,11 +20,11 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -51,8 +51,8 @@ public class Location {
             return false;
         }
         Location location = (Location) o;
-        return Float.compare(latitude, location.latitude) == 0
-            && Float.compare(longitude, location.longitude) == 0;
+        return Double.compare(latitude, location.latitude) == 0
+            && Double.compare(longitude, location.longitude) == 0;
     }
 
     @Override
