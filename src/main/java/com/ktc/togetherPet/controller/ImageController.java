@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/images")
+@RequestMapping("/api/v0/images")
 @RequiredArgsConstructor
 public class ImageController {
 

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping("/api/missing/suspect")
+@RequestMapping("/api/v0/missing/suspect")
 @RequiredArgsConstructor
 public class SuspectController {
 

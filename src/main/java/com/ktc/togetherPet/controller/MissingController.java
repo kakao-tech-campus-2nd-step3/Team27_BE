@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/missing")
+@RequestMapping("/api/v0/missing")
 @RequiredArgsConstructor
 public class MissingController {
 
