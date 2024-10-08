@@ -14,24 +14,17 @@ import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ReportService {
 
     private final ReportRepository reportRepository;
     private final MissingRepository missingRepository;
     private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
-
-    public ReportService(ReportRepository reportRepository, MissingRepository missingRepository,
-        KakaoMapService kakaoMapService,
-        ImageService imageService) {
-        this.reportRepository = reportRepository;
-        this.missingRepository = missingRepository;
-        this.kakaoMapService = kakaoMapService;
-        this.imageService = imageService;
-    }
 
     public Long createReport(User user, SuspectRequestDTO suspectRequestDTO) {
 

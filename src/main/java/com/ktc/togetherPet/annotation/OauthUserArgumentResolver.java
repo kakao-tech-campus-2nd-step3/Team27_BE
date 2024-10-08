@@ -4,6 +4,7 @@ import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.jwtUtil.JwtUtil;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -13,15 +14,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 
 @Component
+@RequiredArgsConstructor
 public class OauthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
-
-    public OauthUserArgumentResolver(JwtUtil jwtUtil, UserService userService) {
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
-    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

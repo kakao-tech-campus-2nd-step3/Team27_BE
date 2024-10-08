@@ -5,16 +5,14 @@ import com.ktc.togetherPet.model.dto.pet.PetRegisterRequestDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.repository.PetRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PetService {
 
     private final PetRepository petRepository;
-
-    public PetService(PetRepository petRepository) {
-        this.petRepository = petRepository;
-    }
 
     public Pet findPetById(Long petId) {
         return petRepository.findById(petId).orElseThrow(CustomException::petNotFoundException);
