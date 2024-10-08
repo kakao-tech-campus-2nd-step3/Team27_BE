@@ -1,4 +1,4 @@
-package com.ktc.togetherPet.model.dto.suspect;
+package com.ktc.togetherPet.model.dto.report;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

@@ -6,8 +6,8 @@ import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
+import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
@@ -138,36 +138,5 @@ public class ReportService {
             imageService.getImageUrl(reportId, REPORT),
             report.getTimeStamp()
         );
-    }
-
-    public void setBreed(Long reportId, String breed) {
-        Report report = reportRepository.findById(reportId)
-            .orElseThrow(CustomException::reportNotFoundException);
-        Breed breedEntity = new Breed(breed);
-
-        report.setBreed(breedEntity);
-
-        reportRepository.save(report);
-    }
-
-    public void setGender(Long reportId, String gender) {
-        Report report = reportRepository.findById(reportId)
-            .orElseThrow(CustomException::reportNotFoundException);
-
-        report.setGender(gender);
-
-        reportRepository.save(report);
-    }
-
-    public void setMissing(Long reportId, Long missingId) {
-        Report report = reportRepository.findById(reportId)
-            .orElseThrow(CustomException::reportNotFoundException);
-
-        Missing missing = missingRepository.findById(missingId)
-            .orElseThrow(CustomException::missingNotFound);
-
-        report.setMissing(missing);
-
-        reportRepository.save(report);
     }
 }

@@ -1,17 +1,14 @@
 package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
-import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
-import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
@@ -103,17 +100,4 @@ public class MissingService {
             imageService.getImageUrl(missingId, MISSING)
         );
     }
-
-//    public ReportDetailResponseDTO getReportDetail(long reportId) {
-//        Report report = reportRepository.findById(reportId)
-//            .orElseThrow(CustomException::reportNotFoundException);
-//
-//        return new ReportDetailResponseDTO(
-//            report.getUser().getName(),
-//            report.getDescription(),
-//            report.getLocation().getLatitude(),
-//            report.getLocation().getLongitude(),
-//            report.getTimeStamp()
-//        );
-//    }
 }

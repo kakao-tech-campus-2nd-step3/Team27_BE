@@ -9,11 +9,9 @@ import com.ktc.togetherPet.annotation.OauthUser;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
-import com.ktc.togetherPet.service.MissingService;
+import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
 import com.ktc.togetherPet.service.ReportService;
-import com.ktc.togetherPet.service.SuspectService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,8 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ReportController {
 
-    private final MissingService missingService;
-    private final SuspectService suspectService;
     private final ReportService reportService;
 
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
@@ -66,15 +62,12 @@ public class ReportController {
     }
 
     @GetMapping("/{report-id}")
-    public ResponseEntity<ReportDetailResponseDTO> getReportDetail(@PathVariable Long reportId) {
-        return null;
-//        return ResponseEntity
-//            .status(OK)
-//            .body(missingService.getReportDetail(reportId));
+    public ResponseEntity<ReportDetailResponseDTO> getReportDetail(
+        @PathVariable("report-id") Long reportId
+    ) {
+        return ResponseEntity
+            .status(OK)
+            .body(reportService.getReportById(reportId));
     }
 
 }
-// 제보 등록
-// 자신에게 온 실종 제보 확인
-// 근처 실종 제보 확인
-// 제보 디테일 확인
