@@ -1,8 +1,8 @@
 package com.ktc.togetherPet.controller;
 
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 
+import com.ktc.togetherPet.apiResponse.CustomResponse;
 import com.ktc.togetherPet.service.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +28,6 @@ public class ImageController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(IMAGE_JPEG);
 
-        return ResponseEntity
-            .status(OK)
-            .headers(headers)
-            .body(imageService.getImageBytesFromFileName(fileName));
+        return CustomResponse.ok(headers, imageService.getImageBytesFromFileName(fileName));
     }
 }

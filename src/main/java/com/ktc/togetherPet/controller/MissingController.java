@@ -1,9 +1,7 @@
 package com.ktc.togetherPet.controller;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
-
 import com.ktc.togetherPet.annotation.OauthUser;
+import com.ktc.togetherPet.apiResponse.CustomResponse;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
@@ -35,13 +33,13 @@ public class MissingController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> registerMissingPet(
+    public ResponseEntity<?> registerMissingPet(
         @OauthUser OauthUserDTO oauthUserDTO,
         @RequestBody MissingPetRequestDTO missingPetRequestDTO
     ) {
 
         missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
-        return ResponseEntity.status(CREATED).build();
+        return CustomResponse.created();
     }
 
     @GetMapping
@@ -49,35 +47,27 @@ public class MissingController {
         @RequestParam("latitude") double latitude,
         @RequestParam("longitude") double longitude
     ) {
-        return ResponseEntity
-            .status(OK)
-            .body(missingService.getMissingPetsNearBy(latitude, longitude));
+        return CustomResponse.ok(missingService.getMissingPetsNearBy(latitude, longitude));
     }
 
     @GetMapping("/{missing-id}")
     public ResponseEntity<MissingPetDetailResponseDTO> getMissingPetDetailByMissingId(
         @PathVariable("missing-id") long missingId
     ) {
-        return ResponseEntity
-            .status(OK)
-            .body(missingService.getMissingPetDetailByMissingId(missingId));
+        return CustomResponse.ok(missingService.getMissingPetDetailByMissingId(missingId));
     }
 
     @GetMapping("/report")
     public ResponseEntity<List<ReportResponseDTO>> getMissingReports(
         @OauthUser OauthUserDTO oauthUserDTO
     ) {
-        return ResponseEntity
-            .status(OK)
-            .body(missingService.getMissingReports(oauthUserDTO));
+        return CustomResponse.ok(missingService.getMissingReports(oauthUserDTO));
     }
 
     @GetMapping("/report/{report-id}")
     public ResponseEntity<ReportDetailResponseDTO> getMissingReportDetailByReportId(
         @PathVariable("report-id") long reportId
     ) {
-        return ResponseEntity
-            .status(OK)
-            .body(missingService.getReportDetail(reportId));
+        return CustomResponse.ok(missingService.getReportDetail(reportId));
     }
 }
