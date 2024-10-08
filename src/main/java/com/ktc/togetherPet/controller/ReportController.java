@@ -62,7 +62,7 @@ public class ReportController {
     ) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(suspectService.getSuspectReportsNearBy(latitude, longitude));
+            .body(reportService.getReportsByLocation(latitude, longitude));
     }
 
     @GetMapping("/{report-id}")
