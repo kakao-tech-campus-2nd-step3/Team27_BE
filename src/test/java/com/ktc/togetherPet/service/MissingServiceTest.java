@@ -25,9 +25,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
@@ -82,7 +82,7 @@ class MissingServiceTest {
     class registerMissingPetTest {
 
         private OauthUserDTO oauthUserDTO;
-        private MissingPetDTO missingPetDTO;
+        private MissingPetRequestDTO missingPetDTO;
         private Missing missing;
         private Pet pet;
         private Breed breed;
@@ -94,7 +94,7 @@ class MissingServiceTest {
             //given
             oauthUserDTO = new OauthUserDTO("test@email.com");
 
-            missingPetDTO = new MissingPetDTO(
+            missingPetDTO = new MissingPetRequestDTO(
                 "testPetName",
                 "testPetGender",
                 1L,
@@ -215,7 +215,7 @@ class MissingServiceTest {
                 //given
                 User user = new User(oauthUserDTO.email());
 
-                missingPetDTO = new MissingPetDTO(
+                missingPetDTO = new MissingPetRequestDTO(
                     "testPetName",
                     "testPetGender",
                     petBirthMonth,
@@ -253,7 +253,7 @@ class MissingServiceTest {
                 //given
                 User user = new User(oauthUserDTO.email());
 
-                missingPetDTO = new MissingPetDTO(
+                missingPetDTO = new MissingPetRequestDTO(
                     "testPetName",
                     "testPetGender",
                     1L,
@@ -298,7 +298,7 @@ class MissingServiceTest {
                 // given
                 User user = new User(oauthUserDTO.email());
 
-                missingPetDTO = new MissingPetDTO(
+                missingPetDTO = new MissingPetRequestDTO(
                     "testPetName",
                     "testPetGender",
                     1L,
@@ -447,14 +447,14 @@ class MissingServiceTest {
                 )
             );
 
-            List<MissingPetNearByDTO> expects = List.of(
-                new MissingPetNearByDTO(
+            List<MissingPetNearByResponseDTO> expects = List.of(
+                new MissingPetNearByResponseDTO(
                     1L,
                     32.5F,
                     80.0F,
                     "pet-image-url"
                 ),
-                new MissingPetNearByDTO(
+                new MissingPetNearByResponseDTO(
                     2L,
                     33.5F,
                     81.0F,
@@ -473,7 +473,7 @@ class MissingServiceTest {
             when(pet2.getId()).thenReturn(2L);
 
             //then
-            List<MissingPetNearByDTO> result = missingService.getMissingPetsNearBy(latitude,
+            List<MissingPetNearByResponseDTO> result = missingService.getMissingPetsNearBy(latitude,
                 longitude);
             assertEquals(expects, result);
         }
@@ -502,7 +502,7 @@ class MissingServiceTest {
                 15,
                 "test-description-1"
             );
-            MissingPetDetailDTO expect = new MissingPetDetailDTO(
+            MissingPetDetailResponseDTO expect = new MissingPetDetailResponseDTO(
                 "test-pet-name",
                 "test-breed-name",
                 1L,
@@ -518,7 +518,7 @@ class MissingServiceTest {
                 .thenReturn(Optional.of(expectMissing));
 
             // then
-            MissingPetDetailDTO result = missingService.getMissingPetDetailByMissingId(missingId);
+            MissingPetDetailResponseDTO result = missingService.getMissingPetDetailByMissingId(missingId);
             assertEquals(expect, result);
 
             verify(missingRepository, times(1))

@@ -1,14 +1,18 @@
-package com.ktc.togetherPet.model.dto.suspect;
+package com.ktc.togetherPet.model.dto.missing;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.util.List;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record ReportNearByDTO (
-    long reportId,
+public record MissingPetDetailResponseDTO(
+    String name,
+    String breed,
+    long birthMonth,
     double latitude,
     double longitude,
-    String reportRepImageUrl
+    String description,
+    List<String> imageUrl
 ) {
 
 }

@@ -4,11 +4,11 @@ import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MIS
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.report.ReportDTO;
+import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
@@ -54,7 +54,7 @@ public class MissingService {
         this.imageService = imageService;
     }
 
-    public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetDTO missingPetDTO) {
+    public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetRequestDTO missingPetDTO) {
         User user = userRepository.findByEmail(oauthUserDTO.email())
             .orElseThrow(CustomException::invalidUserException);
 
@@ -88,13 +88,13 @@ public class MissingService {
         );
     }
 
-    public List<MissingPetNearByDTO> getMissingPetsNearBy(float latitude, float longitude) {
+    public List<MissingPetNearByResponseDTO> getMissingPetsNearBy(double latitude, double longitude) {
         long regionCode = kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude));
 
         return missingRepository.findAllByRegionCode(regionCode)
             .stream()
             .filter(Missing::isMissing)
-            .map(missing -> new MissingPetNearByDTO(
+            .map(missing -> new MissingPetNearByResponseDTO(
                 missing.getPet().getId(),
                 missing.getLocation().getLatitude(),
                 missing.getLocation().getLongitude(),
@@ -102,13 +102,13 @@ public class MissingService {
             )).toList();
     }
 
-    public MissingPetDetailDTO getMissingPetDetailByMissingId(long missingId) {
+    public MissingPetDetailResponseDTO getMissingPetDetailByMissingId(long missingId) {
         Missing missing = missingRepository.findById(missingId)
             .orElseThrow(CustomException::missingNotFound);
 
         Pet pet = missing.getPet();
 
-        return new MissingPetDetailDTO(
+        return new MissingPetDetailResponseDTO(
             pet.getName(),
             pet.getBreed().getName(),
             pet.getBirthMonth(),
@@ -119,7 +119,7 @@ public class MissingService {
         );
     }
 
-    public List<ReportDTO> getMissingReports(OauthUserDTO oauthUserDTO) {
+    public List<ReportResponseDTO> getMissingReports(OauthUserDTO oauthUserDTO) {
         User user = userRepository.findByEmail(oauthUserDTO.email())
             .orElseThrow(CustomException::invalidUserException);
 
@@ -130,7 +130,7 @@ public class MissingService {
 
         return reports.stream()
             .map(report ->
-                new ReportDTO(
+                new ReportResponseDTO(
                     report.getId(),
                     report.getLocation().getLatitude(),
                     report.getLocation().getLongitude(),

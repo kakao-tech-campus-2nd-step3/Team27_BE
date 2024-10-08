@@ -1,21 +1,23 @@
-package com.ktc.togetherPet.model.dto.missing;
+package com.ktc.togetherPet.model.dto.suspect;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record MissingPetDTO(
-    String petName,
-    String petGender,
-    long birthMonth,
+public record ReportDetailResponseDTO(
     String petBreed,
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul") LocalDateTime lostTime,
+    String petColor,
+    String petGender,
     double latitude,
     double longitude,
     String description,
-    boolean isNeutering
+    String reporterName,
+    List<String> imageUrl,
+    @JsonFormat(pattern = "yyyy.MM.dd (E) HH:mm", timezone = "Asia/Seoul")
+    LocalDateTime foundDate
 ) {
 
 }

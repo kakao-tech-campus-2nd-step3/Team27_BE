@@ -14,7 +14,7 @@ public class Location {
     public Location() {
     }
 
-    public Location(float latitude, float longitude) {
+    public Location(double latitude, double longitude) {
         validate(latitude, longitude);
         this.latitude = latitude;
         this.longitude = longitude;
@@ -28,17 +28,17 @@ public class Location {
         return longitude;
     }
 
-    private void validate(float latitude, float longitude) {
+    private void validate(double latitude, double longitude) {
         if (!validateLatitude(latitude) || !validateLongitude(longitude)) {
             throw invalidLocaltionException();
         }
     }
 
-    private boolean validateLatitude(float latitude) {
+    private boolean validateLatitude(double latitude) {
         return latitude <= 90 && latitude >= -90;
     }
 
-    private boolean validateLongitude(float longitude) {
+    private boolean validateLongitude(double longitude) {
         return longitude <= 180 && longitude >= -180;
     }
 

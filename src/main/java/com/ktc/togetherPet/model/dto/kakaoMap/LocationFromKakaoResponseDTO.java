@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.List;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record LocationFromKakaoDTO(
+public record LocationFromKakaoResponseDTO(
     MetaDTO meta,
     List<Documents> documents
 ) {

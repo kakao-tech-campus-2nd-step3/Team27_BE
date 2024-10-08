@@ -4,8 +4,8 @@ import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REP
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportDetailDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportNearByDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
@@ -61,12 +61,12 @@ public class SuspectService {
         Report report = new Report();
     }
 
-    public List<ReportNearByDTO> getSuspectReportsNearBy(float latitude, float longitude) {
+    public List<ReportNearByResponseDTO> getSuspectReportsNearBy(double latitude, double longitude) {
 
         return reportService.getReportsByLocation(latitude, longitude);
     }
 
-    public ReportDetailDTO getSuspectReportDetailByReportId(long reportId) {
+    public ReportDetailResponseDTO getSuspectReportDetailByReportId(long reportId) {
         return reportService.getReportById(reportId);
     }
 }

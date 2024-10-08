@@ -2,7 +2,7 @@ package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.PET;
 
-import com.ktc.togetherPet.model.dto.pet.PetRegisterDTO;
+import com.ktc.togetherPet.model.dto.pet.PetRegisterRequestDTO;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class RegisterService {
     }
 
     @Transactional
-    public void create(PetRegisterDTO petRegisterDTO,
+    public void create(PetRegisterRequestDTO petRegisterDTO,
         MultipartFile petImage, String email, String userName) {
         Long petId = petService.createPet(petRegisterDTO);
 

@@ -36,9 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.exception.ErrorResponse;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.MissingService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
@@ -76,13 +76,13 @@ class MissingControllerTest extends RestDocsTestSupport {
 
         //given
         private OauthUserDTO oauthUserDTO;
-        private MissingPetDTO missingPetDTO;
+        private MissingPetRequestDTO missingPetDTO;
 
         @BeforeEach
         void setUp() throws Exception {
             //given
             oauthUserDTO = new OauthUserDTO("test@email.com");
-            missingPetDTO = new MissingPetDTO(
+            missingPetDTO = new MissingPetRequestDTO(
                 "testPetName",
                 "testPetGender",
                 1L,
@@ -152,7 +152,7 @@ class MissingControllerTest extends RestDocsTestSupport {
             @ValueSource(ints = {-100, -10, 0})
             void under0Age(int petBirthMonth) throws Exception {
                 //given
-                missingPetDTO = new MissingPetDTO(
+                missingPetDTO = new MissingPetRequestDTO(
                     "testPetName",
                     "testPetGender",
                     petBirthMonth, // 애완동물의 개월수에 따른 오류 발생 체크
@@ -194,7 +194,7 @@ class MissingControllerTest extends RestDocsTestSupport {
             @MethodSource("lateMoreThanNowMethodSource")
             void lateMoreThanNow(LocalDateTime lostTime) throws Exception {
                 //given
-                missingPetDTO = new MissingPetDTO(
+                missingPetDTO = new MissingPetRequestDTO(
                     "testPetName",
                     "testPetGender",
                     1L,
@@ -247,7 +247,7 @@ class MissingControllerTest extends RestDocsTestSupport {
                 // 위도는 -90 ~ 90도 사이
                 // 경도는 -180 ~ 180도 사이의 범위를 가져야만 한다.
                 //given
-                missingPetDTO = new MissingPetDTO(
+                missingPetDTO = new MissingPetRequestDTO(
                     "testPetName",
                     "testPetGender",
                     1L,
@@ -447,20 +447,20 @@ class MissingControllerTest extends RestDocsTestSupport {
             float latitude = 37.5F;
             float longitude = 80.1F;
 
-            List<MissingPetNearByDTO> expects = List.of(
-                new MissingPetNearByDTO(
+            List<MissingPetNearByResponseDTO> expects = List.of(
+                new MissingPetNearByResponseDTO(
                     1L,
                     32.5F,
                     80.0F,
                     "test-pet-image-url-1"
                 ),
-                new MissingPetNearByDTO(
+                new MissingPetNearByResponseDTO(
                     2L,
                     33.5F,
                     81.0F,
                     "test-pet-image-url-2"
                 ),
-                new MissingPetNearByDTO(
+                new MissingPetNearByResponseDTO(
                     3L,
                     34.5F,
                     82.0F,
@@ -540,7 +540,7 @@ class MissingControllerTest extends RestDocsTestSupport {
 
         private long missingId = 1L;
 
-        private MissingPetDetailDTO missingPetDetailDTO = new MissingPetDetailDTO(
+        private MissingPetDetailResponseDTO missingPetDetailDTO = new MissingPetDetailResponseDTO(
             "test-name",
             "test-breed",
             1L,

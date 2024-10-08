@@ -2,13 +2,11 @@ package com.ktc.togetherPet.controller;
 
 import com.ktc.togetherPet.annotation.OauthUser;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportDetailDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportNearByDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.service.SuspectService;
-import java.io.IOException;
 import java.util.List;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,26 +34,26 @@ public class SuspectController {
         @RequestPart SuspectRequestDTO suspectRequestDTO,
         @RequestPart(required = false) List<MultipartFile> files,
         @OauthUser OauthUserDTO oauthUserDTO
-        ) throws IOException {
+    ) {
         suspectService.createSuspectReport(oauthUserDTO, suspectRequestDTO, files);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<ReportNearByDTO>> getSuspectReportsNearByRegion(
-        @RequestParam("latitude") float latitude,
-        @RequestParam("longitude") float longitude
-        ) {
+    public ResponseEntity<List<ReportNearByResponseDTO>> getSuspectReportsNearByRegion(
+        @RequestParam("latitude") double latitude,
+        @RequestParam("longitude") double longitude
+    ) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(suspectService.getSuspectReportsNearBy(latitude, longitude));
     }
 
     @GetMapping("/{report-id}")
-    public ResponseEntity<ReportDetailDTO> getSuspectReportDetailByReportId(
+    public ResponseEntity<ReportDetailResponseDTO> getSuspectReportDetailByReportId(
         @PathVariable("report-id") long reportId
-        ) {
+    ) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(suspectService.getSuspectReportDetailByReportId(reportId));

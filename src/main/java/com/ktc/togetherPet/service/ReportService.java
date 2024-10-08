@@ -1,8 +1,8 @@
 package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.suspect.ReportDetailDTO;
-import com.ktc.togetherPet.model.dto.suspect.ReportNearByDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
@@ -53,7 +53,7 @@ public class ReportService {
         return report.getId();
     }
 
-    public List<ReportNearByDTO> getReportsByLocation(float latitude, float longitude) {
+    public List<ReportNearByResponseDTO> getReportsByLocation(double latitude, double longitude) {
         Location location = new Location(latitude, longitude);
         long regionCode = kakaoMapService.getRegionCodeFromKakao(location);
 
@@ -66,7 +66,7 @@ public class ReportService {
             .map(report -> {
                 String representImagePath = imageService.getRepresentativeImageById(
                     ImageEntityType.REPORT, report.getId());
-                return new ReportNearByDTO(
+                return new ReportNearByResponseDTO(
                     report.getId(),
                     report.getLocation().getLatitude(),
                     report.getLocation().getLongitude(),
@@ -77,13 +77,13 @@ public class ReportService {
 
     }
 
-    public ReportDetailDTO getReportById(long reportId) {
+    public ReportDetailResponseDTO getReportById(long reportId) {
         Report report = reportRepository.findById(reportId)
             .orElseThrow(CustomException::reportNotFoundException);
 
         Location location = report.getLocation();
 
-        return new ReportDetailDTO(
+        return new ReportDetailResponseDTO(
             report.getBreed().getName(),
             report.getColor(),
             report.getGender(),
