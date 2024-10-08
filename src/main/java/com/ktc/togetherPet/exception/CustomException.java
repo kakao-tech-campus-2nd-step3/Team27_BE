@@ -68,7 +68,7 @@ public class CustomException extends RuntimeException {
         return new CustomException(INVALID_PET_MONTH, BAD_REQUEST);
     }
 
-    public static CustomException invalidLocaltionException() {
+    public static CustomException invalidLocationException() {
         return new CustomException(INVALID_LOCATION, BAD_REQUEST);
     }
 

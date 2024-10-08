@@ -1,6 +1,6 @@
 package com.ktc.togetherPet.model.dto.kakaoMap;
 
-import static com.ktc.togetherPet.exception.CustomException.invalidLocaltionException;
+import static com.ktc.togetherPet.exception.CustomException.invalidLocationException;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -26,6 +26,6 @@ public record LocationFromKakaoResponseDTO(
                 return docs;
             }
         }
-        throw invalidLocaltionException();
+        throw invalidLocationException();
     }
 }

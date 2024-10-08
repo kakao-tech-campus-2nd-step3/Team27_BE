@@ -1,6 +1,6 @@
 package com.ktc.togetherPet.model.vo;
 
-import static com.ktc.togetherPet.exception.CustomException.invalidLocaltionException;
+import static com.ktc.togetherPet.exception.CustomException.invalidLocationException;
 import static lombok.AccessLevel.PROTECTED;
 
 import jakarta.persistence.Embeddable;
@@ -26,7 +26,7 @@ public class Location {
 
     private void validate(double latitude, double longitude) {
         if (!validateLatitude(latitude) || !validateLongitude(longitude)) {
-            throw invalidLocaltionException();
+            throw invalidLocationException();
         }
     }
 

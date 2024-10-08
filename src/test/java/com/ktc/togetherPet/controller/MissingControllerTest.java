@@ -3,7 +3,7 @@ package com.ktc.togetherPet.controller;
 import static com.ktc.togetherPet.exception.CustomException.breedNotFoundException;
 import static com.ktc.togetherPet.exception.CustomException.expiredTokenException;
 import static com.ktc.togetherPet.exception.CustomException.invalidDateException;
-import static com.ktc.togetherPet.exception.CustomException.invalidLocaltionException;
+import static com.ktc.togetherPet.exception.CustomException.invalidLocationException;
 import static com.ktc.togetherPet.exception.CustomException.invalidPetBirthMonthException;
 import static com.ktc.togetherPet.exception.CustomException.invalidTokenException;
 import static com.ktc.togetherPet.exception.CustomException.invalidUserException;
@@ -260,7 +260,7 @@ class MissingControllerTest extends RestDocsTestSupport {
                 );
 
                 // when
-                doThrow(invalidLocaltionException())
+                doThrow(invalidLocationException())
                     .when(missingService)
                     .registerMissingPet(oauthUserDTO, missingPetDTO);
 
@@ -504,7 +504,7 @@ class MissingControllerTest extends RestDocsTestSupport {
 
             //when
             when(missingService.getMissingPetsNearBy(latitude, longitude))
-                .thenThrow(invalidLocaltionException());
+                .thenThrow(invalidLocationException());
 
             //then
             mockMvc.perform(
