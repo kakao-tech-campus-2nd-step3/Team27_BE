@@ -8,7 +8,6 @@ import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
@@ -105,36 +104,36 @@ public class MissingService {
         );
     }
 
-    public List<ReportResponseDTO> getMissingReports(OauthUserDTO oauthUserDTO) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
+//    public List<ReportResponseDTO> getMissingReports(OauthUserDTO oauthUserDTO) {
+//        User user = userRepository.findByEmail(oauthUserDTO.email())
+//            .orElseThrow(CustomException::invalidUserException);
+//
+//        Pet pet = user.getPet();
+//
+//        Missing missing = missingRepository.findByPet(pet);
+//        List<Report> reports = reportRepository.findAllByMissing(missing);
+//
+//        return reports.stream()
+//            .map(report ->
+//                new ReportResponseDTO(
+//                    report.getId(),
+//                    report.getLocation().getLatitude(),
+//                    report.getLocation().getLongitude(),
+//                    imageService.getImageUrl(report.getId(), REPORT).getFirst()
+//                )
+//            ).toList();
+//    }
 
-        Pet pet = user.getPet();
-
-        Missing missing = missingRepository.findByPet(pet);
-        List<Report> reports = reportRepository.findAllByMissing(missing);
-
-        return reports.stream()
-            .map(report ->
-                new ReportResponseDTO(
-                    report.getId(),
-                    report.getLocation().getLatitude(),
-                    report.getLocation().getLongitude(),
-                    imageService.getImageUrl(report.getId(), REPORT).getFirst()
-                )
-            ).toList();
-    }
-
-    public ReportDetailResponseDTO getReportDetail(long reportId) {
-        Report report = reportRepository.findById(reportId)
-            .orElseThrow(CustomException::reportNotFoundException);
-
-        return new ReportDetailResponseDTO(
-            report.getUser().getName(),
-            report.getDescription(),
-            report.getLocation().getLatitude(),
-            report.getLocation().getLongitude(),
-            report.getTimeStamp()
-        );
-    }
+//    public ReportDetailResponseDTO getReportDetail(long reportId) {
+//        Report report = reportRepository.findById(reportId)
+//            .orElseThrow(CustomException::reportNotFoundException);
+//
+//        return new ReportDetailResponseDTO(
+//            report.getUser().getName(),
+//            report.getDescription(),
+//            report.getLocation().getLatitude(),
+//            report.getLocation().getLongitude(),
+//            report.getTimeStamp()
+//        );
+//    }
 }

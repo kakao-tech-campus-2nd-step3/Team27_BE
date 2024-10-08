@@ -1,21 +1,28 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
+
 import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.model.entity.Breed;
-import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
+import com.ktc.togetherPet.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -25,25 +32,46 @@ public class ReportService {
     private final MissingRepository missingRepository;
     private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
+    private final UserRepository userRepository;
 
-    public Long createReport(User user, SuspectRequestDTO suspectRequestDTO) {
+    @Transactional
+    public void createReport(
+        ReportCreateRequestDTO reportCreateRequestDTO,
+        List<MultipartFile> files,
+        OauthUserDTO oauthUserDTO
+    ) {
+        User user = userRepository.findByEmail(oauthUserDTO.email())
+            .orElseThrow(CustomException::invalidUserException);
 
         Location location = new Location(
-            suspectRequestDTO.foundLatitude(),
-            suspectRequestDTO.foundLongitude()
+            reportCreateRequestDTO.foundLatitude(),
+            reportCreateRequestDTO.foundLongitude()
         );
 
-        Report report = reportRepository.save(
-            new Report(
-                user,
-                suspectRequestDTO.foundDate(),
-                location,
-                kakaoMapService.getRegionCodeFromKakao(location),
-                suspectRequestDTO.description()
-            )
+        Report report = new Report(
+            user,
+            reportCreateRequestDTO.foundDate(),
+            location,
+            kakaoMapService.getRegionCodeFromKakao(location),
+            reportCreateRequestDTO.description()
         );
 
-        return report.getId();
+        Optional.ofNullable(reportCreateRequestDTO.breed())
+            .ifPresent(breed -> report.setBreed(new Breed(breed)));
+
+        Optional.ofNullable(reportCreateRequestDTO.gender())
+            .ifPresent(report::setGender);
+
+        Optional.ofNullable(reportCreateRequestDTO.missingId())
+            .ifPresent(missingId -> report.setMissing(
+                    missingRepository
+                        .findById(missingId)
+                        .orElseThrow(CustomException::missingNotFound)
+                )
+            );
+
+        long reportId = reportRepository.save(report).getId();
+        imageService.saveImages(reportId, REPORT, files);
     }
 
     public List<ReportNearByResponseDTO> getReportsByLocation(double latitude, double longitude) {
@@ -58,7 +86,7 @@ public class ReportService {
             .stream()
             .map(report -> {
                 String representImagePath = imageService.getRepresentativeImageById(
-                    ImageEntityType.REPORT, report.getId());
+                    REPORT, report.getId());
                 return new ReportNearByResponseDTO(
                     report.getId(),
                     report.getLocation().getLatitude(),
@@ -84,7 +112,7 @@ public class ReportService {
             location.getLongitude(),
             report.getDescription(),
             report.getUser().getName(),
-            imageService.getImageUrl(reportId, ImageEntityType.REPORT),
+            imageService.getImageUrl(reportId, REPORT),
             report.getTimeStamp()
         );
     }

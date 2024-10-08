@@ -25,35 +25,6 @@ public class SuspectService {
     private final ImageService imageService;
     private final ReportService reportService;
 
-    @Transactional
-    public void createSuspectReport(
-        OauthUserDTO oauthUserDTO,
-        SuspectRequestDTO suspectRequestDTO,
-        List<MultipartFile> files
-    ) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
-
-        Long reportId = reportService.createReport(user, suspectRequestDTO);
-        imageService.saveImages(reportId, REPORT, files);
-
-        //todo: Optional.ofNullable 을 사용하는 것으로 변경
-        if (suspectRequestDTO.breed() != null) {
-            reportService.setBreed(reportId, suspectRequestDTO.breed());
-        }
-        if (suspectRequestDTO.gender() != null) {
-            reportService.setGender(reportId, suspectRequestDTO.gender());
-        }
-        if (suspectRequestDTO.missingId() != null) {
-            reportService.setMissing(reportId, suspectRequestDTO.missingId());
-        }
-
-        /** todo: Report 엔티티에 species / color 값이 nullable로 추가되어야 함
-         */
-
-//        Report report = new Report();
-    }
-
     public List<ReportNearByResponseDTO> getSuspectReportsNearBy(double latitude,
         double longitude) {
 

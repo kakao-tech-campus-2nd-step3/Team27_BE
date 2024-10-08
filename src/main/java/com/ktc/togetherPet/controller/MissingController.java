@@ -6,8 +6,6 @@ import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
-import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.service.MissingService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
