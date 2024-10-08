@@ -14,7 +14,6 @@ import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
-import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
@@ -64,7 +63,7 @@ public class MissingService {
             new Missing(
                 pet,
                 true,
-                new DateTime(missingPetDTO.lostTime()),
+                missingPetDTO.lostTime(),
                 location,
                 kakaoMapService.getRegionCodeFromKakao(location),
                 missingPetDTO.description()

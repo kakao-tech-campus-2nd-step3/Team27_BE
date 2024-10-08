@@ -2,7 +2,6 @@ package com.ktc.togetherPet.model.entity;
 
 import static lombok.AccessLevel.PROTECTED;
 
-import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -13,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,8 +36,8 @@ public class Missing {
     @Column(name = "is_missing", nullable = false)
     private Boolean isMissing;
 
-    @Embedded
-    private DateTime lostTime;
+    @Column(name = "lost_time", nullable = false)
+    private LocalDateTime lostTime;
 
     @Getter
     @Embedded
@@ -53,14 +53,14 @@ public class Missing {
     public Missing(
         Pet pet,
         Boolean isMissing,
-        DateTime dateTime,
+        LocalDateTime lostTime,
         Location location,
         long regionCode,
         String description
     ) {
         this.pet = pet;
         this.isMissing = isMissing;
-        this.lostTime = dateTime;
+        this.lostTime = lostTime;
         this.location = location;
         this.regionCode = regionCode;
         this.description = description;
