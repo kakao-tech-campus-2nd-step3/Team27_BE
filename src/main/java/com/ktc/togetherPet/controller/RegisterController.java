@@ -1,10 +1,10 @@
 package com.ktc.togetherPet.controller;
 
 import com.ktc.togetherPet.annotation.OauthUser;
+import com.ktc.togetherPet.apiResponse.CustomResponse;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.pet.PetRegisterRequestDTO;
 import com.ktc.togetherPet.service.RegisterService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +30,6 @@ public class RegisterController {
         @OauthUser OauthUserDTO oauthUserDTO) {
         registerService.create(petRegisterRequestDTO, petImage, oauthUserDTO.email(), userName);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return CustomResponse.created();
     }
 }

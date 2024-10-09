@@ -24,11 +24,11 @@ public class User {
     private String name;
 
     @ManyToOne(targetEntity = Region.class)
-    @JoinColumn(name = "region_id", nullable = false)
+    @JoinColumn(name = "region_id", nullable = true)
     private Region region;
 
     @ManyToOne(targetEntity = Pet.class)
-    @JoinColumn(name = "pet_id", nullable = false)
+    @JoinColumn(name = "pet_id", nullable = true)
     private Pet pet;
 
     public User() {

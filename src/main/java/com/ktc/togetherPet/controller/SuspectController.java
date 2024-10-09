@@ -1,13 +1,13 @@
 package com.ktc.togetherPet.controller;
 
 import com.ktc.togetherPet.annotation.OauthUser;
+import com.ktc.togetherPet.apiResponse.CustomResponse;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.suspect.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.suspect.SuspectRequestDTO;
 import com.ktc.togetherPet.service.SuspectService;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,7 +37,7 @@ public class SuspectController {
     ) {
         suspectService.createSuspectReport(oauthUserDTO, suspectRequestDTO, files);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return CustomResponse.created();
     }
 
     @GetMapping
@@ -45,17 +45,13 @@ public class SuspectController {
         @RequestParam("latitude") double latitude,
         @RequestParam("longitude") double longitude
     ) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(suspectService.getSuspectReportsNearBy(latitude, longitude));
+        return CustomResponse.ok(suspectService.getSuspectReportsNearBy(latitude, longitude));
     }
 
     @GetMapping("/{report-id}")
     public ResponseEntity<ReportDetailResponseDTO> getSuspectReportDetailByReportId(
         @PathVariable("report-id") long reportId
     ) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(suspectService.getSuspectReportDetailByReportId(reportId));
+        return CustomResponse.ok(suspectService.getSuspectReportDetailByReportId(reportId));
     }
 }
