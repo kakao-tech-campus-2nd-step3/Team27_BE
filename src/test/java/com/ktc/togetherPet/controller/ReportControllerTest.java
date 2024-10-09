@@ -12,7 +12,6 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -105,6 +104,9 @@ class ReportControllerTest extends RestDocsTestSupport {
         // then
         result.andExpect(status().isCreated())
             .andDo(restDocs.document(
+                requestHeaders(
+                    headerWithName("Authorization").description("Bearer을 포함한 토큰")
+                ),
                 requestParts(
                     partWithName("reportCreateRequestDTO").description("제보를 위한 정보"),
                     partWithName("files").description("제보하고자 하는 동물의 이미지")
@@ -182,6 +184,9 @@ class ReportControllerTest extends RestDocsTestSupport {
         // then
         result.andExpect(status().isCreated())
             .andDo(restDocs.document(
+                requestHeaders(
+                    headerWithName("Authorization").description("Bearer을 포함한 토큰")
+                ),
                 requestParts(
                     partWithName("reportCreateRequestDTO").description("제보를 위한 정보"),
                     partWithName("files").description("제보하고자 하는 동물의 이미지")
@@ -299,7 +304,18 @@ class ReportControllerTest extends RestDocsTestSupport {
             status().isOk(),
             content().contentType(APPLICATION_JSON),
             content().json(toJson(actual))
-        );
+        ).andDo(restDocs.document(
+            queryParameters(
+                parameterWithName("latitude").description("찾고자 하는 위치의 위도"),
+                parameterWithName("longitude").description("찾고자 하는 위치의 경도")
+            ),
+            responseFields(
+                fieldWithPath("[].report_id").description("제보 id"),
+                fieldWithPath("[].latitude").description("제보 위도"),
+                fieldWithPath("[].longitude").description("제보 경도"),
+                fieldWithPath("[].report_rep_image_url").description("제보 대표 이미지")
+            )
+        ));
 
         verify(reportService, times(1))
             .getReportsByLocation(latitude, longitude);

@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
@@ -92,6 +94,9 @@ class RegisterControllerTest extends RestDocsTestSupport {
         // then
         result.andExpect(status().isCreated())
             .andDo(restDocs.document(
+                requestHeaders(
+                    headerWithName("Authorization").description("Bearer을 포함한 토큰")
+                ),
                 requestParts(
                     partWithName("PetRegisterDTO").description("펫 등록을 위한 정보"),
                     partWithName("petImage").description("펫의 프로필을 등록하기 위한 사진"),
