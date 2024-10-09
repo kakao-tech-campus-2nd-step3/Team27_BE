@@ -11,9 +11,9 @@ public record ReportCreateRequestDTO(
     @NotNull
     String color,
     @NotNull
-    Float foundLatitude,
+    double foundLatitude,
     @NotNull
-    Float foundLongitude,
+    double foundLongitude,
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     LocalDateTime foundDate,
