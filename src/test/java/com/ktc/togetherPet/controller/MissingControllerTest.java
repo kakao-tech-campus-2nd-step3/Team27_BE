@@ -35,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
-import com.ktc.togetherPet.exception.ErrorResponse;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
