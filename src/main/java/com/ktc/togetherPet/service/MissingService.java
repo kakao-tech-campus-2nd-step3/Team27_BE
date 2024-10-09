@@ -76,6 +76,7 @@ public class MissingService {
             .stream()
             .filter(Missing::isMissing)
             .map(missing -> new MissingPetNearByResponseDTO(
+                missing.getId(),
                 missing.getPet().getId(),
                 missing.getLocation().getLatitude(),
                 missing.getLocation().getLongitude(),

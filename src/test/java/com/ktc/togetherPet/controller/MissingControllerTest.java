@@ -107,12 +107,14 @@ class MissingControllerTest extends RestDocsTestSupport {
         List<MissingPetNearByResponseDTO> actual = List.of(
             new MissingPetNearByResponseDTO(
                 1L,
+                1L,
                 14.0D,
                 15.0D,
                 "testPetImageUrl1"
             ),
             new MissingPetNearByResponseDTO(
-                1L,
+                2L,
+                2L,
                 14.0D,
                 15.0D,
                 "testPetImageUrl1"
@@ -141,6 +143,7 @@ class MissingControllerTest extends RestDocsTestSupport {
                 parameterWithName("longitude").description("가져오고자 하는 위치의 경도")
             ),
             responseFields(
+                fieldWithPath("[].missing_id").description("실종 정보 id"),
                 fieldWithPath("[].pet_id").description("해당 애완동물의 id"),
                 fieldWithPath("[].latitude").description("실종 위도"),
                 fieldWithPath("[].longitude").description("실종 경도"),
