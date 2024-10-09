@@ -6,19 +6,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.MissingService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
 import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -88,6 +93,62 @@ class MissingControllerTest extends RestDocsTestSupport {
 
         verify(missingService, times(1))
             .registerMissingPet(oauthUserDTO, missingPetRequestDTO);
+    }
+
+    @Test
+    @DisplayName("근처 실종 정보 가져오기 테스트/getMissingPetsNearByRegion")
+    void 근처_실종_정보_가져오기() throws Exception {
+        // given
+        double latitude = 15.0D;
+        double longitude = 15.0D;
+
+        List<MissingPetNearByResponseDTO> actual = List.of(
+            new MissingPetNearByResponseDTO(
+                1L,
+                14.0D,
+                15.0D,
+                "testPetImageUrl1"
+            ),
+            new MissingPetNearByResponseDTO(
+                1L,
+                14.0D,
+                15.0D,
+                "testPetImageUrl1"
+            )
+        );
+
+        // when
+        when(missingService.getMissingPetsNearBy(latitude, longitude))
+            .thenReturn(actual);
+
+        ResultActions result = mockMvc.perform(
+            get("/api/v0/missing")
+                .contentType(APPLICATION_JSON)
+                .queryParam("latitude", String.valueOf(latitude))
+                .queryParam("longitude", String.valueOf(longitude))
+        );
+
+        // then
+        result.andExpectAll(
+            status().isOk(),
+            content().contentType(APPLICATION_JSON),
+            content().json(toJson(actual))
+        ).andDo(restDocs.document(
+            queryParameters(
+                parameterWithName("latitude").description("가져오고자 하는 위치의 위도"),
+                parameterWithName("longitude").description("가져오고자 하는 위치의 경도")
+            ),
+            responseFields(
+                fieldWithPath("[].pet_id").description("해당 애완동물의 id"),
+                fieldWithPath("[].latitude").description("실종 위도"),
+                fieldWithPath("[].longitude").description("실종 경도"),
+                fieldWithPath("[].pet_image_url").description("애완동물의 사진 url")
+            )
+        ));
+
+        verify(missingService, times(1))
+            .getMissingPetsNearBy(latitude, longitude);
+
     }
 
 //    @Nested
