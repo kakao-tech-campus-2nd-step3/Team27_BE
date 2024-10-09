@@ -5,7 +5,6 @@ import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthSuccessDTO;
 import com.ktc.togetherPet.service.OauthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +19,9 @@ public class OauthController {
     private final OauthService oauthService;
 
     @GetMapping
-    public ResponseEntity<?> handleOauth(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> handleOauth(
+        @RequestHeader("Authorization") String authorizationHeader
+    ) {
 
         String email = extractEmail(authorizationHeader);
         OauthSuccessDTO oauthSuccessDTO = oauthService.processOauth(email);
