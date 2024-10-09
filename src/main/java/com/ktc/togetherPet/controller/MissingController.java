@@ -49,18 +49,4 @@ public class MissingController {
     ) {
         return CustomResponse.ok(missingService.getMissingPetDetailByMissingId(missingId));
     }
-
-    @GetMapping("/report")
-    public ResponseEntity<List<ReportResponseDTO>> getMissingReports(
-        @OauthUser OauthUserDTO oauthUserDTO
-    ) {
-        return CustomResponse.ok(missingService.getMissingReports(oauthUserDTO));
-    }
-
-    @GetMapping("/report/{report-id}")
-    public ResponseEntity<ReportDetailResponseDTO> getMissingReportDetailByReportId(
-        @PathVariable("report-id") long reportId
-    ) {
-        return CustomResponse.ok(missingService.getReportDetail(reportId));
-    }
 }

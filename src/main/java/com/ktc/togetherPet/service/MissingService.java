@@ -30,7 +30,6 @@ public class MissingService {
     private final PetRepository petRepository;
     private final BreedRepository breedRepository;
     private final KakaoMapService kakaoMapService;
-    private final ReportRepository reportRepository;
     private final ImageService imageService;
 
     public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetRequestDTO missingPetDTO) {
