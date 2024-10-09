@@ -16,7 +16,7 @@ public record ReportDetailResponseDTO(
     String description,
     String reporterName,
     List<String> imageUrl,
-    @JsonFormat(pattern = "yyyy.MM.dd (E) HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     LocalDateTime foundDate
 ) {
 

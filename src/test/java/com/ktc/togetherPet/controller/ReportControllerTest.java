@@ -12,9 +12,13 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
+import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.service.ReportService;
@@ -270,7 +275,7 @@ class ReportControllerTest extends RestDocsTestSupport {
                 16.0D,
                 31.0D,
                 "https://together-pet/api/v0/images/test-image-1"
-                ),
+            ),
             new ReportNearByResponseDTO(
                 2L,
                 17.0D,
@@ -300,5 +305,59 @@ class ReportControllerTest extends RestDocsTestSupport {
             .getReportsByLocation(latitude, longitude);
     }
 
+    @Test
+    @DisplayName("제보 상세 정보 확인 테스트/getReportDetail")
+    void 제보_상세_정보_확인() throws Exception {
+        // given
+        long reportId = 1L;
 
+        ReportDetailResponseDTO actual = new ReportDetailResponseDTO(
+            "testPetBreed",
+            "testPetColor",
+            "testPetGender",
+            15.0F,
+            16.0F,
+            "testDescription",
+            "testReporterName",
+            List.of(
+                "https://together-pet/api/v0/images/test-image-url-1",
+                "https://together-pet/api/v0/images/test-image-url-2"
+            ),
+            LocalDateTime.of(2024, 10, 9, 18, 37, 22)
+        );
+
+        // when
+        when(reportService.getReportById(reportId))
+            .thenReturn(actual);
+
+        ResultActions result = mockMvc.perform(
+            get("/api/v0/report/{report-id}", reportId)
+                .contentType(APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpectAll(
+            status().isOk(),
+            content().contentType(APPLICATION_JSON),
+            content().json(toJson(actual))
+        ).andDo(restDocs.document(
+            pathParameters(
+                parameterWithName("report-id").description("확인하고자 하는 제보의 id")
+            ),
+            responseFields(
+                fieldWithPath("pet_breed").description("애완동물의 종"),
+                fieldWithPath("pet_color").description("애완동물의 색상"),
+                fieldWithPath("pet_gender").description("애완동물의 성별"),
+                fieldWithPath("latitude").description("제보된 위치의 위도"),
+                fieldWithPath("longitude").description("제보된 위치의 경도"),
+                fieldWithPath("description").description("제보에 대한 설명"),
+                fieldWithPath("reporter_name").description("제보자 이름"),
+                fieldWithPath("image_url[]").description("제보 사진 리스트"),
+                fieldWithPath("found_date").description("제보된 시각")
+            )
+        ));
+
+        verify(reportService, times(1))
+            .getReportById(reportId);
+    }
 }
