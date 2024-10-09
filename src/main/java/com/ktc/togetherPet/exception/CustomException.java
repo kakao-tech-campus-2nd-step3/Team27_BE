@@ -3,10 +3,15 @@ package com.ktc.togetherPet.exception;
 import static com.ktc.togetherPet.exception.ErrorMessage.BREED_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.EXPIRED_TOKEN;
 import static com.ktc.togetherPet.exception.ErrorMessage.IMAGE_NOT_FOUND;
+import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_API;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
+import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_HEADER;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
+import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PROVIDER;
+import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_TOKEN;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
+import static com.ktc.togetherPet.exception.ErrorMessage.IO_EXCEPTION;
 import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.PET_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.REPORT_NOT_FOUND;
@@ -16,35 +21,31 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.io.IOException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+@Getter
+@RequiredArgsConstructor
 public class CustomException extends RuntimeException {
 
+    private final ErrorMessage errorMessage;
     private final HttpStatus status;
 
-    public CustomException(String message, HttpStatus status) {
-        super(message);
-        this.status = status;
-    }
-
-    public HttpStatus getStatus() {
-        return status;
-    }
-
     public static CustomException invalidHeaderException() {
-        return new CustomException(ErrorMessage.headerInvalid, HttpStatus.BAD_REQUEST);
+        return new CustomException(INVALID_HEADER, BAD_REQUEST);
     }
 
     public static CustomException invalidApiException(HttpStatus httpStatus) {
-        return new CustomException(ErrorMessage.apiInvalid, httpStatus);
+        return new CustomException(INVALID_API, httpStatus);
     }
 
     public static CustomException invalidTokenException() {
-        return new CustomException(ErrorMessage.tokenInvalid, UNAUTHORIZED);
+        return new CustomException(INVALID_TOKEN, UNAUTHORIZED);
     }
 
     public static CustomException invalidProviderException() {
-        return new CustomException(ErrorMessage.providerInvalid, HttpStatus.BAD_REQUEST);
+        return new CustomException(INVALID_PROVIDER, BAD_REQUEST);
     }
 
     public static CustomException invalidUserException() {
@@ -67,7 +68,7 @@ public class CustomException extends RuntimeException {
         return new CustomException(INVALID_PET_MONTH, BAD_REQUEST);
     }
 
-    public static CustomException invalidLocaltionException() {
+    public static CustomException invalidLocationException() {
         return new CustomException(INVALID_LOCATION, BAD_REQUEST);
     }
 
@@ -83,12 +84,11 @@ public class CustomException extends RuntimeException {
         return new CustomException(MISSING_NOT_FOUND, NOT_FOUND);
     }
 
-    public static CustomException imageNotFoundException(){
+    public static CustomException imageNotFoundException() {
         return new CustomException(IMAGE_NOT_FOUND, NOT_FOUND);
     }
 
     public static CustomException IOException(IOException ioException) {
-        return new CustomException("파일 처리 중 오류가 발생했습니다: " + ioException.getMessage(),
-            INTERNAL_SERVER_ERROR);
+        return new CustomException(IO_EXCEPTION, INTERNAL_SERVER_ERROR);
     }
 }

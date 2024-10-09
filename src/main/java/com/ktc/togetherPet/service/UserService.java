@@ -4,19 +4,16 @@ import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.user.UserDTO;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PetService petService;
-
-    public UserService(UserRepository userRepository, PetService petService) {
-        this.userRepository = userRepository;
-        this.petService = petService;
-    }
 
     public UserDTO findUser(String email) {
         User user = userRepository.findByEmail(email).orElse(null);

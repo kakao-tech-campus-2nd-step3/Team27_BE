@@ -1,4 +1,4 @@
-package com.ktc.togetherPet.model.dto.suspect;
+package com.ktc.togetherPet.model.dto.report;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record SuspectRequestDTO(
+public record ReportCreateRequestDTO(
     @NotNull
     String color,
     @NotNull
@@ -24,5 +24,6 @@ public record SuspectRequestDTO(
     String gender,
     Long missingId
 ) {
+
 
 }

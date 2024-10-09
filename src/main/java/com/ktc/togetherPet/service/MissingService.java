@@ -1,20 +1,15 @@
 package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
-import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
-import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
-import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
-import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
@@ -23,9 +18,11 @@ import com.ktc.togetherPet.repository.ReportRepository;
 import com.ktc.togetherPet.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MissingService {
 
     private final MissingRepository missingRepository;
@@ -33,26 +30,7 @@ public class MissingService {
     private final PetRepository petRepository;
     private final BreedRepository breedRepository;
     private final KakaoMapService kakaoMapService;
-    private final ReportRepository reportRepository;
     private final ImageService imageService;
-
-    public MissingService(
-        MissingRepository missingRepository,
-        UserRepository userRepository,
-        PetRepository petRepository,
-        BreedRepository breedRepository,
-        KakaoMapService kakaoMapService,
-        ReportRepository reportRepository,
-        ImageService imageService
-    ) {
-        this.missingRepository = missingRepository;
-        this.userRepository = userRepository;
-        this.petRepository = petRepository;
-        this.breedRepository = breedRepository;
-        this.kakaoMapService = kakaoMapService;
-        this.reportRepository = reportRepository;
-        this.imageService = imageService;
-    }
 
     public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetRequestDTO missingPetDTO) {
         User user = userRepository.findByEmail(oauthUserDTO.email())
@@ -80,7 +58,7 @@ public class MissingService {
             new Missing(
                 pet,
                 true,
-                new DateTime(missingPetDTO.lostTime()),
+                missingPetDTO.lostTime(),
                 location,
                 kakaoMapService.getRegionCodeFromKakao(location),
                 missingPetDTO.description()
@@ -88,7 +66,10 @@ public class MissingService {
         );
     }
 
-    public List<MissingPetNearByResponseDTO> getMissingPetsNearBy(double latitude, double longitude) {
+    public List<MissingPetNearByResponseDTO> getMissingPetsNearBy(
+        double latitude,
+        double longitude
+    ) {
         long regionCode = kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude));
 
         return missingRepository.findAllByRegionCode(regionCode)
@@ -116,39 +97,6 @@ public class MissingService {
             missing.getLocation().getLongitude(),
             missing.getDescription(),
             imageService.getImageUrl(missingId, MISSING)
-        );
-    }
-
-    public List<ReportResponseDTO> getMissingReports(OauthUserDTO oauthUserDTO) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
-
-        Pet pet = user.getPet();
-
-        Missing missing = missingRepository.findByPet(pet);
-        List<Report> reports = reportRepository.findAllByMissing(missing);
-
-        return reports.stream()
-            .map(report ->
-                new ReportResponseDTO(
-                    report.getId(),
-                    report.getLocation().getLatitude(),
-                    report.getLocation().getLongitude(),
-                    imageService.getImageUrl(report.getId(), REPORT).getFirst()
-                )
-            ).toList();
-    }
-
-    public ReportDetailResponseDTO getReportDetail(long reportId) {
-        Report report = reportRepository.findById(reportId)
-            .orElseThrow(CustomException::reportNotFoundException);
-
-        return new ReportDetailResponseDTO(
-            report.getUser().getName(),
-            report.getDescription(),
-            report.getLocation().getLatitude(),
-            report.getLocation().getLongitude(),
-            report.getTimeStamp()
         );
     }
 }

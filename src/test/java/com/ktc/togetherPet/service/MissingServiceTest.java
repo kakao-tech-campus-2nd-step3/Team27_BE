@@ -25,15 +25,14 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
-import com.ktc.togetherPet.model.vo.DateTime;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
@@ -125,7 +124,7 @@ class MissingServiceTest {
             missing = new Missing(
                 pet,
                 true,
-                new DateTime(missingPetDTO.lostTime()),
+                missingPetDTO.lostTime(),
                 location,
                 regionCode,
                 missingPetDTO.description()
@@ -424,7 +423,7 @@ class MissingServiceTest {
                 new Missing(
                     pet1,
                     true,
-                    new DateTime(LocalDateTime.now()),
+                    LocalDateTime.now(),
                     new Location(32.5F, 80.0F),
                     regionCode,
                     "test-description-1"
@@ -432,7 +431,7 @@ class MissingServiceTest {
                 new Missing(
                     pet2,
                     true,
-                    new DateTime(LocalDateTime.now().minus(1, HOURS)),
+                    LocalDateTime.now().minus(1, HOURS),
                     new Location(33.5F, 81.0F),
                     regionCode,
                     "test-description-2"
@@ -440,7 +439,7 @@ class MissingServiceTest {
                 new Missing(
                     pet3,
                     false,
-                    new DateTime(LocalDateTime.now().minus(1, MINUTES)),
+                    LocalDateTime.now().minus(1, MINUTES),
                     new Location(33.0F, 126.0F),
                     regionCode,
                     "test-description-3"
@@ -497,7 +496,7 @@ class MissingServiceTest {
                     true
                 ),
                 true,
-                new DateTime(LocalDateTime.now()),
+                LocalDateTime.now(),
                 new Location(10.0F, 15.0F),
                 15,
                 "test-description-1"
@@ -518,7 +517,8 @@ class MissingServiceTest {
                 .thenReturn(Optional.of(expectMissing));
 
             // then
-            MissingPetDetailResponseDTO result = missingService.getMissingPetDetailByMissingId(missingId);
+            MissingPetDetailResponseDTO result = missingService.getMissingPetDetailByMissingId(
+                missingId);
             assertEquals(expect, result);
 
             verify(missingRepository, times(1))

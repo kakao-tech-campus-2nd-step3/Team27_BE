@@ -1,6 +1,8 @@
 package com.ktc.togetherPet.model.entity.ImageRelation;
 
 
+import static lombok.AccessLevel.PROTECTED;
+
 import com.ktc.togetherPet.model.entity.Image;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,9 +14,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "imageRelation")
+@NoArgsConstructor(access = PROTECTED)
 public class ImageRelation {
 
     @Id
@@ -28,16 +33,10 @@ public class ImageRelation {
     @Column(name = "entity_id", nullable = false)
     private Long entityId;
 
+    @Getter
     @ManyToOne(targetEntity = Image.class)
     @JoinColumn(name = "image_id", nullable = false)
     private Image image;
-
-    public Image getImage() {
-        return image;
-    }
-
-    public ImageRelation() {
-    }
 
     public ImageRelation(
         ImageEntityType imageEntityType,

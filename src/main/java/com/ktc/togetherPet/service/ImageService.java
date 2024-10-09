@@ -13,23 +13,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
 
     private final ImageRepository imageRepository;
     private final ImageRelationRepository imageRelationRepository;
-
-    public ImageService(
-        ImageRepository imageRepository,
-        ImageRelationRepository imageRelationRepository
-    ) {
-        this.imageRepository = imageRepository;
-        this.imageRelationRepository = imageRelationRepository;
-    }
 
     @Value("${image-folder-path}")
     private String FOLDER_PATH;
