@@ -35,69 +35,59 @@ class MissingControllerTest extends RestDocsTestSupport {
     @MockBean
     private OauthUserArgumentResolver oauthUserArgumentResolver;
 
-    @Nested
-    @DisplayName("[같이 찾기] registerMissingPet 테스트")
-    class registerMissingPetTest {
+    @Test
+    @DisplayName("실종등록 테스트/registerMissingPet")
+    void 실종등록() throws Exception {
+        // given
+        String token = "testToken";
+        OauthUserDTO oauthUserDTO = new OauthUserDTO("testEmail");
 
-        private final OauthUserDTO oauthUserDTO = new OauthUserDTO("testEmail");
-        private final String token = "testToken";
+        MissingPetRequestDTO missingPetRequestDTO = new MissingPetRequestDTO(
+            "testPetName",
+            "male",
+            1L,
+            "testPetBreed",
+            LocalDateTime.of(2024, 10, 9, 14, 32, 22),
+            15.5F,
+            15.5F,
+            "testDescription",
+            true
+        );
 
-        @BeforeEach
-        void setUp() {
-            when(oauthUserArgumentResolver.supportsParameter(any())).thenReturn(true);
-            when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(oauthUserDTO);
-        }
+        // when
+        when(oauthUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+            .thenReturn(oauthUserDTO);
 
-        @Test
-        @DisplayName("성공")
-        void 성공() throws Exception {
-            //given
-            String token = "testToken";
-            MissingPetRequestDTO missingPetRequestDTO = new MissingPetRequestDTO(
-                "testPetName",
-                "male",
-                1L,
-                "testPetBreed",
-                LocalDateTime.of(2024, 10, 9, 14, 32, 22),
-                15.5F,
-                15.5F,
-                "testDescription",
-                true
-            );
+        ResultActions actual = mockMvc.perform(
+            post("/api/v0/missing")
+                .header("Authorization", token)
+                .content(toJson(missingPetRequestDTO))
+                .contentType(APPLICATION_JSON)
+        );
 
-            //when
-            ResultActions actual = mockMvc.perform(
-                post("/api/v0/missing")
-                    .header("Authorization", token)
-                    .content(toJson(missingPetRequestDTO))
-                    .contentType(APPLICATION_JSON)
-            );
+        // then
+        actual
+            .andExpect(status().isCreated())
+            .andDo(restDocs.document(
+                HeaderDocumentation.requestHeaders(
+                    headerWithName("Authorization").description("인증을 위한 Bearer 토큰")
+                ),
+                PayloadDocumentation.requestFields(
+                    fieldWithPath("pet_name").description("실종 동물의 이름"),
+                    fieldWithPath("pet_gender").description("실종 동물의 성별"),
+                    fieldWithPath("birth_month").description("실종 동물의 개월수"),
+                    fieldWithPath("pet_breed").description("실종 동물의 종"),
+                    fieldWithPath("lost_time").description("실종 시각"),
+                    fieldWithPath("latitude").description("실종 위도"),
+                    fieldWithPath("longitude").description("실종 경도"),
+                    fieldWithPath("description").description("실종 동물의 특징"),
+                    fieldWithPath("is_neutering").description("중성화 여부")
+                )
+            ));
 
-            //then
-            actual
-                .andExpect(status().isCreated())
-                .andDo(restDocs.document(
-                    HeaderDocumentation.requestHeaders(
-                        headerWithName("Authorization").description("인증을 위한 Bearer 토큰")
-                    ),
-                    PayloadDocumentation.requestFields(
-                        fieldWithPath("pet_name").description("실종 동물의 이름"),
-                        fieldWithPath("pet_gender").description("실종 동물의 성별"),
-                        fieldWithPath("birth_month").description("실종 동물의 개월수"),
-                        fieldWithPath("pet_breed").description("실종 동물의 종"),
-                        fieldWithPath("lost_time").description("실종 시각"),
-                        fieldWithPath("latitude").description("실종 위도"),
-                        fieldWithPath("longitude").description("실종 경도"),
-                        fieldWithPath("description").description("실종 동물의 특징"),
-                        fieldWithPath("is_neutering").description("중성화 여부")
-                    )
-                ));
-
-            verify(missingService, times(1))
-                .registerMissingPet(oauthUserDTO, missingPetRequestDTO);
-        }
-
+        verify(missingService, times(1))
+            .registerMissingPet(oauthUserDTO, missingPetRequestDTO);
     }
 
 //    @Nested
