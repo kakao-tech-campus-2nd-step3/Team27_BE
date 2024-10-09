@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
+import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.service.ReportService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
@@ -255,4 +256,49 @@ class ReportControllerTest extends RestDocsTestSupport {
         verify(reportService, times(1))
             .getReceivedReports(oauthUserDTO);
     }
+
+    @Test
+    @DisplayName("지역의 실종 제보 확인/getNearByReports")
+    void 지역의_실종_제보_확인() throws Exception {
+        // given
+        double latitude = 15.0D;
+        double longitude = 30.0D;
+
+        List<ReportNearByResponseDTO> actual = List.of(
+            new ReportNearByResponseDTO(
+                1L,
+                16.0D,
+                31.0D,
+                "https://together-pet/api/v0/images/test-image-1"
+                ),
+            new ReportNearByResponseDTO(
+                2L,
+                17.0D,
+                32.0D,
+                "https://together-pet/api/v0/images/test-image-2"
+            )
+        );
+
+        // when
+        when(reportService.getReportsByLocation(latitude, longitude))
+            .thenReturn(actual);
+
+        ResultActions result = mockMvc.perform(
+            get("/api/v0/report/location")
+                .queryParam("latitude", String.valueOf(latitude))
+                .queryParam("longitude", String.valueOf(longitude))
+        );
+
+        // then
+        result.andExpectAll(
+            status().isOk(),
+            content().contentType(APPLICATION_JSON),
+            content().json(toJson(actual))
+        );
+
+        verify(reportService, times(1))
+            .getReportsByLocation(latitude, longitude);
+    }
+
+
 }
