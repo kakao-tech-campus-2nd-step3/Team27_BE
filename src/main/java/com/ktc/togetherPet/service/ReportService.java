@@ -14,7 +14,6 @@ import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
-import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -29,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReportService {
 
     private final ReportRepository reportRepository;
-    private final MissingRepository missingRepository;
     private final MissingService missingService;
     private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
@@ -74,7 +72,7 @@ public class ReportService {
 
         Pet pet = user.getPet();
 
-        Missing missing = missingRepository.findByPet(pet);
+        Missing missing = missingService.findByPet(pet);
         List<Report> reports = reportRepository.findAllByMissing(missing);
 
         return reports.stream()

@@ -98,4 +98,9 @@ public class MissingService {
         return missingRepository.findById(missingId)
             .orElseThrow(CustomException::missingNotFound);
     }
+
+    public Missing findByPet(Pet pet) {
+        return missingRepository.findByPet(pet)
+            .orElseThrow(CustomException::missingNotFound);
+    }
 }

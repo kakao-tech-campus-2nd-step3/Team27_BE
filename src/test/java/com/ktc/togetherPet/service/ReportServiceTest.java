@@ -228,7 +228,7 @@ class ReportServiceTest {
         when(userService.findUserByEmail(oauthUserDTO.email()))
             .thenReturn(expectUser);
 
-        when(missingRepository.findByPet(pet))
+        when(missingService.findByPet(pet))
             .thenReturn(expectMissing);
 
         when(reportRepository.findAllByMissing(expectMissing))
@@ -254,7 +254,7 @@ class ReportServiceTest {
         verify(userService, times(1))
             .findUserByEmail(oauthUserDTO.email());
 
-        verify(missingRepository, times(1))
+        verify(missingService, times(1))
             .findByPet(pet);
 
         verify(reportRepository, times(1))
