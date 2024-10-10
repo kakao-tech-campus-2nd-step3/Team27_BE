@@ -1,80 +1,125 @@
-//package com.ktc.togetherPet.service;
-//
-//import static com.ktc.togetherPet.exception.CustomException.breedNotFoundException;
-//import static com.ktc.togetherPet.exception.CustomException.invalidUserException;
-//import static com.ktc.togetherPet.exception.ErrorMessage.BREED_NOT_FOUND;
-//import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
-//import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
-//import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
-//import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
-//import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
-//import static java.time.temporal.ChronoUnit.HOURS;
-//import static java.time.temporal.ChronoUnit.MINUTES;
-//import static java.time.temporal.ChronoUnit.SECONDS;
-//import static org.junit.jupiter.api.Assertions.assertAll;
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.mockito.BDDMockito.given;
-//import static org.mockito.Mockito.never;
-//import static org.mockito.Mockito.spy;
-//import static org.mockito.Mockito.times;
-//import static org.mockito.Mockito.verify;
-//import static org.mockito.Mockito.when;
-//import static org.springframework.http.HttpStatus.BAD_REQUEST;
-//import static org.springframework.http.HttpStatus.NOT_FOUND;
-//import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-//
-//import com.ktc.togetherPet.exception.CustomException;
-//import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
-//import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
-//import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
-//import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
-//import com.ktc.togetherPet.model.entity.Breed;
-//import com.ktc.togetherPet.model.entity.Missing;
-//import com.ktc.togetherPet.model.entity.Pet;
-//import com.ktc.togetherPet.model.entity.User;
-//import com.ktc.togetherPet.model.vo.Location;
-//import com.ktc.togetherPet.repository.BreedRepository;
-//import com.ktc.togetherPet.repository.MissingRepository;
-//import com.ktc.togetherPet.repository.PetRepository;
-//import com.ktc.togetherPet.repository.UserRepository;
-//import java.time.LocalDateTime;
-//import java.util.List;
-//import java.util.Optional;
-//import java.util.stream.Stream;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Nested;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.junit.jupiter.params.ParameterizedTest;
-//import org.junit.jupiter.params.provider.Arguments;
-//import org.junit.jupiter.params.provider.MethodSource;
-//import org.junit.jupiter.params.provider.ValueSource;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//
-//@ExtendWith(MockitoExtension.class)
-//class MissingServiceTest {
-//
-//    @Mock
-//    private MissingRepository missingRepository;
-//
-//    @Mock
-//    private UserRepository userRepository;
-//
-//    @Mock
-//    private PetRepository petRepository;
-//
-//    @Mock
-//    private BreedRepository breedRepository;
-//
-//    @Mock
-//    private KakaoMapService kakaoMapService;
-//
-//    @InjectMocks
-//    private MissingService missingService;
+package com.ktc.togetherPet.service;
+
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
+import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.entity.Breed;
+import com.ktc.togetherPet.model.entity.Missing;
+import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.User;
+import com.ktc.togetherPet.model.vo.Location;
+import com.ktc.togetherPet.repository.BreedRepository;
+import com.ktc.togetherPet.repository.MissingRepository;
+import com.ktc.togetherPet.repository.PetRepository;
+import com.ktc.togetherPet.repository.UserRepository;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class MissingServiceTest {
+
+    @Mock
+    private MissingRepository missingRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private PetRepository petRepository;
+
+    @Mock
+    private BreedRepository breedRepository;
+
+    @Mock
+    private KakaoMapService kakaoMapService;
+
+    @Mock
+    private ImageService imageService;
+
+    @InjectMocks
+    private MissingService missingService;
+
+    @Nested
+    @DisplayName("실종 등록 테스트/registerMissingPet")
+    class registerMissingPet {
+
+        @Test
+        @DisplayName("성공")
+        void 성공() {
+            // given
+            OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
+            MissingPetRequestDTO missingPetRequestDTO = new MissingPetRequestDTO(
+                "testPetName",
+                "testPetGender",
+                1L,
+                "testPetBreed",
+                LocalDateTime.of(2024, 10, 11, 3, 2, 22),
+                15.0D,
+                15.0D,
+                "testDescription",
+                true
+            );
+
+            User expectUser = new User(oauthUserDTO.email());
+
+            Pet pet = new Pet(
+                missingPetRequestDTO.petName(),
+                missingPetRequestDTO.birthMonth(),
+                new Breed(missingPetRequestDTO.petBreed()),
+                missingPetRequestDTO.isNeutering()
+            );
+
+            Location location = new Location(
+                missingPetRequestDTO.latitude(),
+                missingPetRequestDTO.longitude()
+            );
+
+            expectUser.setPet(pet);
+
+            long expectRegionCode = 1L;
+
+            // when
+            when(userRepository.findByEmail("test@email.com"))
+                .thenReturn(Optional.of(expectUser));
+
+            when(kakaoMapService.getRegionCodeFromKakao(location))
+                .thenReturn(expectRegionCode);
+
+            // then
+            missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
+
+            verify(userRepository, times(1))
+                .findByEmail("test@email.com");
+
+            verify(petRepository, never())
+                .save(pet);
+
+            verify(breedRepository, never())
+                .findByName(missingPetRequestDTO.petBreed());
+
+            verify(missingRepository, times(1))
+                .save(new Missing(
+                    pet,
+                    true,
+                    missingPetRequestDTO.lostTime(),
+                    location,
+                    expectRegionCode,
+                    missingPetRequestDTO.description()
+                ));
+        }
+    }
+
 //
 //    @Nested
 //    @DisplayName("[같이 찾기] registerMissingPet 테스트")
@@ -544,4 +589,4 @@
 //            );
 //        }
 //    }
-//}
+}

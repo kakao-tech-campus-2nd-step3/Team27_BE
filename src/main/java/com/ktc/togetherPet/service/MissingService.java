@@ -14,7 +14,6 @@ import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.PetRepository;
-import com.ktc.togetherPet.repository.ReportRepository;
 import com.ktc.togetherPet.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
