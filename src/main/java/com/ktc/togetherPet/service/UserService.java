@@ -22,6 +22,11 @@ public class UserService {
         return new UserDTO(user);
     }
 
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(CustomException::invalidUserException);
+    }
+
     public boolean userExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }

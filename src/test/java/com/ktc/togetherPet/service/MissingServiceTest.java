@@ -12,12 +12,9 @@ import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
-import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.PetRepository;
-import com.ktc.togetherPet.repository.UserRepository;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,13 +30,13 @@ class MissingServiceTest {
     private MissingRepository missingRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Mock
     private PetRepository petRepository;
 
     @Mock
-    private BreedRepository breedRepository;
+    private BreedService breedService;
 
     @Mock
     private KakaoMapService kakaoMapService;
@@ -90,8 +87,8 @@ class MissingServiceTest {
             long expectRegionCode = 1L;
 
             // when
-            when(userRepository.findByEmail("test@email.com"))
-                .thenReturn(Optional.of(expectUser));
+            when(userService.findUserByEmail("test@email.com"))
+                .thenReturn(expectUser);
 
             when(kakaoMapService.getRegionCodeFromKakao(location))
                 .thenReturn(expectRegionCode);
@@ -99,14 +96,14 @@ class MissingServiceTest {
             // then
             missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
 
-            verify(userRepository, times(1))
-                .findByEmail("test@email.com");
+            verify(userService, times(1))
+                .findUserByEmail("test@email.com");
 
             verify(petRepository, never())
                 .save(pet);
 
-            verify(breedRepository, never())
-                .findByName(missingPetRequestDTO.petBreed());
+            verify(breedService, never())
+                .findBreedByName(missingPetRequestDTO.petBreed());
 
             verify(missingRepository, times(1))
                 .save(new Missing(
