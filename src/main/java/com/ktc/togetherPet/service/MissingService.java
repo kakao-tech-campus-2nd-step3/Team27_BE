@@ -75,7 +75,7 @@ public class MissingService {
                 missing.getPet().getId(),
                 missing.getLocation().getLatitude(),
                 missing.getLocation().getLongitude(),
-                imageService.getImageUrl(missing.getId(), MISSING).getFirst()
+                imageService.getRepresentativeImageById(MISSING, missing.getId())
             )).toList();
     }
 
