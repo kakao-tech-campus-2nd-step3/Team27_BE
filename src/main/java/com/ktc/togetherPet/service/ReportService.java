@@ -83,9 +83,7 @@ public class ReportService {
                     report.getId(),
                     report.getLocation().getLatitude(),
                     report.getLocation().getLongitude(),
-
-                    // TODO 이 부분 최적화 필요
-                    imageService.getImageUrl(report.getId(), REPORT).getFirst()
+                    imageService.getRepresentativeImageById(REPORT, report.getId())
                 )
             ).toList();
     }

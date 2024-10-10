@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -9,6 +10,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
+import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
@@ -164,5 +166,104 @@ class ReportServiceTest {
 
         verify(imageService, times(1))
             .saveImages(savedReport.getId(), REPORT, files);
+    }
+
+    @Test
+    @DisplayName("개인이 받은 제보를 반환 테스트/getReceivedReports")
+    void 개인이_받은_제보를_반환() {
+        // given
+        OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
+        User expectUser = new User(oauthUserDTO.email());
+        Pet pet = new Pet(
+            "testPetName",
+            1L,
+            new Breed("testPetBreed"),
+            true
+        );
+        expectUser.setPet(pet);
+        Missing expectMissing = new Missing(
+            pet,
+            true,
+            LocalDateTime.of(2024, 10, 11, 5, 41, 22),
+            new Location(15.0D, 15.0D),
+            1L,
+            "testDescription"
+        );
+        List<Report> expectReports = List.of(
+            spy(new Report(
+                new User("reporter1@email.com"),
+                LocalDateTime.of(2024, 10, 11, 6, 4, 11),
+                new Location(15.0D, 15.0D),
+                1L,
+                "testDescription1"
+            )),
+            spy(new Report(
+                new User("reporter2@email.com"),
+                LocalDateTime.of(2024, 10, 11, 6, 4, 11),
+                new Location(15.0D, 15.0D),
+                1L,
+                "testDescription2"
+            ))
+        );
+
+        String expectRepresentativeImage1 = "https://together-pet/images/test-image-1";
+        String expectRepresentativeImage2 = "https://together-pet/images/test-image-2";
+
+        List<ReportResponseDTO> expect = List.of(
+            new ReportResponseDTO(
+                1L,
+                15.0D,
+                15.0D,
+                expectRepresentativeImage1
+            ),
+            new ReportResponseDTO(
+                2L,
+                15.0D,
+                15.0D,
+                expectRepresentativeImage2
+            )
+        );
+
+        // when
+        when(userService.findUserByEmail(oauthUserDTO.email()))
+            .thenReturn(expectUser);
+
+        when(missingRepository.findByPet(pet))
+            .thenReturn(expectMissing);
+
+        when(reportRepository.findAllByMissing(expectMissing))
+            .thenReturn(expectReports);
+
+        when(expectReports.get(0).getId())
+            .thenReturn(1L);
+
+        when(expectReports.get(1).getId())
+            .thenReturn(2L);
+
+        when(imageService.getRepresentativeImageById(REPORT, 1L))
+            .thenReturn(expectRepresentativeImage1);
+
+        when(imageService.getRepresentativeImageById(REPORT, 2L))
+            .thenReturn(expectRepresentativeImage2);
+
+        // then
+        List<ReportResponseDTO> actual = reportService.getReceivedReports(oauthUserDTO);
+
+        assertEquals(expect, actual);
+
+        verify(userService, times(1))
+            .findUserByEmail(oauthUserDTO.email());
+
+        verify(missingRepository, times(1))
+            .findByPet(pet);
+
+        verify(reportRepository, times(1))
+            .findAllByMissing(expectMissing);
+
+        verify(imageService, times(1))
+            .getRepresentativeImageById(REPORT, 1L);
+
+        verify(imageService, times(1))
+            .getRepresentativeImageById(REPORT, 2L);
     }
 }
