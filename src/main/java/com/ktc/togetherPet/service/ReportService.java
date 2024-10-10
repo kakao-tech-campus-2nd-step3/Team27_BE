@@ -5,9 +5,9 @@ import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REP
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
-import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
+import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
@@ -16,7 +16,6 @@ import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
-import com.ktc.togetherPet.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class ReportService {
     private final MissingRepository missingRepository;
     private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public void createReport(
@@ -41,8 +40,7 @@ public class ReportService {
         List<MultipartFile> files,
         OauthUserDTO oauthUserDTO
     ) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
+        User user = userService.findUserByEmail(oauthUserDTO.email());
 
         Location location = new Location(
             reportCreateRequestDTO.foundLatitude(),
@@ -76,8 +74,7 @@ public class ReportService {
     }
 
     public List<ReportResponseDTO> getReceivedReports(OauthUserDTO oauthUserDTO) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
+        User user = userService.findUserByEmail(oauthUserDTO.email());
 
         Pet pet = user.getPet();
 
