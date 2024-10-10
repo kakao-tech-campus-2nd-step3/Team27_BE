@@ -1,5 +1,6 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.exception.ErrorMessage;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
@@ -341,7 +341,7 @@ class MissingServiceTest {
 
             // when
             when(missingRepository.findById(missingId))
-                .thenThrow(CustomException.missingNotFound());
+                .thenReturn(Optional.empty());
 
             CustomException thrown = assertThrows(
                 CustomException.class,
@@ -349,13 +349,78 @@ class MissingServiceTest {
             );
 
             // then
-            assertEquals(thrown.getErrorMessage(), ErrorMessage.MISSING_NOT_FOUND);
+            assertEquals(thrown.getErrorMessage(), MISSING_NOT_FOUND);
 
             verify(missingRepository, times(1))
                 .findById(missingId);
 
             verify(imageService, never())
                 .getImageUrl(missingId, MISSING);
+        }
+    }
+
+    @Nested
+    @DisplayName("애완동물을 통해 실종 정보 찾기 테스트/findByPet")
+    class 애완동물을_통해_실종_정보_찾기 {
+
+        @Test
+        @DisplayName("성공")
+        void 성공() {
+            // given
+            Pet pet = new Pet(
+                "testPetName",
+                1L,
+                new Breed("testPetBreed"),
+                true
+            );
+
+            Missing expect = new Missing(
+                pet,
+                true,
+                LocalDateTime.of(2024, 10, 11, 6, 21, 22),
+                new Location(15.0D, 15.0D),
+                1L,
+                "testDescription"
+            );
+
+            // when
+            when(missingRepository.findByPet(pet))
+                .thenReturn(Optional.of(expect));
+
+            // then
+            Missing actual = missingService.findByPet(pet);
+
+            assertEquals(actual, expect);
+
+            verify(missingRepository, times(1))
+                .findByPet(pet);
+        }
+
+        @Test
+        @DisplayName("실패")
+        void 실패() {
+            // given
+            Pet pet = new Pet(
+                "testPetName",
+                1L,
+                new Breed("testPetBreed"),
+                true
+            );
+
+            // when
+            when(missingRepository.findByPet(pet))
+                .thenReturn(Optional.empty());
+
+            // then
+            CustomException thrown = assertThrows(
+                CustomException.class,
+                () -> missingService.findByPet(pet)
+            );
+
+            assertEquals(thrown.getErrorMessage(), MISSING_NOT_FOUND);
+
+            verify(missingRepository, times(1))
+                .findByPet(pet);
         }
     }
 }
