@@ -30,6 +30,7 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final MissingRepository missingRepository;
+    private final MissingService missingService;
     private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
     private final UserService userService;
@@ -62,12 +63,7 @@ public class ReportService {
             .ifPresent(report::setGender);
 
         Optional.ofNullable(reportCreateRequestDTO.missingId())
-            .ifPresent(missingId -> report.setMissing(
-                    missingRepository
-                        .findById(missingId)
-                        .orElseThrow(CustomException::missingNotFound)
-                )
-            );
+            .ifPresent(missingId -> report.setMissing(missingService.findByMissingId(missingId)));
 
         long reportId = reportRepository.save(report).getId();
         imageService.saveImages(reportId, REPORT, files);

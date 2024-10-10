@@ -19,7 +19,6 @@ import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +38,9 @@ class ReportServiceTest {
     private MissingRepository missingRepository;
 
     @Mock
+    private MissingService missingService;
+
+    @Mock
     private KakaoMapService kakaoMapService;
 
     @Mock
@@ -52,7 +54,7 @@ class ReportServiceTest {
 
     @Test
     @DisplayName("제보 등록 테스트/createReport")
-    void 성공() {
+    void 제보_등록() {
         // given
         ReportCreateRequestDTO reportCreateRequestDTO = new ReportCreateRequestDTO(
             "testColor",
@@ -131,8 +133,8 @@ class ReportServiceTest {
             )
         ).thenReturn(expectRegionCode);
 
-        when(missingRepository.findById(reportCreateRequestDTO.missingId()))
-            .thenReturn(Optional.of(expectMissing));
+        when(missingService.findByMissingId(reportCreateRequestDTO.missingId()))
+            .thenReturn(expectMissing);
 
         when(reportRepository.save(expectReport))
             .thenReturn(savedReport);
@@ -154,8 +156,8 @@ class ReportServiceTest {
                 )
             );
 
-        verify(missingRepository, times(1))
-            .findById(reportCreateRequestDTO.missingId());
+        verify(missingService, times(1))
+            .findByMissingId(reportCreateRequestDTO.missingId());
 
         verify(reportRepository, times(1))
             .save(expectReport);
