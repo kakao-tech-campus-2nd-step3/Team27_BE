@@ -57,74 +57,70 @@ class MissingServiceTest {
     @InjectMocks
     private MissingService missingService;
 
-    @Nested
+    @Test
     @DisplayName("실종 등록 테스트/registerMissingPet")
-    class registerMissingPet {
+    void 실종_등록() {
+        // given
+        OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
+        MissingPetRequestDTO missingPetRequestDTO = new MissingPetRequestDTO(
+            "testPetName",
+            "testPetGender",
+            1L,
+            "testPetBreed",
+            LocalDateTime.of(2024, 10, 11, 3, 2, 22),
+            15.0D,
+            15.0D,
+            "testDescription",
+            true
+        );
 
-        @Test
-        @DisplayName("성공")
-        void 성공() {
-            // given
-            OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
-            MissingPetRequestDTO missingPetRequestDTO = new MissingPetRequestDTO(
-                "testPetName",
-                "testPetGender",
-                1L,
-                "testPetBreed",
-                LocalDateTime.of(2024, 10, 11, 3, 2, 22),
-                15.0D,
-                15.0D,
-                "testDescription",
-                true
-            );
+        User expectUser = new User(oauthUserDTO.email());
 
-            User expectUser = new User(oauthUserDTO.email());
+        Pet pet = new Pet(
+            missingPetRequestDTO.petName(),
+            missingPetRequestDTO.birthMonth(),
+            new Breed(missingPetRequestDTO.petBreed()),
+            missingPetRequestDTO.isNeutering()
+        );
 
-            Pet pet = new Pet(
-                missingPetRequestDTO.petName(),
-                missingPetRequestDTO.birthMonth(),
-                new Breed(missingPetRequestDTO.petBreed()),
-                missingPetRequestDTO.isNeutering()
-            );
+        Location location = new Location(
+            missingPetRequestDTO.latitude(),
+            missingPetRequestDTO.longitude()
+        );
 
-            Location location = new Location(
-                missingPetRequestDTO.latitude(),
-                missingPetRequestDTO.longitude()
-            );
+        expectUser.setPet(pet);
 
-            expectUser.setPet(pet);
+        long expectRegionCode = 1L;
 
-            long expectRegionCode = 1L;
+        // when
+        when(userService.findUserByEmail("test@email.com"))
+            .thenReturn(expectUser);
 
-            // when
-            when(userService.findUserByEmail("test@email.com"))
-                .thenReturn(expectUser);
+        when(kakaoMapService.getRegionCodeFromKakao(location))
+            .thenReturn(expectRegionCode);
 
-            when(kakaoMapService.getRegionCodeFromKakao(location))
-                .thenReturn(expectRegionCode);
+        // then
+        missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
 
-            // then
-            missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
+        verify(userService, times(1))
+            .findUserByEmail("test@email.com");
 
-            verify(userService, times(1))
-                .findUserByEmail("test@email.com");
+        verify(petRepository, never())
+            .save(pet);
 
-            verify(petRepository, never())
-                .save(pet);
+        verify(breedService, never())
+            .findBreedByName(missingPetRequestDTO.petBreed());
 
-            verify(breedService, never())
-                .findBreedByName(missingPetRequestDTO.petBreed());
+        verify(missingRepository, times(1))
+            .save(new Missing(
+                pet,
+                true,
+                missingPetRequestDTO.lostTime(),
+                location,
+                expectRegionCode,
+                missingPetRequestDTO.description()
+            ));
 
-            verify(missingRepository, times(1))
-                .save(new Missing(
-                    pet,
-                    true,
-                    missingPetRequestDTO.lostTime(),
-                    location,
-                    expectRegionCode,
-                    missingPetRequestDTO.description()
-                ));
-        }
     }
 
     @Test
@@ -252,66 +248,94 @@ class MissingServiceTest {
             .getRepresentativeImageById(MISSING, expectMissing.get(1).getId());
     }
 
-    @Nested
+    @Test
     @DisplayName("실종의 자세한 정보 가져오기 테스트/getMissingPetDetailByMissingId")
-    class 실종의_자세한_정보_가져오기 {
+    void 실종의_자세한_정보_가져오기() {
+        // given
+        long missingId = 1L;
+        Missing missing = new Missing(
+            new Pet(
+                "testPetName",
+                1L,
+                new Breed("testBreedName"),
+                true
+            ),
+            true,
+            LocalDateTime.of(2024, 10, 11, 4, 8, 22),
+            new Location(15.0D, 15.0D),
+            3,
+            "testDescription"
+        );
+        List<String> expectImageUrls = List.of(
+            "https://together-pet/images/test-image-1.jpeg",
+            "https://together-pet/images/test-image-2.jpeg",
+            "https://together-pet/images/test-image-3.jpeg"
+        );
+        MissingPetDetailResponseDTO expect = new MissingPetDetailResponseDTO(
+            missing.getPet().getName(),
+            missing.getPet().getBreed().getName(),
+            missing.getPet().getBirthMonth(),
+            missing.getLocation().getLatitude(),
+            missing.getLocation().getLongitude(),
+            missing.getDescription(),
+            expectImageUrls
+        );
+
+        // when
+        when(missingRepository.findById(missingId))
+            .thenReturn(Optional.of(missing));
+
+        when(imageService.getImageUrl(missingId, MISSING))
+            .thenReturn(expectImageUrls);
+
+        // then
+        MissingPetDetailResponseDTO actual = missingService.getMissingPetDetailByMissingId(
+            missingId);
+
+        assertEquals(actual, expect);
+
+        verify(missingRepository, times(1))
+            .findById(missingId);
+
+        verify(imageService, times(1))
+            .getImageUrl(missingId, MISSING);
+    }
+
+    @Nested
+    @DisplayName("실종 아이디를 기반으로 실종 엔티티 찾기 테스트/findByMissingId")
+    class 실종_아이디를_기반으로_실종_엔티티_찾기 {
 
         @Test
         @DisplayName("성공")
         void 성공() {
             // given
             long missingId = 1L;
-            Missing missing = new Missing(
+
+            Missing expectMissing = new Missing(
                 new Pet(
                     "testPetName",
                     1L,
-                    new Breed("testBreedName"),
+                    new Breed("testBreed"),
                     true
                 ),
                 true,
-                LocalDateTime.of(2024, 10, 11, 4, 8, 22),
+                LocalDateTime.of(2024, 10, 11, 5, 27, 22),
                 new Location(15.0D, 15.0D),
-                3,
+                1L,
                 "testDescription"
-            );
-            List<String> expectImageUrls = List.of(
-                "https://together-pet/images/test-image-1.jpeg",
-                "https://together-pet/images/test-image-2.jpeg",
-                "https://together-pet/images/test-image-3.jpeg"
-            );
-            MissingPetDetailResponseDTO expect = new MissingPetDetailResponseDTO(
-                missing.getPet().getName(),
-                missing.getPet().getBreed().getName(),
-                missing.getPet().getBirthMonth(),
-                missing.getLocation().getLatitude(),
-                missing.getLocation().getLongitude(),
-                missing.getDescription(),
-                expectImageUrls
             );
 
             // when
             when(missingRepository.findById(missingId))
-                .thenReturn(Optional.of(missing));
-
-            when(imageService.getImageUrl(missingId, MISSING))
-                .thenReturn(expectImageUrls);
+                .thenReturn(Optional.of(expectMissing));
 
             // then
-            MissingPetDetailResponseDTO actual = missingService.getMissingPetDetailByMissingId(
-                missingId);
-
-            assertEquals(actual, expect);
-
-            verify(missingRepository, times(1))
-                .findById(missingId);
-
-            verify(imageService, times(1))
-                .getImageUrl(missingId, MISSING);
+            assertEquals(expectMissing, missingService.findByMissingId(missingId));
         }
 
         @Test
-        @DisplayName("실종 아이디가 잘못된 경우")
-        void 실종_아이디가_잘못된_경우() {
+        @DisplayName("실패")
+        void 실패() {
             // given
             long missingId = 1L;
 

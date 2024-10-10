@@ -80,9 +80,7 @@ public class MissingService {
     }
 
     public MissingPetDetailResponseDTO getMissingPetDetailByMissingId(long missingId) {
-        Missing missing = missingRepository.findById(missingId)
-            .orElseThrow(CustomException::missingNotFound);
-
+        Missing missing = findByMissingId(missingId);
         Pet pet = missing.getPet();
 
         return new MissingPetDetailResponseDTO(
@@ -94,5 +92,10 @@ public class MissingService {
             missing.getDescription(),
             imageService.getImageUrl(missingId, MISSING)
         );
+    }
+
+    public Missing findByMissingId(long missingId) {
+        return missingRepository.findById(missingId)
+            .orElseThrow(CustomException::missingNotFound);
     }
 }
