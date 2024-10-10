@@ -117,9 +117,6 @@ public class ReportService {
         Location location = report.getLocation();
 
         return new ReportDetailResponseDTO(
-            report.getBreed().getName(),
-            report.getColor(),
-            report.getGender(),
             location.getLatitude(),
             location.getLongitude(),
             report.getDescription(),

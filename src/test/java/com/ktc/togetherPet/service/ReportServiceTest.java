@@ -1,15 +1,22 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.exception.ErrorMessage.REPORT_NOT_FOUND;
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REPORT;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
+import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
+import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
@@ -21,7 +28,9 @@ import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -265,5 +274,93 @@ class ReportServiceTest {
 
         verify(imageService, times(1))
             .getRepresentativeImageById(REPORT, 2L);
+    }
+
+    @Test
+    @DisplayName("근처 제보 확인 테스트/getReportsByLocation")
+    void 근처_제보_확인() {
+        //TODO 논의 후 테스트코드 작성
+    }
+
+    @Nested
+    @DisplayName("제보 상세 확인 테스트/getReportById")
+    class 제보_상세_확인_테스트 {
+
+        @Test
+        @DisplayName("성공")
+        void 성공() {
+            // given
+            long reportId = 1L;
+            User expectUser = new User("test@email.com");
+            expectUser.setName("testName");
+            Report expectReport = new Report(
+                expectUser,
+                LocalDateTime.of(2024, 10, 11, 6, 44, 11),
+                new Location(15.0D, 15.0D),
+                1L,
+                "testDescription"
+            );
+
+            List<String> expectImages = List.of(
+                "https://together-pet/images/test-image-1.jpeg",
+                "https://together-pet/images/test-image-2.jpeg",
+                "https://together-pet/images/test-image-3.jpeg"
+            );
+
+            ReportDetailResponseDTO expect = new ReportDetailResponseDTO(
+                15.0D,
+                15.0D,
+                "testDescription",
+                "testName",
+                expectImages,
+                LocalDateTime.of(2024, 10, 11, 6, 44, 11)
+            );
+
+            // when
+            when(reportRepository.findById(reportId))
+                .thenReturn(Optional.of(expectReport));
+
+            when(imageService.getImageUrl(reportId, REPORT))
+                .thenReturn(expectImages);
+
+            // then
+            ReportDetailResponseDTO actual = reportService.getReportById(reportId);
+
+            assertEquals(expect, actual);
+
+            verify(reportRepository, times(1))
+                .findById(reportId);
+
+            verify(imageService, times(1))
+                .getImageUrl(reportId, REPORT);
+        }
+
+        @Test
+        @DisplayName("제보 아이디가 존재하지 않는 경우")
+        void 제보_아이디가_존재하지_않는_경우() {
+            // given
+            long reportId = 1L;
+
+            // when
+            when(reportRepository.findById(reportId))
+                .thenReturn(Optional.empty());
+
+            // then
+            CustomException thrown = assertThrows(
+                CustomException.class,
+                () -> reportService.getReportById(reportId)
+            );
+
+            assertAll(
+                () -> assertEquals(REPORT_NOT_FOUND, thrown.getErrorMessage()),
+                () -> assertEquals(NOT_FOUND, thrown.getStatus())
+            );
+
+            verify(reportRepository, times(1))
+                .findById(reportId);
+
+            verify(imageService, never())
+                .getImageUrl(reportId, REPORT);
+        }
     }
 }

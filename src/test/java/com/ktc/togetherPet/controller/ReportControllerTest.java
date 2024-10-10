@@ -328,9 +328,6 @@ class ReportControllerTest extends RestDocsTestSupport {
         long reportId = 1L;
 
         ReportDetailResponseDTO actual = new ReportDetailResponseDTO(
-            "testPetBreed",
-            "testPetColor",
-            "testPetGender",
             15.0F,
             16.0F,
             "testDescription",
@@ -361,9 +358,6 @@ class ReportControllerTest extends RestDocsTestSupport {
                 parameterWithName("report-id").description("확인하고자 하는 제보의 id")
             ),
             responseFields(
-                fieldWithPath("pet_breed").description("애완동물의 종"),
-                fieldWithPath("pet_color").description("애완동물의 색상"),
-                fieldWithPath("pet_gender").description("애완동물의 성별"),
                 fieldWithPath("latitude").description("제보된 위치의 위도"),
                 fieldWithPath("longitude").description("제보된 위치의 경도"),
                 fieldWithPath("description").description("제보에 대한 설명"),
