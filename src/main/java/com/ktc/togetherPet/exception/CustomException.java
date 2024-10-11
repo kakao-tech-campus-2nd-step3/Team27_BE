@@ -15,6 +15,7 @@ import static com.ktc.togetherPet.exception.ErrorMessage.IO_EXCEPTION;
 import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.PET_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.REPORT_NOT_FOUND;
+import static com.ktc.togetherPet.exception.ErrorMessage.WALK_NOT_FOUND;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -86,6 +87,10 @@ public class CustomException extends RuntimeException {
 
     public static CustomException imageNotFoundException() {
         return new CustomException(IMAGE_NOT_FOUND, NOT_FOUND);
+    }
+
+    public static CustomException walkNotFoundException() {
+        return new CustomException(WALK_NOT_FOUND, NOT_FOUND);
     }
 
     public static CustomException IOException(IOException ioException) {
