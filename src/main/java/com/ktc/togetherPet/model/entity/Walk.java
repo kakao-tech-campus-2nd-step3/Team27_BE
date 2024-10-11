@@ -33,5 +33,17 @@ public class Walk {
     private LocalDateTime walkDate;
 
     @Column(nullable = false)
-    private Long walkTime;
+    private long walkTime;
+
+    public Walk(
+        Pet pet,
+        Float distance,
+        LocalDateTime walkDate,
+        long walkTime
+    ) {
+        this.pet = pet;
+        this.distance = distance;
+        this.walkDate = walkDate;
+        this.walkTime = walkTime;
+    }
 }
