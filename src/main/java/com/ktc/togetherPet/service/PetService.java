@@ -15,7 +15,8 @@ public class PetService {
     private final PetRepository petRepository;
 
     public Pet findPetById(Long petId) {
-        return petRepository.findById(petId).orElseThrow(CustomException::petNotFoundException);
+        return petRepository.findById(petId)
+            .orElseThrow(CustomException::petNotFoundException);
     }
 
     public Long createPet(PetRegisterRequestDTO petRegisterDTO) {
