@@ -15,6 +15,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PetService petService;
 
+    //todo: 이 부분 수정 필요
     public UserDTO findUser(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
 
