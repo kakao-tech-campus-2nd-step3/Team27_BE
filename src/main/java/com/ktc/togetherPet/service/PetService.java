@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class PetService {
 
     private final PetRepository petRepository;
+    private final BreedService breedService;
 
     public Pet findPetById(Long petId) {
         return petRepository.findById(petId)
@@ -20,7 +21,7 @@ public class PetService {
     }
 
     public Long createPet(PetRegisterRequestDTO petRegisterDTO) {
-        Breed breed = new Breed(petRegisterDTO.petType());
+        Breed breed = breedService.findBreedByName(petRegisterDTO.petType());
 
         Pet pet = new Pet(petRegisterDTO.petName(), petRegisterDTO.petBirthMonth(),
             breed, petRegisterDTO.isNeutering());
@@ -30,7 +31,7 @@ public class PetService {
     }
 
     public void setImageSrc(Long petId, String imageSrc) {
-        Pet pet = petRepository.findById(petId).orElseThrow(CustomException::petNotFoundException);
+        Pet pet = findPetById(petId);
         pet.setImageSrc(imageSrc);
 
         petRepository.save(pet);
