@@ -31,16 +31,14 @@ public class UserService {
     }
 
     public void setUserPet(Long petId, String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(CustomException::invalidUserException);
+        User user = findUserByEmail(email);
         user.setPet(petService.findPetById(petId));
 
         userRepository.save(user);
     }
 
     public void setUserName(String email, String userName) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(CustomException::invalidUserException);
+        User user = findUserByEmail(email);
         user.setName(userName);
 
         userRepository.save(user);

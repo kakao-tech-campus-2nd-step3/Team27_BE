@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.model.entity.Breed;
+import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
 import java.util.Optional;
@@ -109,5 +111,62 @@ class UserServiceTest {
 
         verify(userRepository, times(1))
             .save(new User(email));
+    }
+
+    @Test
+    @DisplayName("사용자의 애완동물 등록 테스트/setUserPet")
+    void 사용자의_애완동물_등록() {
+        // given
+        long petId = 1L;
+        String email = "test@test.com";
+        User expectUser = new User(email);
+        Pet expectPet = new Pet(
+            "testPet",
+            1L,
+            new Breed("testBreed"),
+            true
+        );
+
+        // when
+        when(userRepository.findByEmail(email))
+            .thenReturn(Optional.of(expectUser));
+
+        when(petService.findPetById(petId))
+            .thenReturn(expectPet);
+
+        // then
+        userService.setUserPet(petId, email);
+
+        verify(userRepository, times(1))
+            .findByEmail(email);
+
+        verify(petService, times(1))
+            .findPetById(petId);
+
+        verify(userRepository, times(1))
+            .save(expectUser);
+    }
+
+    @Test
+    @DisplayName("사용자의 이름 등록 테스트/setUserName")
+    void 사용자의_이름_등록() {
+        // given
+        String email = "test@test.com";
+        String userName = "testName";
+
+        User expectUser = new User(email);
+
+        // when
+        when(userRepository.findByEmail(email))
+            .thenReturn(Optional.of(expectUser));
+
+        // then
+        userService.setUserName(email, userName);
+
+        verify(userRepository, times(1))
+            .findByEmail(email);
+
+        verify(userRepository, times(1))
+            .save(expectUser);
     }
 }
