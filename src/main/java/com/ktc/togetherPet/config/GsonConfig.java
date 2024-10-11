@@ -7,10 +7,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.ktc.togetherPet.exception.ErrorMessage;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +28,7 @@ public class GsonConfig {
             .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
+            .registerTypeAdapter(ErrorMessage.class, new ErrorMessageSerializer())
             .setPrettyPrinting()
             .create();
     }
@@ -57,6 +60,18 @@ public class GsonConfig {
                 json.getAsString(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             );
+        }
+    }
+
+    private static class ErrorMessageSerializer implements JsonSerializer<ErrorMessage> {
+
+        @Override
+        public JsonElement serialize(ErrorMessage src, Type typeOfSrc,
+            JsonSerializationContext context) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("code", src.getCode());
+            jsonObject.addProperty("message", src.getMessage());
+            return jsonObject;
         }
     }
 }

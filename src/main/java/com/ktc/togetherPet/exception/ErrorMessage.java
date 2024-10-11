@@ -1,10 +1,12 @@
 package com.ktc.togetherPet.exception;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorMessage {
 
     // 입력 및 인증 관련 문제 -10000 ~ -19999
