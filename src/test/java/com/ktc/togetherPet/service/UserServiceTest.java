@@ -97,4 +97,17 @@ class UserServiceTest {
         // then
         assertEquals(expects, userService.userExists(email));
     }
+
+    @Test
+    @DisplayName("유저 생성/createUser")
+    void 유저_생성() {
+        // given
+        String email = "test@test.com";
+
+        // when & then
+        userService.createUser(email);
+
+        verify(userRepository, times(1))
+            .save(new User(email));
+    }
 }
