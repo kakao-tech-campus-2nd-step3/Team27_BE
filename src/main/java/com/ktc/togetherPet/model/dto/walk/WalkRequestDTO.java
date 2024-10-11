@@ -6,9 +6,9 @@ import java.util.List;
 
 @JsonNaming(SnakeCaseStrategy.class)
 public record WalkRequestDTO(
-    double totalWalkDistance,
+    float totalWalkDistance,
     long totalWalkTime,
-    List<LocationDTO> locationList
+    List<LocationDTO> locationList //todo: 이 부분은 논의가 필요함
 ) {
 
 }
