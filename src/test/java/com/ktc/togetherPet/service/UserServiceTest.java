@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.exception.ErrorMessage;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
 import java.util.Optional;
@@ -18,10 +17,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -81,5 +81,20 @@ class UserServiceTest {
             verify(userRepository, times(1))
                 .findByEmail(email);
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    @DisplayName("이메일을 통해 사용자 존재여부 찾기 테스트/userExists")
+    void 이메일을_통해_사용자_존재여부_찾기(boolean expects) {
+        // given
+        String email = "test@test.com";
+
+        // when
+        when(userRepository.existsByEmail(email))
+            .thenReturn(expects);
+
+        // then
+        assertEquals(expects, userService.userExists(email));
     }
 }

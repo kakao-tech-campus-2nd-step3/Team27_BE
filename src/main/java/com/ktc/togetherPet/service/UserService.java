@@ -1,7 +1,6 @@
 package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.user.UserDTO;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class UserService {
     }
 
     public boolean userExists(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        return userRepository.existsByEmail(email);
     }
 
     @Transactional
