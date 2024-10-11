@@ -15,13 +15,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PetService petService;
 
-    //todo: 이 부분 수정 필요
-    public UserDTO findUser(String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-
-        return new UserDTO(user);
-    }
-
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
             .orElseThrow(CustomException::invalidUserException);
