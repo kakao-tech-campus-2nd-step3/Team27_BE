@@ -1,4 +1,4 @@
-package com.ktc.togetherPet.model.dto.suspect;
+package com.ktc.togetherPet.model.dto.report;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
@@ -7,20 +7,23 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record SuspectRequestDTO(
+public record ReportCreateRequestDTO(
     @NotNull
     String color,
     @NotNull
-    Float foundLatitude,
+    double foundLatitude,
     @NotNull
-    Float foundLongitude,
+    double foundLongitude,
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     LocalDateTime foundDate,
+    @NotNull
+    String description,
 
     String breed,
     String gender,
     Long missingId
 ) {
+
 
 }

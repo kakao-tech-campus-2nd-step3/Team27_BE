@@ -5,16 +5,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
     private final JwtProperties jwtProperties;
-
-    public JwtUtil(JwtProperties jwtProperties) {
-        this.jwtProperties = jwtProperties;
-    }
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtProperties.secretKey().getBytes());

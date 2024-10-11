@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.model.entity;
 
 import static com.ktc.togetherPet.exception.CustomException.invalidPetBirthMonthException;
+import static lombok.AccessLevel.PROTECTED;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,22 +11,31 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "pet")
+@NoArgsConstructor(access = PROTECTED)
+@EqualsAndHashCode
 public class Pet {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Getter
     @Column(name = "birth_month", nullable = false)
     private long birthMonth;
 
+    @Getter
     @ManyToOne(targetEntity = Breed.class)
     @JoinColumn(name = "breed_id", nullable = true)
     private Breed breed;
@@ -33,31 +43,9 @@ public class Pet {
     @Column(name = "is_neutering", nullable = true)
     private Boolean isNeutering;
 
+    @Setter
     @Column(name = "image_src", nullable = true)
     private String imageSrc;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public long getBirthMonth() {
-        return birthMonth;
-    }
-
-    public Breed getBreed() {
-        return breed;
-    }
-
-    public void setImageSrc(String imageSrc) {
-        this.imageSrc = imageSrc;
-    }
-
-    public Pet() {
-    }
 
     public Pet(String name, long birthMonth, Breed breed, Boolean isNeutering) {
         validateBirthMonth(birthMonth);
@@ -72,27 +60,5 @@ public class Pet {
         if (birthMonth <= 0) {
             throw invalidPetBirthMonthException();
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Pet pet = (Pet) o;
-        return birthMonth == pet.birthMonth
-            && Objects.equals(id, pet.id)
-            && Objects.equals(name, pet.name)
-            && Objects.equals(breed, pet.breed)
-            && Objects.equals(isNeutering, pet.isNeutering)
-            && Objects.equals(imageSrc, pet.imageSrc);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, birthMonth, breed, isNeutering, imageSrc);
     }
 }

@@ -1,62 +1,40 @@
 package com.ktc.togetherPet.model.vo;
 
-import static com.ktc.togetherPet.exception.CustomException.invalidLocaltionException;
+import static com.ktc.togetherPet.exception.CustomException.invalidLocationException;
+import static lombok.AccessLevel.PROTECTED;
 
 import jakarta.persistence.Embeddable;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
 @Embeddable
+@NoArgsConstructor(access = PROTECTED)
+@EqualsAndHashCode
 public class Location {
 
-    private float latitude;
-    private float longitude;
+    private double latitude;
 
-    public Location() {
-    }
+    private double longitude;
 
-    public Location(float latitude, float longitude) {
+    public Location(double latitude, double longitude) {
         validate(latitude, longitude);
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public float getLatitude() {
-        return latitude;
-    }
-
-    public float getLongitude() {
-        return longitude;
-    }
-
-    private void validate(float latitude, float longitude) {
+    private void validate(double latitude, double longitude) {
         if (!validateLatitude(latitude) || !validateLongitude(longitude)) {
-            throw invalidLocaltionException();
+            throw invalidLocationException();
         }
     }
 
-    private boolean validateLatitude(float latitude) {
+    private boolean validateLatitude(double latitude) {
         return latitude <= 90 && latitude >= -90;
     }
 
-    private boolean validateLongitude(float longitude) {
+    private boolean validateLongitude(double longitude) {
         return longitude <= 180 && longitude >= -180;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Location location = (Location) o;
-        return Float.compare(latitude, location.latitude) == 0
-            && Float.compare(longitude, location.longitude) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(latitude, longitude);
     }
 }

@@ -1,15 +1,14 @@
 package com.ktc.togetherPet.controller;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
-
 import com.ktc.togetherPet.annotation.OauthUser;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetDetailDTO;
-import com.ktc.togetherPet.model.dto.missing.MissingPetNearByDTO;
+import com.ktc.togetherPet.apiResponse.CustomResponse;
+import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
+import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.service.MissingService;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,41 +19,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/missing")
+@RequestMapping("/api/v0/missing")
+@RequiredArgsConstructor
 public class MissingController {
 
     private final MissingService missingService;
 
-    public MissingController(MissingService missingService) {
-        this.missingService = missingService;
-    }
-
     @PostMapping
-    public ResponseEntity<Void> registerMissingPet(
+    public ResponseEntity<?> registerMissingPet(
         @OauthUser OauthUserDTO oauthUserDTO,
-        @RequestBody MissingPetDTO missingPetDTO
+        @RequestBody MissingPetRequestDTO missingPetRequestDTO
     ) {
 
-        missingService.registerMissingPet(oauthUserDTO, missingPetDTO);
-        return ResponseEntity.status(CREATED).build();
+        missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
+        return CustomResponse.created();
     }
 
     @GetMapping
-    public ResponseEntity<List<MissingPetNearByDTO>> getMissingPetsNearByRegion(
-        @RequestParam("latitude") float latitude,
-        @RequestParam("longitude") float longitude
+    public ResponseEntity<List<MissingPetNearByResponseDTO>> getMissingPetsNearByRegion(
+        @RequestParam("latitude") double latitude,
+        @RequestParam("longitude") double longitude
     ) {
-        return ResponseEntity
-            .status(OK)
-            .body(missingService.getMissingPetsNearBy(latitude, longitude));
+        return CustomResponse.ok(missingService.getMissingPetsNearBy(latitude, longitude));
     }
 
     @GetMapping("/{missing-id}")
-    public ResponseEntity<MissingPetDetailDTO> getMissingPetDetailByMissingId(
+    public ResponseEntity<MissingPetDetailResponseDTO> getMissingPetDetailByMissingId(
         @PathVariable("missing-id") long missingId
     ) {
-        return ResponseEntity
-            .status(OK)
-            .body(missingService.getMissingPetDetailByMissingId(missingId));
+        return CustomResponse.ok(missingService.getMissingPetDetailByMissingId(missingId));
     }
 }

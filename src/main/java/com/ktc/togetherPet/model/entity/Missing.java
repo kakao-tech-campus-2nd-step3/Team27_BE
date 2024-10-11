@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.model.entity;
 
-import com.ktc.togetherPet.model.vo.DateTime;
+import static lombok.AccessLevel.PROTECTED;
+
 import com.ktc.togetherPet.model.vo.Location;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -11,16 +12,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "missing")
+@NoArgsConstructor(access = PROTECTED)
+@EqualsAndHashCode
 public class Missing {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @ManyToOne(targetEntity = Pet.class)
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
@@ -28,74 +36,38 @@ public class Missing {
     @Column(name = "is_missing", nullable = false)
     private Boolean isMissing;
 
-    @Embedded
-    private DateTime lostTime;
+    @Column(name = "lost_time", nullable = false)
+    private LocalDateTime lostTime;
 
+    @Getter
     @Embedded
     private Location location;
 
     @Column(name = "region_code", nullable = false)
     private long regionCode;
 
+    @Getter
     @Column(name = "description", nullable = true)
     private String description;
-
-    public Missing() {
-    }
 
     public Missing(
         Pet pet,
         Boolean isMissing,
-        DateTime dateTime,
+        LocalDateTime lostTime,
         Location location,
         long regionCode,
         String description
     ) {
         this.pet = pet;
         this.isMissing = isMissing;
-        this.lostTime = dateTime;
+        this.lostTime = lostTime;
         this.location = location;
         this.regionCode = regionCode;
         this.description = description;
-    }
-
-    public Pet getPet() {
-        return pet;
-    }
-
-    public Location getLocation() {
-        return location;
     }
 
     public boolean isMissing() {
         return isMissing;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Missing missing = (Missing) o;
-
-        return regionCode == missing.regionCode
-            && Objects.equals(id, missing.id)
-            && Objects.equals(pet, missing.pet)
-            && Objects.equals(isMissing, missing.isMissing)
-            && Objects.equals(lostTime, missing.lostTime)
-            && Objects.equals(location, missing.location)
-            && Objects.equals(description, missing.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, pet, isMissing, lostTime, location, regionCode, description);
-    }
 }
