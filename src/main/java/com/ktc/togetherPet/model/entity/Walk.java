@@ -10,41 +10,40 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
+import java.time.LocalDateTime;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "user")
+@Table(name = "walk")
 @NoArgsConstructor(access = PROTECTED)
-public class User {
+public class Walk {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
-    @Column(nullable = false)
-    private String email;
-
-    @Setter
-    @Getter
-    @Column(nullable = true)
-    private String name;
-
-    @Setter
-    @ManyToOne(targetEntity = Region.class)
-    @JoinColumn(name = "region_id", nullable = true)
-    private Region region;
-
-    @Getter
-    @Setter
     @ManyToOne(targetEntity = Pet.class)
-    @JoinColumn(name = "pet_id", nullable = true)
+    @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
 
-    public User(String email) {
-        this.email = email;
-    }
+    @Column(nullable = false)
+    private Float distance;
 
+    @Column(nullable = false)
+    private LocalDateTime walkDate;
+
+    @Column(nullable = false)
+    private long walkTime;
+
+    public Walk(
+        Pet pet,
+        Float distance,
+        LocalDateTime walkDate,
+        long walkTime
+    ) {
+        this.pet = pet;
+        this.distance = distance;
+        this.walkDate = walkDate;
+        this.walkTime = walkTime;
+    }
 }

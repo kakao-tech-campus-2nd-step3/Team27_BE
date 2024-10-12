@@ -1,15 +1,13 @@
 package com.ktc.togetherPet.repository;
 
-import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Walk;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MissingRepository extends JpaRepository<Missing, Long> {
+public interface WalkRepository extends JpaRepository<Walk, Long> {
 
-    List<Missing> findAllByRegionCode(long regionCode);
-
-    Missing findByPet(Pet pet);
+    List<Walk> findByPet(Pet pet);
 }

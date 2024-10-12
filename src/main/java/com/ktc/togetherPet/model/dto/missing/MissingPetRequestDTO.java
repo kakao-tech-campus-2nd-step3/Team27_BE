@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 
 @JsonNaming(SnakeCaseStrategy.class)
-public record MissingPetDTO(
+public record MissingPetRequestDTO(
     String petName,
     String petGender,
     long birthMonth,
     String petBreed,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul") LocalDateTime lostTime,
-    float latitude,
-    float longitude,
+    double latitude,
+    double longitude,
     String description,
     boolean isNeutering
 ) {

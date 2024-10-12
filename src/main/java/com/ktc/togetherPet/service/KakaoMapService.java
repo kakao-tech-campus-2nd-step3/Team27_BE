@@ -5,9 +5,10 @@ import static org.springframework.http.HttpStatus.OK;
 
 import com.ktc.togetherPet.config.property.KakaoProperties;
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.kakaoMap.LocationFromKakaoDTO;
+import com.ktc.togetherPet.model.dto.kakaoMap.LocationFromKakaoResponseDTO;
 import com.ktc.togetherPet.model.vo.Location;
 import java.net.URI;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,15 +19,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
+@RequiredArgsConstructor
 public class KakaoMapService {
 
     private final KakaoProperties kakaoProperties;
 
-    private RestTemplate restTemplate = new RestTemplateBuilder().build();
-
-    public KakaoMapService(KakaoProperties kakaoProperties) {
-        this.kakaoProperties = kakaoProperties;
-    }
+    private final RestTemplate restTemplate = new RestTemplateBuilder().build();
 
     public long getRegionCodeFromKakao(Location location) {
         HttpHeaders headers = new HttpHeaders();
@@ -41,11 +39,11 @@ public class KakaoMapService {
             .toUri();
 
         RequestEntity<Void> request = new RequestEntity<>(headers, GET, uri);
-        ResponseEntity<LocationFromKakaoDTO> response = restTemplate
-            .exchange(request, LocationFromKakaoDTO.class);
+        ResponseEntity<LocationFromKakaoResponseDTO> response = restTemplate
+            .exchange(request, LocationFromKakaoResponseDTO.class);
 
         if (response.getStatusCode().isSameCodeAs(OK)) {
-            LocationFromKakaoDTO locationFromKakaoDTO = response.getBody();
+            LocationFromKakaoResponseDTO locationFromKakaoDTO = response.getBody();
 
             assert locationFromKakaoDTO != null;
             return locationFromKakaoDTO.getAdministrativeCode();
