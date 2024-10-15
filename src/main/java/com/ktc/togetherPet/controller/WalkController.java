@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v0/walk")
+@RequestMapping("/api/v1/walk")
 @RequiredArgsConstructor
 public class WalkController {
 

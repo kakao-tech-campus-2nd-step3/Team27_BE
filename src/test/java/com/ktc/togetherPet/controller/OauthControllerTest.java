@@ -53,7 +53,7 @@ class OauthControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/login")
+            get("/api/v1/login")
                 .header("Authorization", inputEmail)
                 .contentType(APPLICATION_JSON)
         );
@@ -89,7 +89,7 @@ class OauthControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/login")
+            get("/api/v1/login")
                 .header("Authorization", inputEmail)
                 .contentType(APPLICATION_JSON)
         );
@@ -117,7 +117,7 @@ class OauthControllerTest extends RestDocsTestSupport {
     void 잘못된_이메일(String inputEmail) throws Exception {
         // when
         ResultActions result = mockMvc.perform(
-            get("/api/v0/login")
+            get("/api/v1/login")
                 .header("Authorization", inputEmail)
                 .contentType(APPLICATION_JSON)
         );

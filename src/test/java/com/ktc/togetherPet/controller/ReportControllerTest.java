@@ -93,7 +93,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(oauthUserDTO);
 
         ResultActions result = mockMvc.perform(
-            multipart("/api/v0/report")
+            multipart("/api/v1/report")
                 .file(reportCreateRequestDTOMock)
                 .file(image1)
                 .file(image2)
@@ -173,7 +173,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(oauthUserDTO);
 
         ResultActions result = mockMvc.perform(
-            multipart("/api/v0/report")
+            multipart("/api/v1/report")
                 .file(reportCreateRequestDTOMock)
                 .file(image1)
                 .file(image2)
@@ -240,7 +240,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/report/user")
+            get("/api/v1/report/user")
                 .contentType(APPLICATION_JSON_VALUE)
                 .header("Authorization", token)
         );
@@ -293,7 +293,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/report/location")
+            get("/api/v1/report/location")
                 .queryParam("latitude", String.valueOf(latitude))
                 .queryParam("longitude", String.valueOf(longitude))
         );
@@ -343,7 +343,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/report/{report-id}", reportId)
+            get("/api/v1/report/{report-id}", reportId)
                 .contentType(APPLICATION_JSON)
         );
 
