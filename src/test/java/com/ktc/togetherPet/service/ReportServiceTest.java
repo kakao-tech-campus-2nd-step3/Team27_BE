@@ -24,7 +24,6 @@ import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
-import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.ReportRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,9 +43,6 @@ class ReportServiceTest {
 
     @Mock
     private ReportRepository reportRepository;
-
-    @Mock
-    private MissingRepository missingRepository;
 
     @Mock
     private MissingService missingService;
@@ -279,7 +275,85 @@ class ReportServiceTest {
     @Test
     @DisplayName("근처 제보 확인 테스트/getReportsByLocation")
     void 근처_제보_확인() {
-        //TODO 논의 후 테스트코드 작성
+        // given
+        double latitude = 15.0D;
+        double longitude = 15.0D;
+        Location expectLocation = new Location(latitude, longitude);
+
+        long expectRegionCode = 1L;
+        Report expectReport1 = spy(
+            new Report(
+                new User("test1@email.com"),
+                LocalDateTime.of(2024, 10, 15, 10, 20, 22),
+                new Location(15.1D, 15.2D),
+                1L,
+                "testDescription1"
+            )
+        );
+
+        Report expectReport2 = spy(
+            new Report(
+                new User("test2@email.com"),
+                LocalDateTime.of(2024, 10, 15, 11, 11, 11),
+                new Location(15.3D, 15.4D),
+                1L,
+                "testDescription2"
+            )
+        );
+
+        List<Report> expectReports = List.of(expectReport1, expectReport2);
+
+        String expectPresentationImageUrl1 = "https://together-pet/images/test-image-1.jpeg";
+        String expectPresentationImageUrl2 = "https://together-pet/images/test-image-2.jpeg";
+
+        List<ReportResponseDTO> expects = List.of(
+            new ReportResponseDTO(
+                1L,
+                15.1D,
+                15.2D,
+                expectPresentationImageUrl1
+            ),
+            new ReportResponseDTO(
+                2L,
+                15.3D,
+                15.4D,
+                expectPresentationImageUrl2
+            )
+        );
+
+        // when
+        when(kakaoMapService.getRegionCodeFromKakao(expectLocation))
+            .thenReturn(expectRegionCode);
+
+        when(reportRepository.findAllByRegionCodeAndMissingNull(expectRegionCode))
+            .thenReturn(expectReports);
+
+        when(expectReport1.getId())
+            .thenReturn(1L);
+
+        when(expectReport2.getId())
+            .thenReturn(2L);
+
+        when(imageService.getRepresentativeImageById(REPORT, 1L))
+            .thenReturn(expectPresentationImageUrl1);
+
+        when(imageService.getRepresentativeImageById(REPORT, 2L))
+            .thenReturn(expectPresentationImageUrl2);
+
+        // then
+        assertEquals(expects, reportService.getReportsByLocation(latitude, longitude));
+
+        verify(kakaoMapService, times(1))
+            .getRegionCodeFromKakao(expectLocation);
+
+        verify(reportRepository, times(1))
+            .findAllByRegionCodeAndMissingNull(expectRegionCode);
+
+        verify(imageService, times(1))
+            .getRepresentativeImageById(REPORT, 1L);
+
+        verify(imageService, times(1))
+            .getRepresentativeImageById(REPORT, 2L);
     }
 
     @Nested
