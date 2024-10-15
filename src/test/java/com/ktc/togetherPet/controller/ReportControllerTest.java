@@ -26,7 +26,6 @@ import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
-import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.service.ReportService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
@@ -274,14 +273,14 @@ class ReportControllerTest extends RestDocsTestSupport {
         double latitude = 15.0D;
         double longitude = 30.0D;
 
-        List<ReportNearByResponseDTO> actual = List.of(
-            new ReportNearByResponseDTO(
+        List<ReportResponseDTO> actual = List.of(
+            new ReportResponseDTO(
                 1L,
                 16.0D,
                 31.0D,
                 "https://together-pet/api/v0/images/test-image-1"
             ),
-            new ReportNearByResponseDTO(
+            new ReportResponseDTO(
                 2L,
                 17.0D,
                 32.0D,
@@ -310,10 +309,10 @@ class ReportControllerTest extends RestDocsTestSupport {
                 parameterWithName("longitude").description("찾고자 하는 위치의 경도")
             ),
             responseFields(
-                fieldWithPath("[].report_id").description("제보 id"),
+                fieldWithPath("[].id").description("제보 id"),
                 fieldWithPath("[].latitude").description("제보 위도"),
                 fieldWithPath("[].longitude").description("제보 경도"),
-                fieldWithPath("[].report_rep_image_url").description("제보 대표 이미지")
+                fieldWithPath("[].image_url").description("제보 대표 이미지")
             )
         ));
 

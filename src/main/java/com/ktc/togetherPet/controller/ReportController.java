@@ -8,7 +8,6 @@ import com.ktc.togetherPet.apiResponse.CustomResponse;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
-import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.service.ReportService;
 import java.util.List;
@@ -50,7 +49,7 @@ public class ReportController {
     }
 
     @GetMapping("/location")
-    public ResponseEntity<List<ReportNearByResponseDTO>> getNearByReports(
+    public ResponseEntity<List<ReportResponseDTO>> getNearByReports(
         @RequestParam("latitude") double latitude,
         @RequestParam("longitude") double longitude
     ) {
