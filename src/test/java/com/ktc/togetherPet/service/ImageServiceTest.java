@@ -185,4 +185,41 @@ class ImageServiceTest {
                 .sourcePrefix();
         }
     }
+
+    @Test
+    @DisplayName("모든 이미지 url 가져오기 테스트/getImageUrl")
+    void 모든_이미지_url_가져오기() {
+        // given
+        ImageEntityType imageEntityType = MISSING;
+        long entityId = 1L;
+
+        List<ImageRelation> expectImageRelation = List.of(
+            new ImageRelation(imageEntityType, entityId, new Image("tempDir/testImage1.jpeg")),
+            new ImageRelation(imageEntityType, entityId, new Image("tempDir/testImage2.jpeg")),
+            new ImageRelation(imageEntityType, entityId, new Image("tempDir/testImage3.jpeg"))
+        );
+
+        List<String> expectImageUrl = List.of(
+            "https://test-image-source/testImage1.jpeg",
+            "https://test-image-source/testImage2.jpeg",
+            "https://test-image-source/testImage3.jpeg"
+        );
+
+        // when
+        when(imageRelationRepository
+            .findAllByImageEntityTypeAndEntityId(imageEntityType, entityId)
+        ).thenReturn(expectImageRelation);
+
+        when(imageConfig.sourcePrefix())
+            .thenReturn("https://test-image-source/");
+
+        // then
+        assertEquals(expectImageUrl, imageService.getImageUrl(entityId, imageEntityType));
+
+        verify(imageRelationRepository, times(1))
+            .findAllByImageEntityTypeAndEntityId(imageEntityType, entityId);
+
+        verify(imageConfig, times(expectImageRelation.size()))
+            .sourcePrefix();
+    }
 }
