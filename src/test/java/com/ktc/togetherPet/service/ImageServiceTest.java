@@ -3,8 +3,10 @@ package com.ktc.togetherPet.service;
 import static com.ktc.togetherPet.exception.ErrorMessage.IMAGE_NOT_FOUND;
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +22,8 @@ import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
 import com.ktc.togetherPet.model.entity.ImageRelation.ImageRelation;
 import com.ktc.togetherPet.repository.ImageRelationRepository;
 import com.ktc.togetherPet.repository.ImageRepository;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -221,5 +225,29 @@ class ImageServiceTest {
 
         verify(imageConfig, times(expectImageRelation.size()))
             .sourcePrefix();
+    }
+
+    @Test
+    @DisplayName("실제 이미지 가져오기 테스트/getImageBytesFromFileName")
+    void 실제_이미지_가져오기(@TempDir Path tempDir) throws IOException {
+        // given
+        String fileName = "testImage1.jpeg";
+        Path tempFile = tempDir.resolve(fileName);
+        byte[] testImageData = new byte[]{1, 2, 3, 4, 5};
+        Files.write(tempFile, testImageData);
+
+        // when
+
+        // 경로만 가져오면 마지막에 /값이 누락되어 있음
+        when(imageConfig.folderPath())
+            .thenReturn(tempDir.toAbsolutePath() + "/");
+
+        // then
+        byte[] actual = imageService.getImageBytesFromFileName(fileName);
+
+        assertAll(
+            () -> assertTrue(Files.exists(tempFile)),
+            () -> assertArrayEquals(testImageData, actual)
+        );
     }
 }
