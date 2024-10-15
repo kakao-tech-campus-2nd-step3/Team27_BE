@@ -81,8 +81,8 @@ class ImageServiceTest {
         UUID uuid2 = UUID.randomUUID();
 
         List<Image> expectImageEntity = List.of(
-            new Image(tempDir.toAbsolutePath().toString() + uuid1 + ".jpeg"),
-            new Image(tempDir.toAbsolutePath().toString() + uuid2 + ".jpeg")
+            new Image(tempDir.toAbsolutePath().toString() + "/" + uuid1 + ".jpeg"),
+            new Image(tempDir.toAbsolutePath().toString() + "/" + uuid2 + ".jpeg")
         );
 
         List<ImageRelation> saveImageRelation = List.of(
@@ -97,7 +97,7 @@ class ImageServiceTest {
 
         // when
         when(imageConfig.folderPath())
-            .thenReturn(tempDir.toAbsolutePath().toString());
+            .thenReturn(tempDir.toAbsolutePath() + "/");
 
         when(uuidGenerator.generateId(files.getFirst()))
             .thenReturn(uuid1);
@@ -113,6 +113,11 @@ class ImageServiceTest {
 
         // then
         imageService.saveImages(entityId, imageEntityType, files);
+
+        assertAll(
+            () -> assertTrue(Files.exists(tempDir.resolve(uuid1 + ".jpeg"))),
+            () -> assertTrue(Files.exists(tempDir.resolve(uuid2 + ".jpeg")))
+        );
 
         verify(imageRepository, times(1))
             .saveAll(expectImageEntity);
