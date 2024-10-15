@@ -1,13 +1,20 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.exception.ErrorMessage.IMAGE_NOT_FOUND;
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
 import com.ktc.togetherPet.config.ImageConfig;
+import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.entity.Image;
 import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
 import com.ktc.togetherPet.model.entity.ImageRelation.ImageRelation;
@@ -15,8 +22,10 @@ import com.ktc.togetherPet.repository.ImageRelationRepository;
 import com.ktc.togetherPet.repository.ImageRepository;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -106,5 +115,74 @@ class ImageServiceTest {
 
         verify(imageRelationRepository, times(1))
             .saveAll(saveImageRelation);
+    }
+
+    @Nested
+    @DisplayName("대표 이미지 경로 가져오기 테스트/getRepresentativeImageById")
+    class GetRepresentativeImageById {
+
+        @Test
+        @DisplayName("성공")
+        void 성공() {
+            // given
+            ImageEntityType imageEntityType = MISSING;
+            long entityId = 1L;
+
+            ImageRelation expectImageRelation = new ImageRelation(
+                imageEntityType, entityId, new Image("tempDir/testImage1.jpeg")
+            );
+
+            String expectRepresentativeImageUrl = "https://test-image-source/testImage1.jpeg";
+
+            // when
+            when(imageRelationRepository
+                .findFirstByImageEntityTypeAndEntityId(imageEntityType, entityId)
+            ).thenReturn(Optional.of(expectImageRelation));
+
+            when(imageConfig.sourcePrefix())
+                .thenReturn("https://test-image-source/");
+
+            // then
+            assertEquals(
+                expectRepresentativeImageUrl,
+                imageService.getRepresentativeImageById(imageEntityType, entityId)
+            );
+
+            verify(imageRelationRepository, times(1))
+                .findFirstByImageEntityTypeAndEntityId(imageEntityType, entityId);
+
+            verify(imageConfig, times(1))
+                .sourcePrefix();
+        }
+
+        @Test
+        @DisplayName("이미지가 없는 경우")
+        void 이미지가_없는_경우() {
+            // given
+            ImageEntityType imageEntityType = MISSING;
+            long entityId = 1L;
+
+            // when
+            when(imageRelationRepository
+                .findFirstByImageEntityTypeAndEntityId(imageEntityType, entityId)
+            ).thenReturn(Optional.empty());
+
+            // then
+            CustomException thrown = assertThrows(
+                CustomException.class,
+                () -> imageService.getRepresentativeImageById(imageEntityType, entityId)
+            );
+
+            assertAll(
+                () -> assertEquals(IMAGE_NOT_FOUND, thrown.getErrorMessage()),
+                () -> assertEquals(NOT_FOUND, thrown.getStatus())
+            );
+
+            verify(imageRelationRepository, times(1))
+                .findFirstByImageEntityTypeAndEntityId(imageEntityType, entityId);
+
+            verify(imageConfig, never())
+                .sourcePrefix();
+        }
     }
 }
