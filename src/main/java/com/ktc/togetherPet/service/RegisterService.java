@@ -18,17 +18,15 @@ public class RegisterService {
     private final UserService userService;
 
     @Transactional
-    public void create(PetRegisterRequestDTO petRegisterDTO,
-        MultipartFile petImage, String email, String userName) {
+    public void create(
+        PetRegisterRequestDTO petRegisterDTO,
+        MultipartFile petImage,
+        String email,
+        String userName
+    ) {
         Long petId = petService.createPet(petRegisterDTO);
 
         imageService.saveImages(petId, PET, List.of(petImage));
-
-        // TODO 여러장이 될 수 있음
-        List<String> imageFilePath = imageService.getImageUrl(petId, PET);
-
-//        petService.setImageSrc(petId, imageFilePath);
-
         userService.setUserPet(petId, email);
         userService.setUserName(email, userName);
     }

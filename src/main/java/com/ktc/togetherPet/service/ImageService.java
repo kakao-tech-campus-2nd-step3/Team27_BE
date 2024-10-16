@@ -1,8 +1,9 @@
 package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.exception.CustomException.IOException;
-import static java.util.UUID.randomUUID;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
+import com.ktc.togetherPet.config.ImageConfig;
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.entity.Image;
 import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,9 +24,8 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final ImageRelationRepository imageRelationRepository;
-
-    @Value("${image-folder-path}")
-    private String FOLDER_PATH;
+    private final UUIDGenerator uuidGenerator;
+    private final ImageConfig imageConfig;
 
     public void saveImages(
         long entityId,
@@ -35,7 +34,7 @@ public class ImageService {
     ) {
         List<String> imagePaths = files
             .stream()
-            .map(this::saveFileAndGetPath)
+            .map(this::save2LocalDirectory)
             .toList();
 
         List<Image> images = imageRepository.saveAll(
@@ -55,7 +54,7 @@ public class ImageService {
         );
     }
 
-    private String saveFileAndGetPath(MultipartFile file) {
+    private String save2LocalDirectory(MultipartFile file) {
         String path = createStoreFileName(file);
         try {
             file.transferTo(new File(path));
@@ -66,18 +65,9 @@ public class ImageService {
     }
 
     private String createStoreFileName(MultipartFile file) {
-        return FOLDER_PATH + randomUUID() + getFileExtension(file.getOriginalFilename());
-    }
-
-    public String getRepresentativeImageById(ImageEntityType entityType, Long id) {
-        ImageRelation representationImageRelation = imageRelationRepository
-            .findFirstByImageEntityTypeAndEntityId(entityType, id)
-            .orElseThrow(CustomException::imageNotFoundException);
-
-        String localImagePath = new File(
-            representationImageRelation.getImage().getPath()).getName();
-
-        return localImagePath2RemoteImagePath(localImagePath);
+        return imageConfig.folderPath() +
+            uuidGenerator.generateId(file) +
+            getFileExtension(file.getOriginalFilename());
     }
 
     private String getFileExtension(String filename) {
@@ -87,7 +77,18 @@ public class ImageService {
         return "";
     }
 
-    // 실제 파일이 있는 경로가 아닌, 서버의 경로를 통해 이미지를 받아올 수 있는 경로를 반환함
+    public String getRepresentativeImageById(ImageEntityType entityType, Long id) {
+        ImageRelation representationImageRelation = imageRelationRepository
+            .findFirstByImageEntityTypeAndEntityId(entityType, id)
+            .orElseThrow(CustomException::imageNotFoundException);
+
+        return localImagePath2RemoteImagePath(representationImageRelation.getImage().getPath());
+    }
+
+    private String localImagePath2RemoteImagePath(String localImagePath) {
+        return imageConfig.sourcePrefix() + new File(localImagePath).getName();
+    }
+
     public List<String> getImageUrl(
         long entityId,
         ImageEntityType imageEntityType
@@ -101,18 +102,9 @@ public class ImageService {
             .toList();
     }
 
-    private String localImagePath2RemoteImagePath(String localImagePath) {
-        // TODO profile별로 실행 환경을 다르게 해서 수정해야함
-        // 현재는 로컬 환경을 기준으로 작성했음
-        String IMAGE_SOURCE_PREFIX = "http://localhost:8080/image/";
-
-        return IMAGE_SOURCE_PREFIX + new File(localImagePath).getName();
-    }
-
     public byte[] getImageBytesFromFileName(String fileName) {
         try {
-            return Files.readAllBytes(
-                new File(FOLDER_PATH + fileName).toPath());
+            return Files.readAllBytes(new File(imageConfig.folderPath() + fileName).toPath());
         } catch (IOException e) {
             throw IOException(e);
         }

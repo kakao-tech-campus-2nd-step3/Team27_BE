@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping("/api/v0/register")
+@RequestMapping("/api/v1/register")
 @RequiredArgsConstructor
 public class RegisterController {
 

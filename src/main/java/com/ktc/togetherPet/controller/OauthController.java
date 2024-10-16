@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/v0/login")
+@RequestMapping("/api/v1/login")
 @RequiredArgsConstructor
 public class OauthController {
 

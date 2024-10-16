@@ -84,7 +84,7 @@ class RegisterControllerTest extends RestDocsTestSupport {
             .thenReturn(oauthUserDTO);
 
         ResultActions result = mockMvc.perform(
-            multipart("/api/v0/register")
+            multipart("/api/v1/register")
                 .file(petRegisterRequestDTOMock)
                 .file(petImageMock)
                 .file(userNameMock)

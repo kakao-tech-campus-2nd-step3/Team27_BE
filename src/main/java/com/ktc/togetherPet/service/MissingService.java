@@ -11,11 +11,8 @@ import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
-import com.ktc.togetherPet.repository.BreedRepository;
 import com.ktc.togetherPet.repository.MissingRepository;
 import com.ktc.togetherPet.repository.PetRepository;
-import com.ktc.togetherPet.repository.ReportRepository;
-import com.ktc.togetherPet.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +23,14 @@ import org.springframework.stereotype.Service;
 public class MissingService {
 
     private final MissingRepository missingRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PetRepository petRepository;
-    private final BreedRepository breedRepository;
+    private final BreedService breedService;
     private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
 
     public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetRequestDTO missingPetDTO) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
+        User user = userService.findUserByEmail(oauthUserDTO.email());
 
         Pet pet = Optional.ofNullable(user.getPet())
             .orElseGet(
@@ -42,8 +38,7 @@ public class MissingService {
                     new Pet(
                         missingPetDTO.petName(),
                         missingPetDTO.birthMonth(),
-                        breedRepository.findByName(missingPetDTO.petBreed())
-                            .orElseThrow(CustomException::breedNotFoundException),
+                        breedService.findBreedByName(missingPetDTO.petBreed()),
                         missingPetDTO.isNeutering()
                     )
                 )
@@ -80,14 +75,12 @@ public class MissingService {
                 missing.getPet().getId(),
                 missing.getLocation().getLatitude(),
                 missing.getLocation().getLongitude(),
-                imageService.getImageUrl(missing.getId(), MISSING).getFirst()
+                imageService.getRepresentativeImageById(MISSING, missing.getId())
             )).toList();
     }
 
     public MissingPetDetailResponseDTO getMissingPetDetailByMissingId(long missingId) {
-        Missing missing = missingRepository.findById(missingId)
-            .orElseThrow(CustomException::missingNotFound);
-
+        Missing missing = findByMissingId(missingId);
         Pet pet = missing.getPet();
 
         return new MissingPetDetailResponseDTO(
@@ -99,5 +92,15 @@ public class MissingService {
             missing.getDescription(),
             imageService.getImageUrl(missingId, MISSING)
         );
+    }
+
+    public Missing findByMissingId(long missingId) {
+        return missingRepository.findById(missingId)
+            .orElseThrow(CustomException::missingNotFound);
+    }
+
+    public Missing findByPet(Pet pet) {
+        return missingRepository.findByPet(pet)
+            .orElseThrow(CustomException::missingNotFound);
     }
 }
