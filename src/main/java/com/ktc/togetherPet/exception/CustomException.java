@@ -5,6 +5,7 @@ import static com.ktc.togetherPet.exception.ErrorMessage.EXPIRED_TOKEN;
 import static com.ktc.togetherPet.exception.ErrorMessage.IMAGE_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_API;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_DATE;
+import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_EMAIL_FORMAT;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_HEADER;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
@@ -45,8 +46,8 @@ public class CustomException extends RuntimeException {
         return new CustomException(INVALID_TOKEN, UNAUTHORIZED);
     }
 
-    public static CustomException invalidProviderException() {
-        return new CustomException(INVALID_PROVIDER, BAD_REQUEST);
+    public static CustomException invalidEmailFormatException() {
+        return new CustomException(INVALID_EMAIL_FORMAT, BAD_REQUEST);
     }
 
     public static CustomException invalidUserException() {
