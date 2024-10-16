@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
-    List<Report> findAllByRegionCode(long regionCode);
     List<Report> findAllByMissing(Missing missing);
+
+    List<Report> findAllByRegionCodeAndMissingNull(long regionCode);
 }

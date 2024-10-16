@@ -9,7 +9,6 @@ import com.ktc.togetherPet.model.dto.kakaoMap.LocationFromKakaoResponseDTO;
 import com.ktc.togetherPet.model.vo.Location;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -24,7 +23,7 @@ public class KakaoMapService {
 
     private final KakaoProperties kakaoProperties;
 
-    private final RestTemplate restTemplate = new RestTemplateBuilder().build();
+    private final RestTemplate restTemplate;
 
     public long getRegionCodeFromKakao(Location location) {
         HttpHeaders headers = new HttpHeaders();
