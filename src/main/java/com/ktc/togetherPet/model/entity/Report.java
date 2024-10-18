@@ -31,7 +31,7 @@ public class Report {
     private Long id;
 
     @Getter
-    @OneToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -47,18 +47,18 @@ public class Report {
     private long regionCode;
 
     @Getter
-    @Column(name = "color", nullable = true)
+    @Column(name = "color")
     private String color;
 
     @Getter
     @Setter
     @ManyToOne(targetEntity = Breed.class)
-    @JoinColumn(name = "breed_id", nullable = true)
+    @JoinColumn(name = "breed_id")
     private Breed breed;
 
     @Setter
     @ManyToOne(targetEntity = Missing.class)
-    @JoinColumn(name = "missing_id", nullable = true)
+    @JoinColumn(name = "missing_id")
     private Missing missing;
 
     @Getter
@@ -67,7 +67,7 @@ public class Report {
 
     @Getter
     @Setter
-    @Column(name = "gender", nullable = false)
+    @Column(name = "gender")
     private String gender;
 
     public Report(
