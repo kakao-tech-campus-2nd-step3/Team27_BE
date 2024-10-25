@@ -6,12 +6,23 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(SnakeCaseStrategy.class)
 public record WalkResponseDTO(
     int flagValue,
-    int totalCount,
-    int avgWalkCount,
-    float totalWalkDistance,
-    float avgWalkDistance,
-    long totalWalkTime,
-    long avgWalkTime
+    Long totalCount,
+    Long avgWalkCount,
+    Double totalWalkDistance,
+    Double avgWalkDistance,
+    Long totalWalkTime,
+    Long avgWalkTime
 ) {
 
+    public WalkResponseDTO(int flagValue, WalkInformationDTO walkInformationDTO) {
+        this(
+            flagValue,
+            walkInformationDTO.todayWalkCount(),
+            walkInformationDTO.averageWalkCount().longValue(),
+            walkInformationDTO.averageWalkDistance(),
+            walkInformationDTO.todayWalkDistance(),
+            walkInformationDTO.todayWalkTime().longValue(),
+            walkInformationDTO.averageWalkTime().longValue()
+        );
+    }
 }
