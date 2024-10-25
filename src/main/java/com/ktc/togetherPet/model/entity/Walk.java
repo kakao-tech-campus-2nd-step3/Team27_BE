@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -26,12 +27,15 @@ public class Walk {
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
 
+    @Getter
     @Column(nullable = false)
     private Float distance;
 
+    @Getter
     @Column(nullable = false)
     private LocalDateTime walkDate;
 
+    @Getter
     @Column(nullable = false)
     private long walkTime;
 
