@@ -47,7 +47,12 @@ public class Pet {
     @Column(name = "image_src", nullable = true)
     private String imageSrc;
 
-    public Pet(String name, long birthMonth, Breed breed, Boolean isNeutering) {
+    public Pet(
+        String name,
+        long birthMonth,
+        Breed breed,
+        Boolean isNeutering
+    ) {
         validateBirthMonth(birthMonth);
 
         this.name = name;
