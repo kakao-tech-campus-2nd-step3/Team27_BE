@@ -17,6 +17,7 @@ import com.ktc.togetherPet.util.WalkCalculator;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,34 @@ public class WalkService {
         List<Walk> walk = walkRepository.findByPet(user.getPet());
 
         //todo: 평균 계산하는 로직 추가
+        walk.stream()
+            .map(Walk::getDistance)
+            .mapToDouble(Float::doubleValue)
+            .average()
+            .orElse(0);
+
+        walk.stream()
+            .map(Walk::getWalkTime)
+            .mapToLong(Long::longValue)
+            .average()
+            .orElse(0);
+
+        walk.stream()
+                .collect(Collectors.groupingBy(
+                    wa -> wa.getWalkDate().toLocalDate(),
+                    Collectors.counting()
+                ))
+                    .values()
+                        .stream()
+                            .mapToLong(Long::longValue)
+                                .average()
+                                    .orElse(0);
+
+
+        walk.stream()
+            .map(Walk::getWalkDate)
+            .max(LocalDateTime::compareTo)
+            .orElse(LocalDateTime.now());
         //todo: 평균에 따라서 플래그 계산하는 로직추가 (WalkCalculator.calculateFlag)
 
         //todo: 우선 더미데이터 삽입.. 로직 구현 후 삭제
