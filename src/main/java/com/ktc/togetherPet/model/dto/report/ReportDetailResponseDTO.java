@@ -8,9 +8,6 @@ import java.util.List;
 
 @JsonNaming(SnakeCaseStrategy.class)
 public record ReportDetailResponseDTO(
-    String petBreed,
-    String petColor,
-    String petGender,
     double latitude,
     double longitude,
     String description,

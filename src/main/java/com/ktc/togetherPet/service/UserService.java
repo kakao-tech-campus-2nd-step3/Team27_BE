@@ -1,7 +1,6 @@
 package com.ktc.togetherPet.service;
 
 import com.ktc.togetherPet.exception.CustomException;
-import com.ktc.togetherPet.model.dto.user.UserDTO;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +14,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PetService petService;
 
-    //todo: 이 부분 수정 필요
-    public UserDTO findUser(String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-
-        return new UserDTO(user);
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(CustomException::invalidUserException);
     }
 
     public boolean userExists(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        return userRepository.existsByEmail(email);
     }
 
     @Transactional
@@ -34,16 +31,14 @@ public class UserService {
     }
 
     public void setUserPet(Long petId, String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(CustomException::invalidUserException);
+        User user = findUserByEmail(email);
         user.setPet(petService.findPetById(petId));
 
         userRepository.save(user);
     }
 
     public void setUserName(String email, String userName) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(CustomException::invalidUserException);
+        User user = findUserByEmail(email);
         user.setName(userName);
 
         userRepository.save(user);

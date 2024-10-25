@@ -26,7 +26,6 @@ import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
-import com.ktc.togetherPet.model.dto.report.ReportNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.service.ReportService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
@@ -94,7 +93,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(oauthUserDTO);
 
         ResultActions result = mockMvc.perform(
-            multipart("/api/v0/report")
+            multipart("/api/v1/report")
                 .file(reportCreateRequestDTOMock)
                 .file(image1)
                 .file(image2)
@@ -174,7 +173,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(oauthUserDTO);
 
         ResultActions result = mockMvc.perform(
-            multipart("/api/v0/report")
+            multipart("/api/v1/report")
                 .file(reportCreateRequestDTOMock)
                 .file(image1)
                 .file(image2)
@@ -241,7 +240,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/report/user")
+            get("/api/v1/report/user")
                 .contentType(APPLICATION_JSON_VALUE)
                 .header("Authorization", token)
         );
@@ -274,14 +273,14 @@ class ReportControllerTest extends RestDocsTestSupport {
         double latitude = 15.0D;
         double longitude = 30.0D;
 
-        List<ReportNearByResponseDTO> actual = List.of(
-            new ReportNearByResponseDTO(
+        List<ReportResponseDTO> actual = List.of(
+            new ReportResponseDTO(
                 1L,
                 16.0D,
                 31.0D,
                 "https://together-pet/api/v0/images/test-image-1"
             ),
-            new ReportNearByResponseDTO(
+            new ReportResponseDTO(
                 2L,
                 17.0D,
                 32.0D,
@@ -294,7 +293,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/report/location")
+            get("/api/v1/report/location")
                 .queryParam("latitude", String.valueOf(latitude))
                 .queryParam("longitude", String.valueOf(longitude))
         );
@@ -310,10 +309,10 @@ class ReportControllerTest extends RestDocsTestSupport {
                 parameterWithName("longitude").description("찾고자 하는 위치의 경도")
             ),
             responseFields(
-                fieldWithPath("[].report_id").description("제보 id"),
+                fieldWithPath("[].id").description("제보 id"),
                 fieldWithPath("[].latitude").description("제보 위도"),
                 fieldWithPath("[].longitude").description("제보 경도"),
-                fieldWithPath("[].report_rep_image_url").description("제보 대표 이미지")
+                fieldWithPath("[].image_url").description("제보 대표 이미지")
             )
         ));
 
@@ -328,9 +327,6 @@ class ReportControllerTest extends RestDocsTestSupport {
         long reportId = 1L;
 
         ReportDetailResponseDTO actual = new ReportDetailResponseDTO(
-            "testPetBreed",
-            "testPetColor",
-            "testPetGender",
             15.0F,
             16.0F,
             "testDescription",
@@ -347,7 +343,7 @@ class ReportControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/report/{report-id}", reportId)
+            get("/api/v1/report/{report-id}", reportId)
                 .contentType(APPLICATION_JSON)
         );
 
@@ -361,9 +357,6 @@ class ReportControllerTest extends RestDocsTestSupport {
                 parameterWithName("report-id").description("확인하고자 하는 제보의 id")
             ),
             responseFields(
-                fieldWithPath("pet_breed").description("애완동물의 종"),
-                fieldWithPath("pet_color").description("애완동물의 색상"),
-                fieldWithPath("pet_gender").description("애완동물의 성별"),
                 fieldWithPath("latitude").description("제보된 위치의 위도"),
                 fieldWithPath("longitude").description("제보된 위치의 경도"),
                 fieldWithPath("description").description("제보에 대한 설명"),

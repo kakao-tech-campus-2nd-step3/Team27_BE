@@ -67,7 +67,7 @@ class MissingControllerTest extends RestDocsTestSupport {
             .thenReturn(oauthUserDTO);
 
         ResultActions actual = mockMvc.perform(
-            post("/api/v0/missing")
+            post("/api/v1/missing")
                 .header("Authorization", token)
                 .content(toJson(missingPetRequestDTO))
                 .contentType(APPLICATION_JSON)
@@ -126,7 +126,7 @@ class MissingControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/missing")
+            get("/api/v1/missing")
                 .contentType(APPLICATION_JSON)
                 .queryParam("latitude", String.valueOf(latitude))
                 .queryParam("longitude", String.valueOf(longitude))
@@ -176,7 +176,7 @@ class MissingControllerTest extends RestDocsTestSupport {
             .thenReturn(actual);
 
         ResultActions result = mockMvc.perform(
-            get("/api/v0/missing/{missing-id}", missingId)
+            get("/api/v1/missing/{missing-id}", missingId)
                 .contentType(APPLICATION_JSON)
         );
 

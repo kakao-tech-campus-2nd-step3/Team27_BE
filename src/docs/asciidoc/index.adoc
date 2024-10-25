@@ -7,7 +7,7 @@
 
 == 로그인
 
-operation::oauth-controller-test/이미_존재하는_사용자[snippets="http-request,request-headers,response-headers"]
+operation::oauth-controller-test/이미_존재하는_사용자[snippets="http-request,request-body,response-headers"]
 
 === 이미 존재하는 사용자
 
