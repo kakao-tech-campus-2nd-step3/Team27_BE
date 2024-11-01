@@ -83,7 +83,7 @@ class MissingRepositoryTest {
             ),
             new Missing(
                 givenPet.get(1),
-                false,
+                true,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 22),
                 new Location(15.0D, 15D),
                 1L,
@@ -113,8 +113,8 @@ class MissingRepositoryTest {
         missingRepository.saveAll(givenMissing);
 
         // then
-        List<Missing> actual = missingRepository.findAllByRegionCode(1L);
-        assertEquals(actual, expect);
+        List<Missing> actual = missingRepository.findAllByRegionCodeAndIsMissingIsTrue(1L);
+        assertEquals(expect, actual);
     }
 
     @Nested
@@ -132,7 +132,7 @@ class MissingRepositoryTest {
             missingRepository.saveAll(givenMissing);
 
             // then
-            Optional<Missing> actual = missingRepository.findByPet(pet);
+            Optional<Missing> actual = missingRepository.findByPetAndIsMissingIsTrue(pet);
             assertEquals(actual, expect);
         }
 
@@ -146,7 +146,7 @@ class MissingRepositoryTest {
             missingRepository.saveAll(givenMissing);
 
             // then
-            assertTrue(missingRepository.findByPet(pet).isEmpty());
+            assertTrue(missingRepository.findByPetAndIsMissingIsTrue(pet).isEmpty());
         }
     }
 }
