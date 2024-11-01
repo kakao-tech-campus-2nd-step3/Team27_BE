@@ -10,16 +10,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("MISSING")
 @NoArgsConstructor(access = PROTECTED)
 public class MissingReport extends ReportBase {
 
-    @Setter
     @ManyToOne(targetEntity = Missing.class)
     @JoinColumn(name = "missing_id")
     private Missing missing;
