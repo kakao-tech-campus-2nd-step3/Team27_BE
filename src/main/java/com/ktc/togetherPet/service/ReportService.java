@@ -46,26 +46,22 @@ public class ReportService {
             reportCreateRequestDTO.foundLongitude()
         );
 
-        ReportBase report;
-
-        if (reportCreateRequestDTO.missingId() == null) {
-            report = new GeneralReport(
-                user,
-                reportCreateRequestDTO.foundDate(),
-                location,
-                kakaoMapService.getRegionCodeFromKakao(location),
-                reportCreateRequestDTO.description()
-            );
-        } else {
-            report = new MissingReport(
+        ReportBase report = Optional.ofNullable(reportCreateRequestDTO.missingId())
+            .map(missingId -> (ReportBase) new MissingReport(
                 user,
                 reportCreateRequestDTO.foundDate(),
                 location,
                 kakaoMapService.getRegionCodeFromKakao(location),
                 reportCreateRequestDTO.description(),
-                missingService.findByMissingId(reportCreateRequestDTO.missingId())
-            );
-        }
+                missingService.findByMissingId(missingId)
+            ))
+            .orElseGet(() -> new GeneralReport(
+                user,
+                reportCreateRequestDTO.foundDate(),
+                location,
+                kakaoMapService.getRegionCodeFromKakao(location),
+                reportCreateRequestDTO.description()
+            ));
 
         Optional.ofNullable(reportCreateRequestDTO.breed())
             .ifPresent(breed -> report.setBreed(new Breed(breed)));
