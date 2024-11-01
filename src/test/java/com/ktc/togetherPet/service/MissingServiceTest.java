@@ -173,15 +173,7 @@ class MissingServiceTest {
                 new Location(15.2D, 15.2D),
                 expectRegionCode,
                 "testDescription2"
-            )),
-            new Missing(
-                pet3,
-                false,
-                LocalDateTime.of(2023, 10, 11, 3, 49, 44),
-                new Location(15.0D, 15.0D),
-                expectRegionCode,
-                "testDescription3"
-            )
+            ))
         );
 
         String expectImageUrl1 = "https://together-pet/images/test-image-1.jpeg";
@@ -208,7 +200,7 @@ class MissingServiceTest {
         when(kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude)))
             .thenReturn(expectRegionCode);
 
-        when(missingRepository.findAllByRegionCode(expectRegionCode))
+        when(missingRepository.findAllByRegionCodeAndIsMissingIsTrue(expectRegionCode))
             .thenReturn(expectMissing);
 
         when(pet1.getId())
@@ -239,7 +231,7 @@ class MissingServiceTest {
             .getRegionCodeFromKakao(new Location(latitude, longitude));
 
         verify(missingRepository, times(1))
-            .findAllByRegionCode(expectRegionCode);
+            .findAllByRegionCodeAndIsMissingIsTrue(expectRegionCode);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(MISSING, expectMissing.get(0).getId());
@@ -384,7 +376,7 @@ class MissingServiceTest {
             );
 
             // when
-            when(missingRepository.findByPet(pet))
+            when(missingRepository.findByPetAndIsMissingIsTrue(pet))
                 .thenReturn(Optional.of(expect));
 
             // then
@@ -393,7 +385,7 @@ class MissingServiceTest {
             assertEquals(actual, expect);
 
             verify(missingRepository, times(1))
-                .findByPet(pet);
+                .findByPetAndIsMissingIsTrue(pet);
         }
 
         @Test
@@ -408,7 +400,7 @@ class MissingServiceTest {
             );
 
             // when
-            when(missingRepository.findByPet(pet))
+            when(missingRepository.findByPetAndIsMissingIsTrue(pet))
                 .thenReturn(Optional.empty());
 
             // then
@@ -420,7 +412,7 @@ class MissingServiceTest {
             assertEquals(thrown.getErrorMessage(), MISSING_NOT_FOUND);
 
             verify(missingRepository, times(1))
-                .findByPet(pet);
+                .findByPetAndIsMissingIsTrue(pet);
         }
     }
 }
