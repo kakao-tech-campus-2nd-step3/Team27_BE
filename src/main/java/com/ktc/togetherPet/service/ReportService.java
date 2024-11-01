@@ -10,8 +10,10 @@ import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
-import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
+import com.ktc.togetherPet.model.entity.report.GeneralReport;
+import com.ktc.togetherPet.model.entity.report.MissingReport;
+import com.ktc.togetherPet.model.entity.report.ReportBase;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.ReportRepository;
 import jakarta.transaction.Transactional;
@@ -44,22 +46,32 @@ public class ReportService {
             reportCreateRequestDTO.foundLongitude()
         );
 
-        Report report = new Report(
-            user,
-            reportCreateRequestDTO.foundDate(),
-            location,
-            kakaoMapService.getRegionCodeFromKakao(location),
-            reportCreateRequestDTO.description()
-        );
+        ReportBase report;
+
+        if (reportCreateRequestDTO.missingId() == null) {
+            report = new GeneralReport(
+                user,
+                reportCreateRequestDTO.foundDate(),
+                location,
+                kakaoMapService.getRegionCodeFromKakao(location),
+                reportCreateRequestDTO.description()
+            );
+        } else {
+            report = new MissingReport(
+                user,
+                reportCreateRequestDTO.foundDate(),
+                location,
+                kakaoMapService.getRegionCodeFromKakao(location),
+                reportCreateRequestDTO.description(),
+                missingService.findByMissingId(reportCreateRequestDTO.missingId())
+            );
+        }
 
         Optional.ofNullable(reportCreateRequestDTO.breed())
             .ifPresent(breed -> report.setBreed(new Breed(breed)));
 
         Optional.ofNullable(reportCreateRequestDTO.gender())
             .ifPresent(report::setGender);
-
-        Optional.ofNullable(reportCreateRequestDTO.missingId())
-            .ifPresent(missingId -> report.setMissing(missingService.findByMissingId(missingId)));
 
         long reportId = reportRepository.save(report).getId();
         imageService.saveImages(reportId, REPORT, files);
@@ -71,7 +83,7 @@ public class ReportService {
         Pet pet = user.getPet();
 
         Missing missing = missingService.findByPet(pet);
-        List<Report> reports = reportRepository.findAllByMissing(missing);
+        List<MissingReport> reports = reportRepository.findAllByMissing(missing);
 
         return reports.stream()
             .map(report ->
@@ -101,7 +113,7 @@ public class ReportService {
     }
 
     public ReportDetailResponseDTO getReportById(long reportId) {
-        Report report = reportRepository.findById(reportId)
+        ReportBase report = reportRepository.findById(reportId)
             .orElseThrow(CustomException::reportNotFoundException);
 
         Location location = report.getLocation();

@@ -21,8 +21,10 @@ import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
-import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
+import com.ktc.togetherPet.model.entity.report.GeneralReport;
+import com.ktc.togetherPet.model.entity.report.MissingReport;
+import com.ktc.togetherPet.model.entity.report.ReportBase;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.ReportRepository;
 import java.time.LocalDateTime;
@@ -111,7 +113,7 @@ class ReportServiceTest {
             "testDescription"
         );
 
-        Report expectReport = new Report(
+        MissingReport expectReport = new MissingReport(
             expectUser,
             reportCreateRequestDTO.foundDate(),
             new Location(
@@ -119,14 +121,14 @@ class ReportServiceTest {
                 reportCreateRequestDTO.foundLongitude()
             ),
             expectRegionCode,
-            reportCreateRequestDTO.description()
+            reportCreateRequestDTO.description(),
+            expectMissing
         );
 
-        Report savedReport = spy(expectReport);
+        MissingReport savedReport = spy(expectReport);
 
         expectReport.setBreed(new Breed(reportCreateRequestDTO.breed()));
         expectReport.setGender(reportCreateRequestDTO.gender());
-        expectReport.setMissing(expectMissing);
 
         // when
         when(userService.findUserByEmail(oauthUserDTO.email()))
@@ -194,20 +196,22 @@ class ReportServiceTest {
             1L,
             "testDescription"
         );
-        List<Report> expectReports = List.of(
-            spy(new Report(
+        List<MissingReport> expectReports = List.of(
+            spy(new MissingReport(
                 new User("reporter1@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
                 1L,
-                "testDescription1"
+                "testDescription1",
+                expectMissing
             )),
-            spy(new Report(
+            spy(new MissingReport(
                 new User("reporter2@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
                 1L,
-                "testDescription2"
+                "testDescription2",
+                expectMissing
             ))
         );
 
@@ -281,8 +285,8 @@ class ReportServiceTest {
         Location expectLocation = new Location(latitude, longitude);
 
         long expectRegionCode = 1L;
-        Report expectReport1 = spy(
-            new Report(
+        GeneralReport expectReport1 = spy(
+            new GeneralReport(
                 new User("test1@email.com"),
                 LocalDateTime.of(2024, 10, 15, 10, 20, 22),
                 new Location(15.1D, 15.2D),
@@ -291,8 +295,8 @@ class ReportServiceTest {
             )
         );
 
-        Report expectReport2 = spy(
-            new Report(
+        GeneralReport expectReport2 = spy(
+            new GeneralReport(
                 new User("test2@email.com"),
                 LocalDateTime.of(2024, 10, 15, 11, 11, 11),
                 new Location(15.3D, 15.4D),
@@ -301,7 +305,7 @@ class ReportServiceTest {
             )
         );
 
-        List<Report> expectReports = List.of(expectReport1, expectReport2);
+        List<GeneralReport> expectReports = List.of(expectReport1, expectReport2);
 
         String expectPresentationImageUrl1 = "https://together-pet/images/test-image-1.jpeg";
         String expectPresentationImageUrl2 = "https://together-pet/images/test-image-2.jpeg";
@@ -367,7 +371,7 @@ class ReportServiceTest {
             long reportId = 1L;
             User expectUser = new User("test@email.com");
             expectUser.setName("testName");
-            Report expectReport = new Report(
+            ReportBase expectReport = new ReportBase(
                 expectUser,
                 LocalDateTime.of(2024, 10, 11, 6, 44, 11),
                 new Location(15.0D, 15.0D),

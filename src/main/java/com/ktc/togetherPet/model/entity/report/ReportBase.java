@@ -1,17 +1,22 @@
-package com.ktc.togetherPet.model.entity;
+package com.ktc.togetherPet.model.entity.report;
 
 import static lombok.AccessLevel.PROTECTED;
 
+import com.ktc.togetherPet.model.entity.Breed;
+import com.ktc.togetherPet.model.entity.Missing;
+import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
@@ -20,10 +25,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "report_type")
 @Table(name = "report")
 @NoArgsConstructor(access = PROTECTED)
 @EqualsAndHashCode
-public class Report {
+public class ReportBase {
 
     @Getter
     @Id
@@ -56,11 +63,6 @@ public class Report {
     @JoinColumn(name = "breed_id")
     private Breed breed;
 
-    @Setter
-    @ManyToOne(targetEntity = Missing.class)
-    @JoinColumn(name = "missing_id")
-    private Missing missing;
-
     @Getter
     @Column(name = "description", nullable = false)
     private String description;
@@ -70,7 +72,7 @@ public class Report {
     @Column(name = "gender")
     private String gender;
 
-    public Report(
+    public ReportBase(
         User user,
         LocalDateTime timestamp,
         Location location,
