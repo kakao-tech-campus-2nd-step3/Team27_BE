@@ -67,9 +67,8 @@ public class MissingService {
     ) {
         long regionCode = kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude));
 
-        return missingRepository.findAllByRegionCode(regionCode)
+        return missingRepository.findAllByRegionCodeAndIsMissingIsTrue(regionCode)
             .stream()
-            .filter(Missing::isMissing)
             .map(missing -> new MissingPetNearByResponseDTO(
                 missing.getId(),
                 missing.getPet().getId(),
@@ -100,7 +99,7 @@ public class MissingService {
     }
 
     public Missing findByPet(Pet pet) {
-        return missingRepository.findByPet(pet)
+        return missingRepository.findByPetAndIsMissingIsTrue(pet)
             .orElseThrow(CustomException::missingNotFound);
     }
 }

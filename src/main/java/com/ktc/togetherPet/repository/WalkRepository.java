@@ -31,7 +31,7 @@ public interface WalkRepository extends JpaRepository<Walk, Long> {
     Optional<Double> getAverageWalkTime(@Param("petId") Long petId);
 
     // 오늘 산책 거리
-    @Query("select sum(w.distance) from Walk w.pet.id = :petId and w.walkDate >= :startOfDay and w.walkDate < :endOfDay")
+    @Query("select sum(w.distance) from Walk w where w.pet.id = :petId and w.walkDate >= :startOfDay and w.walkDate < :endOfDay")
     Optional<Double> getTodayWalkDistance(@Param("petId") Long petId, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
     // 날짜별 평균 산책 거리
