@@ -5,6 +5,7 @@ import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REP
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -62,8 +63,8 @@ class ReportServiceTest {
     private ReportService reportService;
 
     @Test
-    @DisplayName("제보 등록 테스트/createReport")
-    void 제보_등록() {
+    @DisplayName("실종에 대한 제보 등록 테스트/createReport")
+    void 실종에_대한_제보_등록() {
         // given
         ReportCreateRequestDTO reportCreateRequestDTO = new ReportCreateRequestDTO(
             "testColor",
@@ -167,6 +168,102 @@ class ReportServiceTest {
 
         verify(missingService, times(1))
             .findByMissingId(reportCreateRequestDTO.missingId());
+
+        verify(reportRepository, times(1))
+            .save(expectReport);
+
+        verify(imageService, times(1))
+            .saveImages(savedReport.getId(), REPORT, files);
+    }
+
+    @Test
+    @DisplayName("임의의 제보 등록 테스트/createReport")
+    void 임의의_제보_등록() {
+        // given
+        ReportCreateRequestDTO reportCreateRequestDTO = new ReportCreateRequestDTO(
+            "testColor",
+            15.0D,
+            15.0D,
+            LocalDateTime.of(2024, 10, 11, 4, 26, 22),
+            "testDescription",
+            "testBreed",
+            "testGender",
+            null
+        );
+
+        List<MultipartFile> files = List.of(
+            new MockMultipartFile(
+                "testFileName",
+                "testFileName.jpeg",
+                IMAGE_JPEG_VALUE,
+                "testFileName.jpeg".getBytes()
+            ),
+            new MockMultipartFile(
+                "testFileName2",
+                "testFileName2.jpeg",
+                IMAGE_JPEG_VALUE,
+                "testFileName2.jpeg".getBytes()
+            )
+        );
+
+        OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
+
+        User expectUser = new User(
+            oauthUserDTO.email()
+        );
+
+        long expectRegionCode = 1L;
+
+        GeneralReport expectReport = new GeneralReport(
+            expectUser,
+            reportCreateRequestDTO.foundDate(),
+            new Location(
+                reportCreateRequestDTO.foundLatitude(),
+                reportCreateRequestDTO.foundLongitude()
+            ),
+            expectRegionCode,
+            reportCreateRequestDTO.description()
+        );
+
+        GeneralReport savedReport = spy(expectReport);
+
+        expectReport.setBreed(new Breed(reportCreateRequestDTO.breed()));
+        expectReport.setGender(reportCreateRequestDTO.gender());
+
+        // when
+        when(userService.findUserByEmail(oauthUserDTO.email()))
+            .thenReturn(expectUser);
+
+        when(kakaoMapService.getRegionCodeFromKakao(
+                new Location(
+                    reportCreateRequestDTO.foundLatitude(),
+                    reportCreateRequestDTO.foundLongitude()
+                )
+            )
+        ).thenReturn(expectRegionCode);
+
+        when(reportRepository.save(expectReport))
+            .thenReturn(savedReport);
+
+        when(savedReport.getId())
+            .thenReturn(1L);
+
+        // then
+        reportService.createReport(reportCreateRequestDTO, files, oauthUserDTO);
+
+        verify(userService, times(1))
+            .findUserByEmail(oauthUserDTO.email());
+
+        verify(kakaoMapService, times(1))
+            .getRegionCodeFromKakao(
+                new Location(
+                    reportCreateRequestDTO.foundLatitude(),
+                    reportCreateRequestDTO.foundLongitude()
+                )
+            );
+
+        verify(missingService, never())
+            .findByMissingId(any(Long.class));
 
         verify(reportRepository, times(1))
             .save(expectReport);
