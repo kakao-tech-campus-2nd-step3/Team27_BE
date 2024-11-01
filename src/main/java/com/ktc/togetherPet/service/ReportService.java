@@ -100,7 +100,7 @@ public class ReportService {
         Location location = new Location(latitude, longitude);
         long regionCode = kakaoMapService.getRegionCodeFromKakao(location);
 
-        return reportRepository.findAllByRegionCodeAndMissingNull(regionCode)
+        return reportRepository.findAllByRegionCode(regionCode)
             .stream()
             .map(report -> new ReportResponseDTO(
                     report.getId(),

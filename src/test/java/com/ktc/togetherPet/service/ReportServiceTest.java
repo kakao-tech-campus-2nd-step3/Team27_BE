@@ -329,7 +329,7 @@ class ReportServiceTest {
         when(kakaoMapService.getRegionCodeFromKakao(expectLocation))
             .thenReturn(expectRegionCode);
 
-        when(reportRepository.findAllByRegionCodeAndMissingNull(expectRegionCode))
+        when(reportRepository.findAllByRegionCode(expectRegionCode))
             .thenReturn(expectReports);
 
         when(expectReport1.getId())
@@ -351,7 +351,7 @@ class ReportServiceTest {
             .getRegionCodeFromKakao(expectLocation);
 
         verify(reportRepository, times(1))
-            .findAllByRegionCodeAndMissingNull(expectRegionCode);
+            .findAllByRegionCode(expectRegionCode);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(REPORT, 1L);

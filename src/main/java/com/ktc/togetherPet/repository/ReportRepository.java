@@ -17,5 +17,5 @@ public interface ReportRepository extends JpaRepository<ReportBase, Long> {
     List<MissingReport> findAllByMissing(@Param("missing") Missing missing);
 
     @Query("SELECT r FROM GeneralReport r WHERE r.regionCode = :regionCode")
-    List<GeneralReport> findAllByRegionCodeAndMissingNull(long regionCode);
+    List<GeneralReport> findAllByRegionCode(long regionCode);
 }

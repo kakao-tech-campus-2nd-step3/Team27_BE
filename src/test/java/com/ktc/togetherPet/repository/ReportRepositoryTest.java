@@ -146,7 +146,7 @@ class ReportRepositoryTest {
         reportRepository.saveAll(givenReport);
 
         // then
-        List<GeneralReport> actual = reportRepository.findAllByRegionCodeAndMissingNull(regionCode);
+        List<GeneralReport> actual = reportRepository.findAllByRegionCode(regionCode);
 
         assertEquals(expect, actual);
     }
