@@ -181,4 +181,7 @@ gradle-app.setting
 ### Restdocs index.html ###
 src/main/resources/static/docs/index.html
 
+### sql data ###
+*.sql
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,macos,windows,gradle
