@@ -5,6 +5,7 @@ import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.REP
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -21,8 +22,10 @@ import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
-import com.ktc.togetherPet.model.entity.Report;
 import com.ktc.togetherPet.model.entity.User;
+import com.ktc.togetherPet.model.entity.report.GeneralReport;
+import com.ktc.togetherPet.model.entity.report.MissingReport;
+import com.ktc.togetherPet.model.entity.report.ReportBase;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.ReportRepository;
 import java.time.LocalDateTime;
@@ -60,8 +63,8 @@ class ReportServiceTest {
     private ReportService reportService;
 
     @Test
-    @DisplayName("제보 등록 테스트/createReport")
-    void 제보_등록() {
+    @DisplayName("실종에 대한 제보 등록 테스트/createReport")
+    void 실종에_대한_제보_등록() {
         // given
         ReportCreateRequestDTO reportCreateRequestDTO = new ReportCreateRequestDTO(
             "testColor",
@@ -111,7 +114,7 @@ class ReportServiceTest {
             "testDescription"
         );
 
-        Report expectReport = new Report(
+        MissingReport expectReport = new MissingReport(
             expectUser,
             reportCreateRequestDTO.foundDate(),
             new Location(
@@ -119,14 +122,14 @@ class ReportServiceTest {
                 reportCreateRequestDTO.foundLongitude()
             ),
             expectRegionCode,
-            reportCreateRequestDTO.description()
+            reportCreateRequestDTO.description(),
+            expectMissing
         );
 
-        Report savedReport = spy(expectReport);
+        MissingReport savedReport = spy(expectReport);
 
         expectReport.setBreed(new Breed(reportCreateRequestDTO.breed()));
         expectReport.setGender(reportCreateRequestDTO.gender());
-        expectReport.setMissing(expectMissing);
 
         // when
         when(userService.findUserByEmail(oauthUserDTO.email()))
@@ -174,6 +177,102 @@ class ReportServiceTest {
     }
 
     @Test
+    @DisplayName("임의의 제보 등록 테스트/createReport")
+    void 임의의_제보_등록() {
+        // given
+        ReportCreateRequestDTO reportCreateRequestDTO = new ReportCreateRequestDTO(
+            "testColor",
+            15.0D,
+            15.0D,
+            LocalDateTime.of(2024, 10, 11, 4, 26, 22),
+            "testDescription",
+            "testBreed",
+            "testGender",
+            null
+        );
+
+        List<MultipartFile> files = List.of(
+            new MockMultipartFile(
+                "testFileName",
+                "testFileName.jpeg",
+                IMAGE_JPEG_VALUE,
+                "testFileName.jpeg".getBytes()
+            ),
+            new MockMultipartFile(
+                "testFileName2",
+                "testFileName2.jpeg",
+                IMAGE_JPEG_VALUE,
+                "testFileName2.jpeg".getBytes()
+            )
+        );
+
+        OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
+
+        User expectUser = new User(
+            oauthUserDTO.email()
+        );
+
+        long expectRegionCode = 1L;
+
+        GeneralReport expectReport = new GeneralReport(
+            expectUser,
+            reportCreateRequestDTO.foundDate(),
+            new Location(
+                reportCreateRequestDTO.foundLatitude(),
+                reportCreateRequestDTO.foundLongitude()
+            ),
+            expectRegionCode,
+            reportCreateRequestDTO.description()
+        );
+
+        GeneralReport savedReport = spy(expectReport);
+
+        expectReport.setBreed(new Breed(reportCreateRequestDTO.breed()));
+        expectReport.setGender(reportCreateRequestDTO.gender());
+
+        // when
+        when(userService.findUserByEmail(oauthUserDTO.email()))
+            .thenReturn(expectUser);
+
+        when(kakaoMapService.getRegionCodeFromKakao(
+                new Location(
+                    reportCreateRequestDTO.foundLatitude(),
+                    reportCreateRequestDTO.foundLongitude()
+                )
+            )
+        ).thenReturn(expectRegionCode);
+
+        when(reportRepository.save(expectReport))
+            .thenReturn(savedReport);
+
+        when(savedReport.getId())
+            .thenReturn(1L);
+
+        // then
+        reportService.createReport(reportCreateRequestDTO, files, oauthUserDTO);
+
+        verify(userService, times(1))
+            .findUserByEmail(oauthUserDTO.email());
+
+        verify(kakaoMapService, times(1))
+            .getRegionCodeFromKakao(
+                new Location(
+                    reportCreateRequestDTO.foundLatitude(),
+                    reportCreateRequestDTO.foundLongitude()
+                )
+            );
+
+        verify(missingService, never())
+            .findByMissingId(any(Long.class));
+
+        verify(reportRepository, times(1))
+            .save(expectReport);
+
+        verify(imageService, times(1))
+            .saveImages(savedReport.getId(), REPORT, files);
+    }
+
+    @Test
     @DisplayName("개인이 받은 제보를 반환 테스트/getReceivedReports")
     void 개인이_받은_제보를_반환() {
         // given
@@ -194,20 +293,22 @@ class ReportServiceTest {
             1L,
             "testDescription"
         );
-        List<Report> expectReports = List.of(
-            spy(new Report(
+        List<MissingReport> expectReports = List.of(
+            spy(new MissingReport(
                 new User("reporter1@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
                 1L,
-                "testDescription1"
+                "testDescription1",
+                expectMissing
             )),
-            spy(new Report(
+            spy(new MissingReport(
                 new User("reporter2@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
                 1L,
-                "testDescription2"
+                "testDescription2",
+                expectMissing
             ))
         );
 
@@ -281,8 +382,8 @@ class ReportServiceTest {
         Location expectLocation = new Location(latitude, longitude);
 
         long expectRegionCode = 1L;
-        Report expectReport1 = spy(
-            new Report(
+        GeneralReport expectReport1 = spy(
+            new GeneralReport(
                 new User("test1@email.com"),
                 LocalDateTime.of(2024, 10, 15, 10, 20, 22),
                 new Location(15.1D, 15.2D),
@@ -291,8 +392,8 @@ class ReportServiceTest {
             )
         );
 
-        Report expectReport2 = spy(
-            new Report(
+        GeneralReport expectReport2 = spy(
+            new GeneralReport(
                 new User("test2@email.com"),
                 LocalDateTime.of(2024, 10, 15, 11, 11, 11),
                 new Location(15.3D, 15.4D),
@@ -301,7 +402,7 @@ class ReportServiceTest {
             )
         );
 
-        List<Report> expectReports = List.of(expectReport1, expectReport2);
+        List<GeneralReport> expectReports = List.of(expectReport1, expectReport2);
 
         String expectPresentationImageUrl1 = "https://together-pet/images/test-image-1.jpeg";
         String expectPresentationImageUrl2 = "https://together-pet/images/test-image-2.jpeg";
@@ -325,7 +426,7 @@ class ReportServiceTest {
         when(kakaoMapService.getRegionCodeFromKakao(expectLocation))
             .thenReturn(expectRegionCode);
 
-        when(reportRepository.findAllByRegionCodeAndMissingNull(expectRegionCode))
+        when(reportRepository.findAllByRegionCode(expectRegionCode))
             .thenReturn(expectReports);
 
         when(expectReport1.getId())
@@ -347,7 +448,7 @@ class ReportServiceTest {
             .getRegionCodeFromKakao(expectLocation);
 
         verify(reportRepository, times(1))
-            .findAllByRegionCodeAndMissingNull(expectRegionCode);
+            .findAllByRegionCode(expectRegionCode);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(REPORT, 1L);
@@ -367,7 +468,7 @@ class ReportServiceTest {
             long reportId = 1L;
             User expectUser = new User("test@email.com");
             expectUser.setName("testName");
-            Report expectReport = new Report(
+            ReportBase expectReport = new ReportBase(
                 expectUser,
                 LocalDateTime.of(2024, 10, 11, 6, 44, 11),
                 new Location(15.0D, 15.0D),
