@@ -38,4 +38,7 @@ public class WalkController {
             walkService.getWalkInformation(oauthUserDTO)
         );
     }
+
+    // todo : 산책 List 조회 API
+    // todo : 산책 상세 조회 API
 }
