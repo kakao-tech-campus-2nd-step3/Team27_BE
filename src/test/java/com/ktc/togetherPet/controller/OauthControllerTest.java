@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -16,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.jwtUtil.JwtUtil;
 import com.ktc.togetherPet.model.dto.oauth.OauthRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthSuccessDTO;
@@ -37,9 +35,6 @@ class OauthControllerTest extends RestDocsTestSupport {
 
     @MockBean
     private OauthService oauthService;
-
-    @MockBean
-    private OauthUserArgumentResolver oauthUserArgumentResolver;
 
     @MockBean
     private JwtUtil jwtUtil;

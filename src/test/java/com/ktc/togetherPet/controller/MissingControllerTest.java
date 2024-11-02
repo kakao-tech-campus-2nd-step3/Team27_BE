@@ -16,7 +16,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetNearByResponseDTO;
 import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
@@ -38,9 +37,6 @@ class MissingControllerTest extends RestDocsTestSupport {
 
     @MockBean
     private MissingService missingService;
-
-    @MockBean
-    private OauthUserArgumentResolver oauthUserArgumentResolver;
 
     @Test
     @DisplayName("실종등록 테스트/registerMissingPet")

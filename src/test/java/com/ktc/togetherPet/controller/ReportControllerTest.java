@@ -22,7 +22,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
@@ -43,9 +42,6 @@ class ReportControllerTest extends RestDocsTestSupport {
 
     @MockBean
     private ReportService reportService;
-
-    @MockBean
-    private OauthUserArgumentResolver oauthUserArgumentResolver;
 
     @Test
     @DisplayName("제보 등록 테스트(임의 제보)/createReport")
