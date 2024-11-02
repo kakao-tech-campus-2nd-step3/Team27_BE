@@ -45,6 +45,7 @@ public class WalkService {
             walkRequestDTO.totalWalkTime()
         );
 
+        // todo: pathService로 분리
         List<Path> paths = walkRequestDTO.locationList().stream()
                 .map(locationDTO -> new Path(new Location(locationDTO.latitude(), locationDTO.longitude()), walk))
                 .toList();
@@ -63,6 +64,7 @@ public class WalkService {
         User user = userRepository.findByEmail(oauthUserDTO.email())
             .orElseThrow(CustomException::invalidUserException);
 
+        // todo: 한 번에 데이터 받는 방법 탐색. 현재는 여러 번 쿼리를 날리는 방식으로 구현
         Long todayWalkCount = walkRepository.getTodayWalkCount(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now());
         Double averageWalkCount = walkRepository.getAverageWalkCount(user.getPet().getId()).orElse(0.0);
         Double todayWalkTime = walkRepository.getTodayWalkTime(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now()).orElse(0.0);
@@ -83,4 +85,9 @@ public class WalkService {
 
         return new WalkResponseDTO(flagValue, walkInformation);
     }
+
+    // todo: 산책 List 반환 서비스 추가
+    //       반환 DTO는 산책 거리, 총 산책 시간, 산책 시작 시간, 산책 종료 시간이 필요
+
+    // todo: 산책 상세 정보 반환 메서드 추가
 }

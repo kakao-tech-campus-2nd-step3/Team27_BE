@@ -34,7 +34,7 @@ public class ImageService {
     ) {
         List<String> imagePaths = files
             .stream()
-            .map(this::save2LocalDirectory)
+            .map(this::saveToLocalDirectory)
             .toList();
 
         List<Image> images = imageRepository.saveAll(
@@ -54,7 +54,7 @@ public class ImageService {
         );
     }
 
-    private String save2LocalDirectory(MultipartFile file) {
+    private String saveToLocalDirectory(MultipartFile file) {
         String path = createStoreFileName(file);
         try {
             file.transferTo(new File(path));
@@ -82,10 +82,10 @@ public class ImageService {
             .findFirstByImageEntityTypeAndEntityId(entityType, id)
             .orElseThrow(CustomException::imageNotFoundException);
 
-        return localImagePath2RemoteImagePath(representationImageRelation.getImage().getPath());
+        return localImagePathToRemoteImagePath(representationImageRelation.getImage().getPath());
     }
 
-    private String localImagePath2RemoteImagePath(String localImagePath) {
+    private String localImagePathToRemoteImagePath(String localImagePath) {
         return imageConfig.sourcePrefix() + new File(localImagePath).getName();
     }
 
@@ -98,7 +98,7 @@ public class ImageService {
             .stream()
             .map(ImageRelation::getImage)
             .map(Image::getPath)
-            .map(this::localImagePath2RemoteImagePath)
+            .map(this::localImagePathToRemoteImagePath)
             .toList();
     }
 
