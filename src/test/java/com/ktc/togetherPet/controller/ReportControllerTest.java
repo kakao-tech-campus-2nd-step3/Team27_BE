@@ -30,6 +30,7 @@ import com.ktc.togetherPet.service.ReportService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -42,6 +43,21 @@ class ReportControllerTest extends RestDocsTestSupport {
 
     @MockBean
     private ReportService reportService;
+
+    private String token;
+    private OauthUserDTO oauthUserDTO;
+
+    @BeforeEach
+    void setUp() {
+        token = "Bearer testToken";
+        oauthUserDTO = new OauthUserDTO("test@email.com");
+
+        when(oauthUserArgumentResolver.supportsParameter(any()))
+            .thenReturn(true);
+
+        when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+            .thenReturn(oauthUserDTO);
+    }
 
     @Test
     @DisplayName("제보 등록 테스트(임의 제보)/createReport")
@@ -79,15 +95,7 @@ class ReportControllerTest extends RestDocsTestSupport {
 
         );
 
-        String token = "Bearer testToken";
-        OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
-
         // when
-        when(oauthUserArgumentResolver.supportsParameter(any()))
-            .thenReturn(true);
-        when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-            .thenReturn(oauthUserDTO);
-
         ResultActions result = mockMvc.perform(
             multipart("/api/v1/report")
                 .file(reportCreateRequestDTOMock)
@@ -159,15 +167,7 @@ class ReportControllerTest extends RestDocsTestSupport {
 
         );
 
-        String token = "Bearer testToken";
-        OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
-
         // when
-        when(oauthUserArgumentResolver.supportsParameter(any()))
-            .thenReturn(true);
-        when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-            .thenReturn(oauthUserDTO);
-
         ResultActions result = mockMvc.perform(
             multipart("/api/v1/report")
                 .file(reportCreateRequestDTOMock)
@@ -208,8 +208,6 @@ class ReportControllerTest extends RestDocsTestSupport {
     @DisplayName("받은 제보 확인 테스트/getReceivedReports")
     void 받은_제보_확인() throws Exception {
         // given
-        String token = "Bearer testToken";
-        OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
         List<ReportResponseDTO> actual = List.of(
             new ReportResponseDTO(
                 1L,
@@ -226,12 +224,6 @@ class ReportControllerTest extends RestDocsTestSupport {
         );
 
         // when
-        when(oauthUserArgumentResolver.supportsParameter(any()))
-            .thenReturn(true);
-
-        when(oauthUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-            .thenReturn(oauthUserDTO);
-
         when(reportService.getReceivedReports(oauthUserDTO))
             .thenReturn(actual);
 
