@@ -33,6 +33,7 @@ class MissingRepositoryTest {
 
     private List<Pet> givenPet;
     private List<Missing> givenMissing;
+    private List<Long> givenRegionCode;
 
     @BeforeEach
     void setUp() {
@@ -72,13 +73,15 @@ class MissingRepositoryTest {
 
         petRepository.saveAll(givenPet);
 
+        givenRegionCode = List.of(1L, 2L);
+
         givenMissing = List.of(
             new Missing(
                 givenPet.get(0),
                 true,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 44),
                 new Location(15.0D, 15D),
-                1L,
+                givenRegionCode.getFirst(),
                 "testDescription1"
             ),
             new Missing(
@@ -86,7 +89,7 @@ class MissingRepositoryTest {
                 true,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 22),
                 new Location(15.0D, 15D),
-                1L,
+                givenRegionCode.getFirst(),
                 "testDescription2"
             ),
             new Missing(
@@ -94,7 +97,7 @@ class MissingRepositoryTest {
                 false,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 22),
                 new Location(20D, 20D),
-                2L,
+                givenRegionCode.get(1),
                 "testDescription3"
             )
         );
@@ -113,7 +116,8 @@ class MissingRepositoryTest {
         missingRepository.saveAll(givenMissing);
 
         // then
-        List<Missing> actual = missingRepository.findAllByRegionCodeAndIsMissingIsTrue(1L);
+        List<Missing> actual = missingRepository
+            .findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode.getFirst());
         assertEquals(expect, actual);
     }
 
@@ -126,7 +130,7 @@ class MissingRepositoryTest {
         void 존재하는_경우() {
             // given
             Pet pet = givenPet.getFirst();
-            Optional<Missing> expect = Optional.of(givenMissing.get(0));
+            Optional<Missing> expect = Optional.of(givenMissing.getFirst());
 
             // when
             missingRepository.saveAll(givenMissing);
