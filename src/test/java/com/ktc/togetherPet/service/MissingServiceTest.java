@@ -25,6 +25,7 @@ import com.ktc.togetherPet.repository.PetRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -57,16 +58,51 @@ class MissingServiceTest {
     @InjectMocks
     private MissingService missingService;
 
+    private List<Pet> givenPet;
+
+    private long givenRegionCode;
+
+    @BeforeEach
+    void setUp() {
+        List<Breed> givenBreed = List.of(
+            new Breed("testPetBreed1"),
+            new Breed("testPetBreed2")
+        );
+
+        givenPet = List.of(
+            spy(new Pet(
+                "testPetName1",
+                1L,
+                givenBreed.getFirst(),
+                true
+            )),
+            spy(new Pet(
+                "testPetName2",
+                2L,
+                givenBreed.get(1),
+                true
+            )),
+            spy(new Pet(
+                "testPetName3",
+                3L,
+                givenBreed.getFirst(),
+                false
+            ))
+        );
+
+        givenRegionCode = 1L;
+    }
+
     @Test
     @DisplayName("실종 등록 테스트/registerMissingPet")
     void 실종_등록() {
         // given
         OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
         MissingPetRequestDTO missingPetRequestDTO = new MissingPetRequestDTO(
-            "testPetName",
+            "testPetName1",
             "testPetGender",
             1L,
-            "testPetBreed",
+            "testPetBreed1",
             LocalDateTime.of(2024, 10, 11, 3, 2, 22),
             15.0D,
             15.0D,
@@ -76,51 +112,41 @@ class MissingServiceTest {
 
         User expectUser = new User(oauthUserDTO.email());
 
-        Pet pet = new Pet(
-            missingPetRequestDTO.petName(),
-            missingPetRequestDTO.birthMonth(),
-            new Breed(missingPetRequestDTO.petBreed()),
-            missingPetRequestDTO.isNeutering()
-        );
-
         Location location = new Location(
             missingPetRequestDTO.latitude(),
             missingPetRequestDTO.longitude()
         );
 
-        expectUser.setPet(pet);
-
-        long expectRegionCode = 1L;
+        expectUser.setPet(givenPet.getFirst());
 
         // when
-        when(userService.findUserByEmail("test@email.com"))
+        when(userService.findUserByEmail(oauthUserDTO.email()))
             .thenReturn(expectUser);
 
         when(kakaoMapService.getRegionCodeFromKakao(location))
-            .thenReturn(expectRegionCode);
+            .thenReturn(givenRegionCode);
 
         // then
         missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
 
         verify(userService, times(1))
-            .findUserByEmail("test@email.com");
+            .findUserByEmail(oauthUserDTO.email());
 
         verify(petRepository, never())
-            .save(pet);
+            .save(givenPet.getFirst());
 
         verify(breedService, never())
             .findBreedByName(missingPetRequestDTO.petBreed());
 
         verify(missingRepository, times(1))
             .save(new Missing(
-                pet,
+                givenPet.getFirst(),
                 true,
                 missingPetRequestDTO.lostTime(),
                 location,
-                expectRegionCode,
+                givenRegionCode,
                 missingPetRequestDTO.description()
             ));
-
     }
 
     @Test
@@ -130,48 +156,21 @@ class MissingServiceTest {
         double latitude = 15.0D;
         double longitude = 15.0D;
 
-        long expectRegionCode = 1L;
-
-        Pet pet1 = spy(
-            new Pet(
-                "testPetName1",
-                1L,
-                new Breed("testBreed1"),
-                true
-            )
-        );
-
-        Pet pet2 = spy(
-            new Pet(
-                "testPetName2",
-                2L,
-                new Breed("testBreed2"),
-                true
-            )
-        );
-
-        Pet pet3 = new Pet(
-            "testPetName3",
-            3L,
-            new Breed("testBreed1"),
-            false
-        );
-
         List<Missing> expectMissing = List.of(
             spy(new Missing(
-                pet1,
+                givenPet.getFirst(),
                 true,
                 LocalDateTime.of(2024, 10, 11, 3, 49, 44),
                 new Location(15.1D, 15.1D),
-                expectRegionCode,
+                givenRegionCode,
                 "testDescription1"
             )),
             spy(new Missing(
-                pet2,
+                givenPet.get(1),
                 true,
                 LocalDateTime.of(2024, 10, 1, 3, 49, 44),
                 new Location(15.2D, 15.2D),
-                expectRegionCode,
+                givenRegionCode,
                 "testDescription2"
             ))
         );
@@ -198,15 +197,15 @@ class MissingServiceTest {
 
         // when
         when(kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude)))
-            .thenReturn(expectRegionCode);
+            .thenReturn(givenRegionCode);
 
-        when(missingRepository.findAllByRegionCodeAndIsMissingIsTrue(expectRegionCode))
+        when(missingRepository.findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode))
             .thenReturn(expectMissing);
 
-        when(pet1.getId())
+        when(givenPet.getFirst().getId())
             .thenReturn(1L);
 
-        when(pet2.getId())
+        when(givenPet.get(1).getId())
             .thenReturn(2L);
 
         when(expectMissing.get(0).getId())
@@ -231,7 +230,7 @@ class MissingServiceTest {
             .getRegionCodeFromKakao(new Location(latitude, longitude));
 
         verify(missingRepository, times(1))
-            .findAllByRegionCodeAndIsMissingIsTrue(expectRegionCode);
+            .findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(MISSING, expectMissing.get(0).getId());
@@ -246,16 +245,11 @@ class MissingServiceTest {
         // given
         long missingId = 1L;
         Missing missing = new Missing(
-            new Pet(
-                "testPetName",
-                1L,
-                new Breed("testBreedName"),
-                true
-            ),
+            givenPet.getFirst(),
             true,
             LocalDateTime.of(2024, 10, 11, 4, 8, 22),
             new Location(15.0D, 15.0D),
-            3,
+            givenRegionCode,
             "testDescription"
         );
         List<String> expectImageUrls = List.of(
@@ -304,16 +298,11 @@ class MissingServiceTest {
             long missingId = 1L;
 
             Missing expectMissing = new Missing(
-                new Pet(
-                    "testPetName",
-                    1L,
-                    new Breed("testBreed"),
-                    true
-                ),
+                givenPet.getFirst(),
                 true,
                 LocalDateTime.of(2024, 10, 11, 5, 27, 22),
                 new Location(15.0D, 15.0D),
-                1L,
+                givenRegionCode,
                 "testDescription"
             );
 
@@ -359,60 +348,45 @@ class MissingServiceTest {
         @DisplayName("성공")
         void 성공() {
             // given
-            Pet pet = new Pet(
-                "testPetName",
-                1L,
-                new Breed("testPetBreed"),
-                true
-            );
-
             Missing expect = new Missing(
-                pet,
+                givenPet.getFirst(),
                 true,
                 LocalDateTime.of(2024, 10, 11, 6, 21, 22),
                 new Location(15.0D, 15.0D),
-                1L,
+                givenRegionCode,
                 "testDescription"
             );
 
             // when
-            when(missingRepository.findByPetAndIsMissingIsTrue(pet))
+            when(missingRepository.findByPetAndIsMissingIsTrue(givenPet.getFirst()))
                 .thenReturn(Optional.of(expect));
 
             // then
-            Missing actual = missingService.findByPet(pet);
+            Missing actual = missingService.findByPet(givenPet.getFirst());
 
             assertEquals(actual, expect);
 
             verify(missingRepository, times(1))
-                .findByPetAndIsMissingIsTrue(pet);
+                .findByPetAndIsMissingIsTrue(givenPet.getFirst());
         }
 
         @Test
         @DisplayName("실패")
         void 실패() {
-            // given
-            Pet pet = new Pet(
-                "testPetName",
-                1L,
-                new Breed("testPetBreed"),
-                true
-            );
-
             // when
-            when(missingRepository.findByPetAndIsMissingIsTrue(pet))
+            when(missingRepository.findByPetAndIsMissingIsTrue(givenPet.getFirst()))
                 .thenReturn(Optional.empty());
 
             // then
             CustomException thrown = assertThrows(
                 CustomException.class,
-                () -> missingService.findByPet(pet)
+                () -> missingService.findByPet(givenPet.getFirst())
             );
 
             assertEquals(thrown.getErrorMessage(), MISSING_NOT_FOUND);
 
             verify(missingRepository, times(1))
-                .findByPetAndIsMissingIsTrue(pet);
+                .findByPetAndIsMissingIsTrue(givenPet.getFirst());
         }
     }
 }
