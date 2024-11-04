@@ -18,6 +18,7 @@ import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.MissingRepository;
@@ -50,7 +51,7 @@ class MissingServiceTest {
     private BreedService breedService;
 
     @Mock
-    private KakaoMapService kakaoMapService;
+    private RegionService regionService;
 
     @Mock
     private ImageService imageService;
@@ -60,7 +61,7 @@ class MissingServiceTest {
 
     private List<Pet> givenPet;
 
-    private long givenRegionCode;
+    private Region givenRegionCode;
 
     @BeforeEach
     void setUp() {
@@ -90,7 +91,12 @@ class MissingServiceTest {
             ))
         );
 
-        givenRegionCode = 1L;
+        givenRegionCode = new Region(
+            1L,
+            "testProvince",
+            "testDistrict",
+            "testNeighborhood"
+        );
     }
 
     @Test
@@ -123,7 +129,7 @@ class MissingServiceTest {
         when(userService.findUserByEmail(oauthUserDTO.email()))
             .thenReturn(expectUser);
 
-        when(kakaoMapService.getRegionCodeFromKakao(location))
+        when(regionService.findByLocation(location))
             .thenReturn(givenRegionCode);
 
         // then
@@ -196,10 +202,10 @@ class MissingServiceTest {
         );
 
         // when
-        when(kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude)))
+        when(regionService.findByLocation(new Location(latitude, longitude)))
             .thenReturn(givenRegionCode);
 
-        when(missingRepository.findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode))
+        when(missingRepository.findAllByRegionAndIsMissingIsTrue(givenRegionCode))
             .thenReturn(expectMissing);
 
         when(givenPet.getFirst().getId())
@@ -226,11 +232,11 @@ class MissingServiceTest {
 
         assertEquals(actual, expect);
 
-        verify(kakaoMapService, times(1))
-            .getRegionCodeFromKakao(new Location(latitude, longitude));
+        verify(regionService, times(1))
+            .findByLocation(new Location(latitude, longitude));
 
         verify(missingRepository, times(1))
-            .findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode);
+            .findAllByRegionAndIsMissingIsTrue(givenRegionCode);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(MISSING, expectMissing.get(0).getId());

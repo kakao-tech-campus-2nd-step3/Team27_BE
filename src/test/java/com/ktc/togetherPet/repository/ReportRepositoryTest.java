@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.report.GeneralReport;
 import com.ktc.togetherPet.model.entity.report.MissingReport;
@@ -38,9 +39,12 @@ class ReportRepositoryTest {
     @Autowired
     private MissingRepository missingRepository;
 
+    @Autowired
+    private RegionRepository regionRepository;
+
     private Missing givenMissing;
     private List<ReportBase> givenReport;
-    private List<Long> givenRegionCode;
+    private List<Region> givenRegionCode;
 
     @BeforeEach
     void setUp() {
@@ -59,7 +63,22 @@ class ReportRepositoryTest {
             new User("test3@email.com")
         );
 
-        givenRegionCode = List.of(1L, 2L);
+        givenRegionCode = List.of(
+            new Region(
+                1L,
+                "testProvince1",
+                "testDistrict1",
+                "testNeighborhood1"
+            ),
+            new Region(
+                2L,
+                "testProvince2",
+                "testDistrict2",
+                "testNeighborhood2"
+            )
+        );
+
+        regionRepository.saveAll(givenRegionCode);
 
         givenMissing = new Missing(
             givenPet,
@@ -148,7 +167,7 @@ class ReportRepositoryTest {
         reportRepository.saveAll(givenReport);
 
         // then
-        List<GeneralReport> actual = reportRepository.findAllByRegionCode(givenRegionCode.getFirst());
+        List<GeneralReport> actual = reportRepository.findAllByRegion(givenRegionCode.getFirst());
 
         assertEquals(expect, actual);
     }

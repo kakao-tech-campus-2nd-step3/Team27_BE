@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.vo.Location;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,9 +32,12 @@ class MissingRepositoryTest {
     @Autowired
     private BreedRepository breedRepository;
 
+    @Autowired
+    private RegionRepository regionRepository;
+
     private List<Pet> givenPet;
     private List<Missing> givenMissing;
-    private List<Long> givenRegionCode;
+    private List<Region> givenRegionCode;
 
     @BeforeEach
     void setUp() {
@@ -73,7 +77,22 @@ class MissingRepositoryTest {
 
         petRepository.saveAll(givenPet);
 
-        givenRegionCode = List.of(1L, 2L);
+        givenRegionCode = List.of(
+            new Region(
+                1L,
+                "testProvince1",
+                "testDistrict1",
+                "testNeighborhood1"
+            ),
+            new Region(
+                2L,
+                "testProvince2",
+                "testDistrict2",
+                "testNeighborhood2"
+            )
+        );
+
+        regionRepository.saveAll(givenRegionCode);
 
         givenMissing = List.of(
             new Missing(
@@ -117,7 +136,7 @@ class MissingRepositoryTest {
 
         // then
         List<Missing> actual = missingRepository
-            .findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode.getFirst());
+            .findAllByRegionAndIsMissingIsTrue(givenRegionCode.getFirst());
         assertEquals(expect, actual);
     }
 

@@ -22,6 +22,7 @@ import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.report.GeneralReport;
 import com.ktc.togetherPet.model.entity.report.MissingReport;
@@ -52,7 +53,7 @@ class ReportServiceTest {
     private MissingService missingService;
 
     @Mock
-    private KakaoMapService kakaoMapService;
+    private RegionService regionService;
 
     @Mock
     private ImageService imageService;
@@ -63,14 +64,19 @@ class ReportServiceTest {
     @InjectMocks
     private ReportService reportService;
 
-    private long givenRegionCode;
+    private Region givenRegionCode;
     private Missing givenMissing;
     private Breed givenBreed;
     private Pet givenPet;
 
     @BeforeEach
     void setUp() {
-        givenRegionCode = 1L;
+        givenRegionCode = new Region(
+            1L,
+            "testProvince",
+            "testDistrict",
+            "testNeighborhood"
+        );
 
         givenBreed = new Breed("testPetBreed");
 
@@ -148,7 +154,7 @@ class ReportServiceTest {
         when(userService.findUserByEmail(oauthUserDTO.email()))
             .thenReturn(expectUser);
 
-        when(kakaoMapService.getRegionCodeFromKakao(
+        when(regionService.findByLocation(
                 new Location(
                     reportCreateRequestDTO.foundLatitude(),
                     reportCreateRequestDTO.foundLongitude()
@@ -171,8 +177,8 @@ class ReportServiceTest {
         verify(userService, times(1))
             .findUserByEmail(oauthUserDTO.email());
 
-        verify(kakaoMapService, times(1))
-            .getRegionCodeFromKakao(
+        verify(regionService, times(1))
+            .findByLocation(
                 new Location(
                     reportCreateRequestDTO.foundLatitude(),
                     reportCreateRequestDTO.foundLongitude()
@@ -245,7 +251,7 @@ class ReportServiceTest {
         when(userService.findUserByEmail(oauthUserDTO.email()))
             .thenReturn(expectUser);
 
-        when(kakaoMapService.getRegionCodeFromKakao(
+        when(regionService.findByLocation(
                 new Location(
                     reportCreateRequestDTO.foundLatitude(),
                     reportCreateRequestDTO.foundLongitude()
@@ -265,8 +271,8 @@ class ReportServiceTest {
         verify(userService, times(1))
             .findUserByEmail(oauthUserDTO.email());
 
-        verify(kakaoMapService, times(1))
-            .getRegionCodeFromKakao(
+        verify(regionService, times(1))
+            .findByLocation(
                 new Location(
                     reportCreateRequestDTO.foundLatitude(),
                     reportCreateRequestDTO.foundLongitude()
@@ -420,10 +426,10 @@ class ReportServiceTest {
         );
 
         // when
-        when(kakaoMapService.getRegionCodeFromKakao(expectLocation))
+        when(regionService.findByLocation(expectLocation))
             .thenReturn(givenRegionCode);
 
-        when(reportRepository.findAllByRegionCode(givenRegionCode))
+        when(reportRepository.findAllByRegion(givenRegionCode))
             .thenReturn(expectReports);
 
         when(expectReport1.getId())
@@ -441,11 +447,11 @@ class ReportServiceTest {
         // then
         assertEquals(expects, reportService.getReportsByLocation(latitude, longitude));
 
-        verify(kakaoMapService, times(1))
-            .getRegionCodeFromKakao(expectLocation);
+        verify(regionService, times(1))
+            .findByLocation(expectLocation);
 
         verify(reportRepository, times(1))
-            .findAllByRegionCode(givenRegionCode);
+            .findAllByRegion(givenRegionCode);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(REPORT, 1L);
