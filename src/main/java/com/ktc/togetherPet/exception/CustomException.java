@@ -9,13 +9,13 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_EMAIL_FORMAT;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_HEADER;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_LOCATION;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PET_MONTH;
-import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PROVIDER;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_TOKEN;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
 import static com.ktc.togetherPet.exception.ErrorMessage.IO_EXCEPTION;
 import static com.ktc.togetherPet.exception.ErrorMessage.JSON_PROCESSING_EXCEPTION;
 import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.PET_NOT_FOUND;
+import static com.ktc.togetherPet.exception.ErrorMessage.REGION_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.REPORT_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.WALK_NOT_FOUND;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -108,5 +108,9 @@ public class CustomException extends RuntimeException {
     public static CustomException fcmTokenException(
         FirebaseMessagingException firebaseMessagingException) {
         return new CustomException(INVALID_TOKEN, BAD_REQUEST);
+    }
+
+    public static CustomException regionNotFoundException() {
+        return new CustomException(REGION_NOT_FOUND, NOT_FOUND);
     }
 }
