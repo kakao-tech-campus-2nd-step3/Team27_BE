@@ -29,11 +29,4 @@ public class PetService {
 
         return savedPet.getId();
     }
-
-    public void setImageSrc(Long petId, String imageSrc) {
-        Pet pet = findPetById(petId);
-        pet.setImageSrc(imageSrc);
-
-        petRepository.save(pet);
-    }
 }
