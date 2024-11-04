@@ -39,8 +39,6 @@ public class Walk {
     @Column(nullable = false)
     private long walkTime;
 
-    // todo : 산책 시작 및 종료 시간을 계산하기 위해, post된 시간 추가, superMappedClass로 분리할까 고민중
-
     public Walk(
         Pet pet,
         Float distance,
