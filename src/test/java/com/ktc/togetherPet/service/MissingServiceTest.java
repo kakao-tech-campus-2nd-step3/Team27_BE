@@ -61,7 +61,7 @@ class MissingServiceTest {
 
     private List<Pet> givenPet;
 
-    private Region givenRegionCode;
+    private Region givenRegion;
 
     @BeforeEach
     void setUp() {
@@ -91,7 +91,7 @@ class MissingServiceTest {
             ))
         );
 
-        givenRegionCode = new Region(
+        givenRegion = new Region(
             1L,
             "testProvince",
             "testDistrict",
@@ -130,7 +130,7 @@ class MissingServiceTest {
             .thenReturn(expectUser);
 
         when(regionService.findByLocation(location))
-            .thenReturn(givenRegionCode);
+            .thenReturn(givenRegion);
 
         // then
         missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
@@ -150,7 +150,7 @@ class MissingServiceTest {
                 true,
                 missingPetRequestDTO.lostTime(),
                 location,
-                givenRegionCode,
+                givenRegion,
                 missingPetRequestDTO.description()
             ));
     }
@@ -168,7 +168,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 11, 3, 49, 44),
                 new Location(15.1D, 15.1D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription1"
             )),
             spy(new Missing(
@@ -176,7 +176,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 1, 3, 49, 44),
                 new Location(15.2D, 15.2D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription2"
             ))
         );
@@ -203,9 +203,9 @@ class MissingServiceTest {
 
         // when
         when(regionService.findByLocation(new Location(latitude, longitude)))
-            .thenReturn(givenRegionCode);
+            .thenReturn(givenRegion);
 
-        when(missingRepository.findAllByRegionAndIsMissingIsTrue(givenRegionCode))
+        when(missingRepository.findAllByRegionAndIsMissingIsTrue(givenRegion))
             .thenReturn(expectMissing);
 
         when(givenPet.getFirst().getId())
@@ -236,7 +236,7 @@ class MissingServiceTest {
             .findByLocation(new Location(latitude, longitude));
 
         verify(missingRepository, times(1))
-            .findAllByRegionAndIsMissingIsTrue(givenRegionCode);
+            .findAllByRegionAndIsMissingIsTrue(givenRegion);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(MISSING, expectMissing.get(0).getId());
@@ -255,7 +255,7 @@ class MissingServiceTest {
             true,
             LocalDateTime.of(2024, 10, 11, 4, 8, 22),
             new Location(15.0D, 15.0D),
-            givenRegionCode,
+            givenRegion,
             "testDescription"
         );
         List<String> expectImageUrls = List.of(
@@ -308,7 +308,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 11, 5, 27, 22),
                 new Location(15.0D, 15.0D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription"
             );
 
@@ -359,7 +359,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 11, 6, 21, 22),
                 new Location(15.0D, 15.0D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription"
             );
 

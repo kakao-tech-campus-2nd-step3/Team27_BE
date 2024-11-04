@@ -64,14 +64,14 @@ class ReportServiceTest {
     @InjectMocks
     private ReportService reportService;
 
-    private Region givenRegionCode;
+    private Region givenRegion;
     private Missing givenMissing;
     private Breed givenBreed;
     private Pet givenPet;
 
     @BeforeEach
     void setUp() {
-        givenRegionCode = new Region(
+        givenRegion = new Region(
             1L,
             "testProvince",
             "testDistrict",
@@ -92,7 +92,7 @@ class ReportServiceTest {
             true,
             LocalDateTime.of(2024, 10, 11, 4, 39, 11),
             new Location(15.0D, 15.0D),
-            givenRegionCode,
+            givenRegion,
             "testDescription"
         );
     }
@@ -140,7 +140,7 @@ class ReportServiceTest {
                 reportCreateRequestDTO.foundLatitude(),
                 reportCreateRequestDTO.foundLongitude()
             ),
-            givenRegionCode,
+            givenRegion,
             reportCreateRequestDTO.description(),
             givenMissing
         );
@@ -160,7 +160,7 @@ class ReportServiceTest {
                     reportCreateRequestDTO.foundLongitude()
                 )
             )
-        ).thenReturn(givenRegionCode);
+        ).thenReturn(givenRegion);
 
         when(missingService.findByMissingId(reportCreateRequestDTO.missingId()))
             .thenReturn(givenMissing);
@@ -238,7 +238,7 @@ class ReportServiceTest {
                 reportCreateRequestDTO.foundLatitude(),
                 reportCreateRequestDTO.foundLongitude()
             ),
-            givenRegionCode,
+            givenRegion,
             reportCreateRequestDTO.description()
         );
 
@@ -257,7 +257,7 @@ class ReportServiceTest {
                     reportCreateRequestDTO.foundLongitude()
                 )
             )
-        ).thenReturn(givenRegionCode);
+        ).thenReturn(givenRegion);
 
         when(reportRepository.save(expectReport))
             .thenReturn(savedReport);
@@ -302,7 +302,7 @@ class ReportServiceTest {
                 new User("reporter1@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription1",
                 givenMissing
             )),
@@ -310,7 +310,7 @@ class ReportServiceTest {
                 new User("reporter2@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription2",
                 givenMissing
             ))
@@ -390,7 +390,7 @@ class ReportServiceTest {
                 new User("test1@email.com"),
                 LocalDateTime.of(2024, 10, 15, 10, 20, 22),
                 new Location(15.1D, 15.2D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription1"
             )
         );
@@ -400,7 +400,7 @@ class ReportServiceTest {
                 new User("test2@email.com"),
                 LocalDateTime.of(2024, 10, 15, 11, 11, 11),
                 new Location(15.3D, 15.4D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription2"
             )
         );
@@ -427,9 +427,9 @@ class ReportServiceTest {
 
         // when
         when(regionService.findByLocation(expectLocation))
-            .thenReturn(givenRegionCode);
+            .thenReturn(givenRegion);
 
-        when(reportRepository.findAllByRegion(givenRegionCode))
+        when(reportRepository.findAllByRegion(givenRegion))
             .thenReturn(expectReports);
 
         when(expectReport1.getId())
@@ -451,7 +451,7 @@ class ReportServiceTest {
             .findByLocation(expectLocation);
 
         verify(reportRepository, times(1))
-            .findAllByRegion(givenRegionCode);
+            .findAllByRegion(givenRegion);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(REPORT, 1L);
@@ -475,7 +475,7 @@ class ReportServiceTest {
                 expectUser,
                 LocalDateTime.of(2024, 10, 11, 6, 44, 11),
                 new Location(15.0D, 15.0D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription"
             );
 
