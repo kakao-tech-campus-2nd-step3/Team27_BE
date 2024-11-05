@@ -49,10 +49,7 @@ public class ReportService {
 
         Region region = regionService.findByLocation(location);
 
-        ReportBase report = Optional.ofNullable(reportCreateRequestDTO.missingId())
-            .map(missingId -> (ReportBase) createMissingReport(user, region, location,
-                reportCreateRequestDTO))
-            .orElseGet(() -> createGeneralReport(user, region, location, reportCreateRequestDTO));
+        ReportBase report = createConcreteReport(user, region, location, reportCreateRequestDTO);
 
         Optional.ofNullable(reportCreateRequestDTO.breed())
             .ifPresent(breed -> report.setBreed(breedService.findBreedByName(breed)));
@@ -64,12 +61,21 @@ public class ReportService {
         imageService.saveImages(reportId, REPORT, files);
     }
 
-    private MissingReport createMissingReport(
+    private ReportBase createConcreteReport(
         User user,
         Region region,
         Location location,
         ReportCreateRequestDTO reportCreateRequestDTO
     ) {
+        if (reportCreateRequestDTO.missingId() == null) {
+            return new GeneralReport(
+                user,
+                reportCreateRequestDTO.foundDate(),
+                location,
+                region,
+                reportCreateRequestDTO.description()
+            );
+        }
         return new MissingReport(
             user,
             reportCreateRequestDTO.foundDate(),
@@ -77,21 +83,6 @@ public class ReportService {
             region,
             reportCreateRequestDTO.description(),
             missingService.findByMissingId(reportCreateRequestDTO.missingId())
-        );
-    }
-
-    private GeneralReport createGeneralReport(
-        User user,
-        Region region,
-        Location location,
-        ReportCreateRequestDTO reportCreateRequestDTO
-    ) {
-        return new GeneralReport(
-            user,
-            reportCreateRequestDTO.foundDate(),
-            location,
-            region,
-            reportCreateRequestDTO.description()
         );
     }
 
