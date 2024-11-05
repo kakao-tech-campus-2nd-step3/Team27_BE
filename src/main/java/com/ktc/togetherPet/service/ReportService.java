@@ -47,22 +47,12 @@ public class ReportService {
             reportCreateRequestDTO.foundLongitude()
         );
 
+        Region region = regionService.findByLocation(location);
+
         ReportBase report = Optional.ofNullable(reportCreateRequestDTO.missingId())
-            .map(missingId -> (ReportBase) new MissingReport(
-                user,
-                reportCreateRequestDTO.foundDate(),
-                location,
-                regionService.findByLocation(location),
-                reportCreateRequestDTO.description(),
-                missingService.findByMissingId(missingId)
-            ))
-            .orElseGet(() -> new GeneralReport(
-                user,
-                reportCreateRequestDTO.foundDate(),
-                location,
-                regionService.findByLocation(location),
-                reportCreateRequestDTO.description()
-            ));
+            .map(missingId -> (ReportBase) createMissingReport(user, region, location,
+                reportCreateRequestDTO))
+            .orElseGet(() -> createGeneralReport(user, region, location, reportCreateRequestDTO));
 
         Optional.ofNullable(reportCreateRequestDTO.breed())
             .ifPresent(breed -> report.setBreed(breedService.findBreedByName(breed)));
@@ -72,6 +62,37 @@ public class ReportService {
 
         long reportId = reportRepository.save(report).getId();
         imageService.saveImages(reportId, REPORT, files);
+    }
+
+    private MissingReport createMissingReport(
+        User user,
+        Region region,
+        Location location,
+        ReportCreateRequestDTO reportCreateRequestDTO
+    ) {
+        return new MissingReport(
+            user,
+            reportCreateRequestDTO.foundDate(),
+            location,
+            region,
+            reportCreateRequestDTO.description(),
+            missingService.findByMissingId(reportCreateRequestDTO.missingId())
+        );
+    }
+
+    private GeneralReport createGeneralReport(
+        User user,
+        Region region,
+        Location location,
+        ReportCreateRequestDTO reportCreateRequestDTO
+    ) {
+        return new GeneralReport(
+            user,
+            reportCreateRequestDTO.foundDate(),
+            location,
+            region,
+            reportCreateRequestDTO.description()
+        );
     }
 
     public List<ReportResponseDTO> getReceivedReports(OauthUserDTO oauthUserDTO) {
