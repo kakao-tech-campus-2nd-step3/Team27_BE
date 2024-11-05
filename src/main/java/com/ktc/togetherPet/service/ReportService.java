@@ -7,7 +7,6 @@ import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
-import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.Region;
@@ -33,6 +32,7 @@ public class ReportService {
     private final ImageService imageService;
     private final UserService userService;
     private final RegionService regionService;
+    private final BreedService breedService;
 
     @Transactional
     public void createReport(
@@ -65,7 +65,7 @@ public class ReportService {
             ));
 
         Optional.ofNullable(reportCreateRequestDTO.breed())
-            .ifPresent(breed -> report.setBreed(new Breed(breed)));
+            .ifPresent(breed -> report.setBreed(breedService.findBreedByName(breed)));
 
         Optional.ofNullable(reportCreateRequestDTO.gender())
             .ifPresent(report::setGender);

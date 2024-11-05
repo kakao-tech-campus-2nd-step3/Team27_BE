@@ -61,6 +61,9 @@ class ReportServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private BreedService breedService;
+
     @InjectMocks
     private ReportService reportService;
 
@@ -165,6 +168,9 @@ class ReportServiceTest {
         when(missingService.findByMissingId(reportCreateRequestDTO.missingId()))
             .thenReturn(givenMissing);
 
+        when(breedService.findBreedByName(givenBreed.getName()))
+            .thenReturn(givenBreed);
+
         when(reportRepository.save(expectReport))
             .thenReturn(savedReport);
 
@@ -188,6 +194,9 @@ class ReportServiceTest {
         verify(missingService, times(1))
             .findByMissingId(reportCreateRequestDTO.missingId());
 
+        verify(breedService, times(1))
+            .findBreedByName(reportCreateRequestDTO.breed());
+
         verify(reportRepository, times(1))
             .save(expectReport);
 
@@ -205,7 +214,7 @@ class ReportServiceTest {
             15.0D,
             LocalDateTime.of(2024, 10, 11, 4, 26, 22),
             "testDescription",
-            "testBreed",
+            "testPetBreed",
             "testGender",
             null
         );
@@ -259,6 +268,9 @@ class ReportServiceTest {
             )
         ).thenReturn(givenRegion);
 
+        when(breedService.findBreedByName(givenBreed.getName()))
+            .thenReturn(givenBreed);
+
         when(reportRepository.save(expectReport))
             .thenReturn(savedReport);
 
@@ -278,6 +290,9 @@ class ReportServiceTest {
                     reportCreateRequestDTO.foundLongitude()
                 )
             );
+
+        verify(breedService, times(1))
+            .findBreedByName(reportCreateRequestDTO.breed());
 
         verify(missingService, never())
             .findByMissingId(any(Long.class));
