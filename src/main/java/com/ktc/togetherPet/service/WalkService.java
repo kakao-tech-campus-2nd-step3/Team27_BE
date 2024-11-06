@@ -4,14 +4,13 @@ import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.walk.CalorieResponseDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkInformationDTO;
+import com.ktc.togetherPet.model.dto.walk.WalkPathByDateResponseDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkRequestDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkResponseDTO;
 import com.ktc.togetherPet.model.entity.Path;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.Walk;
-import com.ktc.togetherPet.model.vo.Location;
-import com.ktc.togetherPet.repository.PathRepository;
 import com.ktc.togetherPet.repository.UserRepository;
 import com.ktc.togetherPet.repository.WalkRepository;
 import com.ktc.togetherPet.util.WalkCalculator;
@@ -29,7 +28,7 @@ public class WalkService {
     private final PetService petService;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final PathRepository pathRepository;
+    private final PathService pathService;
 
     @Transactional
     public CalorieResponseDTO createWalk(OauthUserDTO oauthUserDTO, WalkRequestDTO walkRequestDTO) {
@@ -45,13 +44,10 @@ public class WalkService {
             walkRequestDTO.totalWalkTime()
         );
 
-        // todo: pathService로 분리
-        List<Path> paths = walkRequestDTO.locationList().stream()
-                .map(locationDTO -> new Path(new Location(locationDTO.latitude(), locationDTO.longitude()), walk))
-                .toList();
-
-        pathRepository.saveAll(paths);
         walkRepository.save(walk);
+
+        List<Path> paths = pathService.createPathList(walkRequestDTO.locationList(), walk);
+        pathService.saveAll(paths);
 
         CalorieResponseDTO calorieResponseDTO = new CalorieResponseDTO(
             WalkCalculator.calculateCalorie(walkRequestDTO.totalWalkDistance())
@@ -86,8 +82,20 @@ public class WalkService {
         return new WalkResponseDTO(flagValue, walkInformation);
     }
 
-    // todo: 산책 List 반환 서비스 추가
-    //       반환 DTO는 산책 거리, 총 산책 시간, 산책 시작 시간, 산책 종료 시간이 필요
+    public List<WalkPathByDateResponseDTO> getWalkPathByDate(OauthUserDTO oauthUserDTO, LocalDateTime date) {
+        User user = userRepository.findByEmail(oauthUserDTO.email())
+            .orElseThrow(CustomException::invalidUserException);
 
-    // todo: 산책 상세 정보 반환 메서드 추가
+        List<Walk> walkList = walkRepository.getWalksByDate(user.getPet().getId(), date.toLocalDate().atStartOfDay(), date.toLocalDate().plusDays(1).atStartOfDay());
+
+        return walkList
+            .stream()
+            .map(walk -> new WalkPathByDateResponseDTO(
+                pathService.findPathByWalkId(walk.getId()),
+                walk.getDistance(),
+                walk.getWalkTime(),
+                walk.getWalkDate(),
+                walk.getWalkDate().plusSeconds(walk.getWalkTime())
+            )).toList();
+    }
 }
