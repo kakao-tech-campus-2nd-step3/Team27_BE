@@ -38,6 +38,10 @@ public interface WalkRepository extends JpaRepository<Walk, Long> {
     @Query("select avg(walkDistance) from (select sum(w.distance) as walkDistance from Walk w where w.pet.id = :petId group by w.walkDate)")
     Optional<Double> getAverageWalkDistance(@Param("petId") Long petId);
 
+    // 날짜별 산책
+    @Query("select w from Walk w where w.pet.id = :petId and w.walkDate >= :startOfDay and w.walkDate < :endOfDay")
+    List<Walk> getWalksByDate(@Param("petId") Long petId, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
     List<Walk> findByPet(Pet pet);
 }
 
