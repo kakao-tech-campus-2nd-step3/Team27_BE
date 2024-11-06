@@ -1,6 +1,11 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.PET;
+
 import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.user.UserInfoResponseDTO;
+import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PetService petService;
+    private final ImageService imageService;
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -42,5 +48,16 @@ public class UserService {
         user.setName(userName);
 
         userRepository.save(user);
+    }
+
+    public UserInfoResponseDTO getUserInfo(OauthUserDTO oauthUserDTO) {
+        User user = findUserByEmail(oauthUserDTO.email());
+        Pet pet = user.getPet();
+        return new UserInfoResponseDTO(
+            user.getName(),
+            pet.getName(),
+            imageService.getRepresentativeImageById(PET, pet.getId()),
+            pet.getBirthMonth()
+        );
     }
 }
