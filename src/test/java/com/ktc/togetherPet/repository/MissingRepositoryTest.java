@@ -37,7 +37,7 @@ class MissingRepositoryTest {
 
     private List<Pet> givenPet;
     private List<Missing> givenMissing;
-    private List<Region> givenRegionCode;
+    private List<Region> givenRegion;
 
     @BeforeEach
     void setUp() {
@@ -77,7 +77,7 @@ class MissingRepositoryTest {
 
         petRepository.saveAll(givenPet);
 
-        givenRegionCode = List.of(
+        givenRegion = List.of(
             new Region(
                 1L,
                 "testProvince1",
@@ -92,7 +92,7 @@ class MissingRepositoryTest {
             )
         );
 
-        regionRepository.saveAll(givenRegionCode);
+        regionRepository.saveAll(givenRegion);
 
         givenMissing = List.of(
             new Missing(
@@ -100,7 +100,7 @@ class MissingRepositoryTest {
                 true,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 44),
                 new Location(15.0D, 15D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription1"
             ),
             new Missing(
@@ -108,7 +108,7 @@ class MissingRepositoryTest {
                 true,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 22),
                 new Location(15.0D, 15D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription2"
             ),
             new Missing(
@@ -116,7 +116,7 @@ class MissingRepositoryTest {
                 false,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 22),
                 new Location(20D, 20D),
-                givenRegionCode.get(1),
+                givenRegion.get(1),
                 "testDescription3"
             )
         );
@@ -136,7 +136,7 @@ class MissingRepositoryTest {
 
         // then
         List<Missing> actual = missingRepository
-            .findAllByRegionAndIsMissingIsTrue(givenRegionCode.getFirst());
+            .findAllByRegionAndIsMissingIsTrue(givenRegion.getFirst());
         assertEquals(expect, actual);
     }
 

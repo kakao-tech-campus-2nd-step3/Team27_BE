@@ -44,7 +44,7 @@ class ReportRepositoryTest {
 
     private Missing givenMissing;
     private List<ReportBase> givenReport;
-    private List<Region> givenRegionCode;
+    private List<Region> givenRegion;
 
     @BeforeEach
     void setUp() {
@@ -63,7 +63,7 @@ class ReportRepositoryTest {
             new User("test3@email.com")
         );
 
-        givenRegionCode = List.of(
+        givenRegion = List.of(
             new Region(
                 1L,
                 "testProvince1",
@@ -78,14 +78,14 @@ class ReportRepositoryTest {
             )
         );
 
-        regionRepository.saveAll(givenRegionCode);
+        regionRepository.saveAll(givenRegion);
 
         givenMissing = new Missing(
             givenPet,
             true,
             LocalDateTime.of(2024, 10, 17, 19, 39, 11),
             new Location(15D, 15D),
-            givenRegionCode.getFirst(),
+            givenRegion.getFirst(),
             "testMissingDescription"
         );
 
@@ -94,7 +94,7 @@ class ReportRepositoryTest {
                 givenUser.get(0),
                 LocalDateTime.of(2024, 10, 17, 19, 19, 11),
                 new Location(15D, 15D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription1",
                 givenMissing
             ),
@@ -102,28 +102,28 @@ class ReportRepositoryTest {
                 givenUser.get(0),
                 LocalDateTime.of(2024, 10, 17, 19, 20, 22),
                 new Location(15D, 15D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription2"
             ),
             new GeneralReport(
                 givenUser.get(0),
                 LocalDateTime.of(2024, 10, 15, 11, 11, 11),
                 new Location(17D, 17D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription3"
             ),
             new GeneralReport(
                 givenUser.get(1),
                 LocalDateTime.of(2024, 10, 17, 19, 20, 33),
                 new Location(30D, 30D),
-                givenRegionCode.get(1),
+                givenRegion.get(1),
                 "testDescription4"
             ),
             new MissingReport(
                 givenUser.get(1),
                 LocalDateTime.of(2024, 10, 17, 19, 20, 33),
                 new Location(30D, 30D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription5",
                 givenMissing
             )
@@ -167,7 +167,7 @@ class ReportRepositoryTest {
         reportRepository.saveAll(givenReport);
 
         // then
-        List<GeneralReport> actual = reportRepository.findAllByRegion(givenRegionCode.getFirst());
+        List<GeneralReport> actual = reportRepository.findAllByRegion(givenRegion.getFirst());
 
         assertEquals(expect, actual);
     }
