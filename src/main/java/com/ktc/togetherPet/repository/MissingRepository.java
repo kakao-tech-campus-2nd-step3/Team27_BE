@@ -13,4 +13,6 @@ public interface MissingRepository extends JpaRepository<Missing, Long> {
     List<Missing> findAllByRegionCodeAndIsMissingIsTrue(long regionCode);
 
     Optional<Missing> findByPetAndIsMissingIsTrue(Pet pet);
+
+    long countByRegionCodeAndIsMissingTrue(long regionCode);
 }
