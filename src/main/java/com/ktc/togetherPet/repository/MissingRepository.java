@@ -15,4 +15,6 @@ public interface MissingRepository extends JpaRepository<Missing, Long> {
 
     // TODO 여러장 존재하는 경우도 고려해야할 필요가 있음
     Optional<Missing> findByPet(Pet pet);
+
+    long countByRegionCodeAndIsMissingTrue(long regionCode);
 }
