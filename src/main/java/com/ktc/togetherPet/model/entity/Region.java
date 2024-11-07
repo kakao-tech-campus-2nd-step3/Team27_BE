@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -25,6 +26,7 @@ public class Region {
     private String name;
 
     @Embedded
+    @Getter
     private Location location;
 
     public Region(String name, Location location) {
