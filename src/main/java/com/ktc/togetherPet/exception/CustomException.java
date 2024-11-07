@@ -13,6 +13,7 @@ import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_PROVIDER;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_TOKEN;
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
 import static com.ktc.togetherPet.exception.ErrorMessage.IO_EXCEPTION;
+import static com.ktc.togetherPet.exception.ErrorMessage.JSON_PROCESSING_EXCEPTION;
 import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.PET_NOT_FOUND;
 import static com.ktc.togetherPet.exception.ErrorMessage.REPORT_NOT_FOUND;
@@ -22,6 +23,8 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.io.IOException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -96,5 +99,14 @@ public class CustomException extends RuntimeException {
 
     public static CustomException IOException(IOException ioException) {
         return new CustomException(IO_EXCEPTION, INTERNAL_SERVER_ERROR);
+    }
+
+    public static CustomException jsonProcessingException(JsonProcessingException jsonProcessingException) {
+        return new CustomException(JSON_PROCESSING_EXCEPTION, INTERNAL_SERVER_ERROR);
+    }
+
+    public static CustomException fcmTokenException(
+        FirebaseMessagingException firebaseMessagingException) {
+        return new CustomException(INVALID_TOKEN, BAD_REQUEST);
     }
 }
