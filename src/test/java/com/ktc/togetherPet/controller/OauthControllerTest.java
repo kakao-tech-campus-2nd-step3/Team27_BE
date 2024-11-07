@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -16,8 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
-import com.ktc.togetherPet.jwtUtil.JwtUtil;
 import com.ktc.togetherPet.model.dto.oauth.OauthRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthSuccessDTO;
 import com.ktc.togetherPet.service.OauthService;
@@ -37,12 +34,6 @@ class OauthControllerTest extends RestDocsTestSupport {
 
     @MockBean
     private OauthService oauthService;
-
-    @MockBean
-    private OauthUserArgumentResolver oauthUserArgumentResolver;
-
-    @MockBean
-    private JwtUtil jwtUtil;
 
     @Test
     @DisplayName("로그인 테스트 이미 존재하는 사용자의 경우/handleOauth")
@@ -138,5 +129,4 @@ class OauthControllerTest extends RestDocsTestSupport {
 
         verify(oauthService, never()).processOauth(inputEmail); // 서비스 메서드 호출 검증
     }
-
 }

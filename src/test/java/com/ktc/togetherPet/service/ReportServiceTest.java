@@ -31,6 +31,7 @@ import com.ktc.togetherPet.repository.ReportRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -62,6 +63,34 @@ class ReportServiceTest {
     @InjectMocks
     private ReportService reportService;
 
+    private long givenRegionCode;
+    private Missing givenMissing;
+    private Breed givenBreed;
+    private Pet givenPet;
+
+    @BeforeEach
+    void setUp() {
+        givenRegionCode = 1L;
+
+        givenBreed = new Breed("testPetBreed");
+
+        givenPet = new Pet(
+            "testPetName",
+            1L,
+            givenBreed,
+            true
+        );
+
+        givenMissing = new Missing(
+            givenPet,
+            true,
+            LocalDateTime.of(2024, 10, 11, 4, 39, 11),
+            new Location(15.0D, 15.0D),
+            givenRegionCode,
+            "testDescription"
+        );
+    }
+
     @Test
     @DisplayName("실종에 대한 제보 등록 테스트/createReport")
     void 실종에_대한_제보_등록() {
@@ -72,7 +101,7 @@ class ReportServiceTest {
             15.0D,
             LocalDateTime.of(2024, 10, 11, 4, 26, 22),
             "testDescription",
-            "testBreed",
+            "testPetBreed",
             "testGender",
             1L
         );
@@ -98,22 +127,6 @@ class ReportServiceTest {
             oauthUserDTO.email()
         );
 
-        long expectRegionCode = 1L;
-
-        Missing expectMissing = new Missing(
-            new Pet(
-                "testPetName",
-                1L,
-                new Breed("testPetBreed"),
-                true
-            ),
-            true,
-            LocalDateTime.of(2024, 10, 11, 4, 39, 11),
-            new Location(15.0D, 15.0D),
-            expectRegionCode,
-            "testDescription"
-        );
-
         MissingReport expectReport = new MissingReport(
             expectUser,
             reportCreateRequestDTO.foundDate(),
@@ -121,14 +134,14 @@ class ReportServiceTest {
                 reportCreateRequestDTO.foundLatitude(),
                 reportCreateRequestDTO.foundLongitude()
             ),
-            expectRegionCode,
+            givenRegionCode,
             reportCreateRequestDTO.description(),
-            expectMissing
+            givenMissing
         );
 
         MissingReport savedReport = spy(expectReport);
 
-        expectReport.setBreed(new Breed(reportCreateRequestDTO.breed()));
+        expectReport.setBreed(givenBreed);
         expectReport.setGender(reportCreateRequestDTO.gender());
 
         // when
@@ -141,10 +154,10 @@ class ReportServiceTest {
                     reportCreateRequestDTO.foundLongitude()
                 )
             )
-        ).thenReturn(expectRegionCode);
+        ).thenReturn(givenRegionCode);
 
         when(missingService.findByMissingId(reportCreateRequestDTO.missingId()))
-            .thenReturn(expectMissing);
+            .thenReturn(givenMissing);
 
         when(reportRepository.save(expectReport))
             .thenReturn(savedReport);
@@ -212,8 +225,6 @@ class ReportServiceTest {
             oauthUserDTO.email()
         );
 
-        long expectRegionCode = 1L;
-
         GeneralReport expectReport = new GeneralReport(
             expectUser,
             reportCreateRequestDTO.foundDate(),
@@ -221,7 +232,7 @@ class ReportServiceTest {
                 reportCreateRequestDTO.foundLatitude(),
                 reportCreateRequestDTO.foundLongitude()
             ),
-            expectRegionCode,
+            givenRegionCode,
             reportCreateRequestDTO.description()
         );
 
@@ -240,7 +251,7 @@ class ReportServiceTest {
                     reportCreateRequestDTO.foundLongitude()
                 )
             )
-        ).thenReturn(expectRegionCode);
+        ).thenReturn(givenRegionCode);
 
         when(reportRepository.save(expectReport))
             .thenReturn(savedReport);
@@ -278,37 +289,24 @@ class ReportServiceTest {
         // given
         OauthUserDTO oauthUserDTO = new OauthUserDTO("test@email.com");
         User expectUser = new User(oauthUserDTO.email());
-        Pet pet = new Pet(
-            "testPetName",
-            1L,
-            new Breed("testPetBreed"),
-            true
-        );
-        expectUser.setPet(pet);
-        Missing expectMissing = new Missing(
-            pet,
-            true,
-            LocalDateTime.of(2024, 10, 11, 5, 41, 22),
-            new Location(15.0D, 15.0D),
-            1L,
-            "testDescription"
-        );
+        expectUser.setPet(givenPet);
+
         List<MissingReport> expectReports = List.of(
             spy(new MissingReport(
                 new User("reporter1@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
-                1L,
+                givenRegionCode,
                 "testDescription1",
-                expectMissing
+                givenMissing
             )),
             spy(new MissingReport(
                 new User("reporter2@email.com"),
                 LocalDateTime.of(2024, 10, 11, 6, 4, 11),
                 new Location(15.0D, 15.0D),
-                1L,
+                givenRegionCode,
                 "testDescription2",
-                expectMissing
+                givenMissing
             ))
         );
 
@@ -334,10 +332,10 @@ class ReportServiceTest {
         when(userService.findUserByEmail(oauthUserDTO.email()))
             .thenReturn(expectUser);
 
-        when(missingService.findByPet(pet))
-            .thenReturn(expectMissing);
+        when(missingService.findByPet(givenPet))
+            .thenReturn(givenMissing);
 
-        when(reportRepository.findAllByMissing(expectMissing))
+        when(reportRepository.findAllByMissing(givenMissing))
             .thenReturn(expectReports);
 
         when(expectReports.get(0).getId())
@@ -361,10 +359,10 @@ class ReportServiceTest {
             .findUserByEmail(oauthUserDTO.email());
 
         verify(missingService, times(1))
-            .findByPet(pet);
+            .findByPet(givenPet);
 
         verify(reportRepository, times(1))
-            .findAllByMissing(expectMissing);
+            .findAllByMissing(givenMissing);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(REPORT, 1L);
@@ -381,13 +379,12 @@ class ReportServiceTest {
         double longitude = 15.0D;
         Location expectLocation = new Location(latitude, longitude);
 
-        long expectRegionCode = 1L;
         GeneralReport expectReport1 = spy(
             new GeneralReport(
                 new User("test1@email.com"),
                 LocalDateTime.of(2024, 10, 15, 10, 20, 22),
                 new Location(15.1D, 15.2D),
-                1L,
+                givenRegionCode,
                 "testDescription1"
             )
         );
@@ -397,7 +394,7 @@ class ReportServiceTest {
                 new User("test2@email.com"),
                 LocalDateTime.of(2024, 10, 15, 11, 11, 11),
                 new Location(15.3D, 15.4D),
-                1L,
+                givenRegionCode,
                 "testDescription2"
             )
         );
@@ -424,9 +421,9 @@ class ReportServiceTest {
 
         // when
         when(kakaoMapService.getRegionCodeFromKakao(expectLocation))
-            .thenReturn(expectRegionCode);
+            .thenReturn(givenRegionCode);
 
-        when(reportRepository.findAllByRegionCode(expectRegionCode))
+        when(reportRepository.findAllByRegionCode(givenRegionCode))
             .thenReturn(expectReports);
 
         when(expectReport1.getId())
@@ -448,7 +445,7 @@ class ReportServiceTest {
             .getRegionCodeFromKakao(expectLocation);
 
         verify(reportRepository, times(1))
-            .findAllByRegionCode(expectRegionCode);
+            .findAllByRegionCode(givenRegionCode);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(REPORT, 1L);
@@ -472,7 +469,7 @@ class ReportServiceTest {
                 expectUser,
                 LocalDateTime.of(2024, 10, 11, 6, 44, 11),
                 new Location(15.0D, 15.0D),
-                1L,
+                givenRegionCode,
                 "testDescription"
             );
 
