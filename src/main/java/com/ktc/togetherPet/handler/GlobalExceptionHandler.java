@@ -1,5 +1,7 @@
-package com.ktc.togetherPet.exception;
+package com.ktc.togetherPet.handler;
 
+import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.exception.ErrorMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

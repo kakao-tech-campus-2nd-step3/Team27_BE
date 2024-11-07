@@ -50,7 +50,8 @@ public enum ErrorMessage {
 
     // 서버 내부 문제 -30000 ~ -39999
     // 파일처리 관련 문제 -30000 ~ -30099
-    IO_EXCEPTION(-30001, "파일 처리 중 오류가 발생했습니다.");
+    IO_EXCEPTION(-30001, "파일 처리 중 오류가 발생했습니다."),
+    JSON_PROCESSING_EXCEPTION(-30002, "전송한 웹소켓 데이터 형식이 잘못되었습니다.");
 
     private final int code;
     private final String message;
