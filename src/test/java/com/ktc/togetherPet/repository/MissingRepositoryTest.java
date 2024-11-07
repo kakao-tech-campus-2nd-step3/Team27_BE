@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.vo.Location;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,9 +32,12 @@ class MissingRepositoryTest {
     @Autowired
     private BreedRepository breedRepository;
 
+    @Autowired
+    private RegionRepository regionRepository;
+
     private List<Pet> givenPet;
     private List<Missing> givenMissing;
-    private List<Long> givenRegionCode;
+    private List<Region> givenRegion;
 
     @BeforeEach
     void setUp() {
@@ -73,7 +77,22 @@ class MissingRepositoryTest {
 
         petRepository.saveAll(givenPet);
 
-        givenRegionCode = List.of(1L, 2L);
+        givenRegion = List.of(
+            new Region(
+                1L,
+                "testProvince1",
+                "testDistrict1",
+                "testNeighborhood1"
+            ),
+            new Region(
+                2L,
+                "testProvince2",
+                "testDistrict2",
+                "testNeighborhood2"
+            )
+        );
+
+        regionRepository.saveAll(givenRegion);
 
         givenMissing = List.of(
             new Missing(
@@ -81,7 +100,7 @@ class MissingRepositoryTest {
                 true,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 44),
                 new Location(15.0D, 15D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription1"
             ),
             new Missing(
@@ -89,7 +108,7 @@ class MissingRepositoryTest {
                 true,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 22),
                 new Location(15.0D, 15D),
-                givenRegionCode.getFirst(),
+                givenRegion.getFirst(),
                 "testDescription2"
             ),
             new Missing(
@@ -97,7 +116,7 @@ class MissingRepositoryTest {
                 false,
                 LocalDateTime.of(2024, 10, 17, 12, 40, 22),
                 new Location(20D, 20D),
-                givenRegionCode.get(1),
+                givenRegion.get(1),
                 "testDescription3"
             )
         );
@@ -117,7 +136,7 @@ class MissingRepositoryTest {
 
         // then
         List<Missing> actual = missingRepository
-            .findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode.getFirst());
+            .findAllByRegionAndIsMissingIsTrue(givenRegion.getFirst());
         assertEquals(expect, actual);
     }
 

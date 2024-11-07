@@ -18,6 +18,7 @@ import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.MissingRepository;
@@ -50,7 +51,7 @@ class MissingServiceTest {
     private BreedService breedService;
 
     @Mock
-    private KakaoMapService kakaoMapService;
+    private RegionService regionService;
 
     @Mock
     private ImageService imageService;
@@ -60,7 +61,7 @@ class MissingServiceTest {
 
     private List<Pet> givenPet;
 
-    private long givenRegionCode;
+    private Region givenRegion;
 
     @BeforeEach
     void setUp() {
@@ -90,7 +91,12 @@ class MissingServiceTest {
             ))
         );
 
-        givenRegionCode = 1L;
+        givenRegion = new Region(
+            1L,
+            "testProvince",
+            "testDistrict",
+            "testNeighborhood"
+        );
     }
 
     @Test
@@ -123,8 +129,8 @@ class MissingServiceTest {
         when(userService.findUserByEmail(oauthUserDTO.email()))
             .thenReturn(expectUser);
 
-        when(kakaoMapService.getRegionCodeFromKakao(location))
-            .thenReturn(givenRegionCode);
+        when(regionService.findByLocation(location))
+            .thenReturn(givenRegion);
 
         // then
         missingService.registerMissingPet(oauthUserDTO, missingPetRequestDTO);
@@ -144,7 +150,7 @@ class MissingServiceTest {
                 true,
                 missingPetRequestDTO.lostTime(),
                 location,
-                givenRegionCode,
+                givenRegion,
                 missingPetRequestDTO.description()
             ));
     }
@@ -162,7 +168,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 11, 3, 49, 44),
                 new Location(15.1D, 15.1D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription1"
             )),
             spy(new Missing(
@@ -170,7 +176,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 1, 3, 49, 44),
                 new Location(15.2D, 15.2D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription2"
             ))
         );
@@ -196,10 +202,10 @@ class MissingServiceTest {
         );
 
         // when
-        when(kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude)))
-            .thenReturn(givenRegionCode);
+        when(regionService.findByLocation(new Location(latitude, longitude)))
+            .thenReturn(givenRegion);
 
-        when(missingRepository.findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode))
+        when(missingRepository.findAllByRegionAndIsMissingIsTrue(givenRegion))
             .thenReturn(expectMissing);
 
         when(givenPet.getFirst().getId())
@@ -226,11 +232,11 @@ class MissingServiceTest {
 
         assertEquals(actual, expect);
 
-        verify(kakaoMapService, times(1))
-            .getRegionCodeFromKakao(new Location(latitude, longitude));
+        verify(regionService, times(1))
+            .findByLocation(new Location(latitude, longitude));
 
         verify(missingRepository, times(1))
-            .findAllByRegionCodeAndIsMissingIsTrue(givenRegionCode);
+            .findAllByRegionAndIsMissingIsTrue(givenRegion);
 
         verify(imageService, times(1))
             .getRepresentativeImageById(MISSING, expectMissing.get(0).getId());
@@ -249,7 +255,7 @@ class MissingServiceTest {
             true,
             LocalDateTime.of(2024, 10, 11, 4, 8, 22),
             new Location(15.0D, 15.0D),
-            givenRegionCode,
+            givenRegion,
             "testDescription"
         );
         List<String> expectImageUrls = List.of(
@@ -302,7 +308,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 11, 5, 27, 22),
                 new Location(15.0D, 15.0D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription"
             );
 
@@ -353,7 +359,7 @@ class MissingServiceTest {
                 true,
                 LocalDateTime.of(2024, 10, 11, 6, 21, 22),
                 new Location(15.0D, 15.0D),
-                givenRegionCode,
+                givenRegion,
                 "testDescription"
             );
 

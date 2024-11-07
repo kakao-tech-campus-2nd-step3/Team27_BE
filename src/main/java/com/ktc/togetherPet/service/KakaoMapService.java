@@ -45,7 +45,7 @@ public class KakaoMapService {
             LocationFromKakaoResponseDTO locationFromKakaoDTO = response.getBody();
 
             assert locationFromKakaoDTO != null;
-            return locationFromKakaoDTO.getAdministrativeCode();
+            return locationFromKakaoDTO.getLegalCode();
         }
         throw CustomException.invalidApiException(
             HttpStatus.resolve(response.getStatusCode().value())

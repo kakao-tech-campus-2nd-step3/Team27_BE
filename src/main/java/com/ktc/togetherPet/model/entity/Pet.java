@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "pet")
@@ -42,10 +41,6 @@ public class Pet {
 
     @Column(name = "is_neutering", nullable = true)
     private Boolean isNeutering;
-
-    @Setter
-    @Column(name = "image_src", nullable = true)
-    private String imageSrc;
 
     public Pet(
         String name,

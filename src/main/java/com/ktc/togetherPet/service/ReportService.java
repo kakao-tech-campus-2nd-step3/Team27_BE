@@ -10,6 +10,7 @@ import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.report.GeneralReport;
 import com.ktc.togetherPet.model.entity.report.MissingReport;
@@ -29,9 +30,9 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final MissingService missingService;
-    private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
     private final UserService userService;
+    private final RegionService regionService;
 
     @Transactional
     public void createReport(
@@ -51,7 +52,7 @@ public class ReportService {
                 user,
                 reportCreateRequestDTO.foundDate(),
                 location,
-                kakaoMapService.getRegionCodeFromKakao(location),
+                regionService.findByLocation(location),
                 reportCreateRequestDTO.description(),
                 missingService.findByMissingId(missingId)
             ))
@@ -59,7 +60,7 @@ public class ReportService {
                 user,
                 reportCreateRequestDTO.foundDate(),
                 location,
-                kakaoMapService.getRegionCodeFromKakao(location),
+                regionService.findByLocation(location),
                 reportCreateRequestDTO.description()
             ));
 
@@ -94,9 +95,9 @@ public class ReportService {
 
     public List<ReportResponseDTO> getReportsByLocation(double latitude, double longitude) {
         Location location = new Location(latitude, longitude);
-        long regionCode = kakaoMapService.getRegionCodeFromKakao(location);
+        Region region = regionService.findByLocation(location);
 
-        return reportRepository.findAllByRegionCode(regionCode)
+        return reportRepository.findAllByRegion(region)
             .stream()
             .map(report -> new ReportResponseDTO(
                     report.getId(),

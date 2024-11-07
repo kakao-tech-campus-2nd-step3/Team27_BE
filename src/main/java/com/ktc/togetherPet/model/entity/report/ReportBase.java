@@ -4,6 +4,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import jakarta.persistence.Column;
@@ -50,8 +51,9 @@ public class ReportBase {
     @Embedded
     private Location location;
 
-    @Column(name = "region_code", nullable = false)
-    private long regionCode;
+    @ManyToOne(targetEntity = Region.class)
+    @JoinColumn(name = "region_code", nullable = false)
+    private Region region;
 
     @Getter
     @Column(name = "color")
@@ -76,13 +78,13 @@ public class ReportBase {
         User user,
         LocalDateTime timestamp,
         Location location,
-        long regionCode,
+        Region region,
         String description
     ) {
         this.user = user;
         this.timeStamp = timestamp;
         this.location = location;
-        this.regionCode = regionCode;
+        this.region = region;
         this.description = description;
     }
 }
