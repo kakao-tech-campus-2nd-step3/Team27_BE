@@ -103,4 +103,8 @@ public class MissingService {
         return missingRepository.findByPet(pet)
             .orElseThrow(CustomException::missingNotFound);
     }
+
+    public long countByRegionCode(long regionId) {
+        return missingRepository.countByRegionCodeAndIsMissingTrue(regionId);
+    }
 }
