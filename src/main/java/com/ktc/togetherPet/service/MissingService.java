@@ -104,7 +104,7 @@ public class MissingService {
             .orElseThrow(CustomException::missingNotFound);
     }
 
-    public long countByRegionCode(long regionId) {
+    public long countByRegionId(long regionId) {
         return missingRepository.countByRegion_IdAndIsMissingTrue(regionId);
     }
 }

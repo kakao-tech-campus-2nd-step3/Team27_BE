@@ -88,6 +88,6 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
     }
 
     private boolean hasMissingReports() {
-        return missingService.countByRegionCode(previousRegionCode) > 0;
+        return missingService.countByRegionId(previousRegionCode) > 0;
     }
 }
