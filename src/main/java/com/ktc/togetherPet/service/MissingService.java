@@ -105,6 +105,6 @@ public class MissingService {
     }
 
     public long countByRegionCode(long regionId) {
-        return missingRepository.countByRegionCodeAndIsMissingTrue(regionId);
+        return missingRepository.countByRegion_IdAndIsMissingTrue(regionId);
     }
 }
