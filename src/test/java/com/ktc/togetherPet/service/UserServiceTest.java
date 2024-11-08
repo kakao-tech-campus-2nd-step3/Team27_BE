@@ -1,16 +1,21 @@
 package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.exception.ErrorMessage.INVALID_USER;
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.PET;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ktc.togetherPet.exception.CustomException;
+import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
+import com.ktc.togetherPet.model.dto.user.UserInfoResponseDTO;
 import com.ktc.togetherPet.model.entity.Breed;
+import com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.repository.UserRepository;
@@ -33,6 +38,9 @@ class UserServiceTest {
 
     @Mock
     private PetService petService;
+
+    @Mock
+    private ImageService imageService;
 
     @InjectMocks
     private UserService userService;
@@ -168,5 +176,49 @@ class UserServiceTest {
 
         verify(userRepository, times(1))
             .save(expectUser);
+    }
+
+    @Test
+    @DisplayName("사용자의 정보 가져오기 테스트/getUserInfo")
+    void 사용자의_정보_가져오기(){
+        // given
+        OauthUserDTO givenOauthUserDTO = new OauthUserDTO("test@email.com");
+        User givenUser = new User("test@email.com");
+        Pet givenPet = spy(new Pet(
+            "testPetName",
+            1L,
+            new Breed("testBreed"),
+            true
+        ));
+        givenUser.setPet(givenPet);
+        givenUser.setName("testUserName");
+
+        String expectImageUrl = "https://together-pet/images/test-uuid.jpg";
+
+        UserInfoResponseDTO expectUserInfoResponseDTO = new UserInfoResponseDTO(
+            givenUser.getName(),
+            givenPet.getName(),
+            expectImageUrl,
+            givenPet.getBirthMonth()
+        );
+
+        // when
+        when(userRepository.findByEmail(givenUser.getEmail()))
+            .thenReturn(Optional.of(givenUser));
+
+        when(givenPet.getId())
+            .thenReturn(1L);
+
+        when(imageService.getRepresentativeImageById(PET, 1L))
+            .thenReturn(expectImageUrl);
+
+        // then
+        assertEquals(expectUserInfoResponseDTO, userService.getUserInfo(givenOauthUserDTO));
+
+        verify(userRepository, times(1))
+            .findByEmail(givenUser.getEmail());
+
+        verify(imageService, times(1))
+            .getRepresentativeImageById(PET, 1L);
     }
 }

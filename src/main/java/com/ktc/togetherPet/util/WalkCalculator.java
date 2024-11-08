@@ -14,13 +14,13 @@ public class WalkCalculator {
 
         int flagValue = 0;
 
-        if(walkInformationDTO.todayWalkCount() < walkInformationDTO.averageWalkCount()) {
+        if(walkInformationDTO.getTodayWalkCount() < walkInformationDTO.getAverageWalkCount()) {
             flagValue += 1;
         }
-        if(walkInformationDTO.todayWalkTime() < walkInformationDTO.averageWalkTime()) {
+        if(walkInformationDTO.getTodayWalkTime() < walkInformationDTO.getAverageWalkTime()) {
             flagValue += 1;
         }
-        if(walkInformationDTO.todayWalkDistance() < walkInformationDTO.averageWalkDistance()) {
+        if(walkInformationDTO.getTodayWalkDistance() < walkInformationDTO.getAverageWalkDistance()) {
             flagValue += 1;
         }
 

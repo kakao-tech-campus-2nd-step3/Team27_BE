@@ -3,6 +3,7 @@ package com.ktc.togetherPet.model.entity.report;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.ktc.togetherPet.model.entity.Missing;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import jakarta.persistence.DiscriminatorValue;
@@ -25,11 +26,11 @@ public class MissingReport extends ReportBase {
         User user,
         LocalDateTime timestamp,
         Location location,
-        long regionCode,
+        Region region,
         String description,
         Missing missing
     ) {
-        super(user, timestamp, location, regionCode, description);
+        super(user, timestamp, location, region, description);
         this.missing = missing;
     }
 }

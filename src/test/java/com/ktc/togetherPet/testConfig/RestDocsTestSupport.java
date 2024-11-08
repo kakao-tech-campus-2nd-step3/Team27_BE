@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.testConfig;
 
 import com.google.gson.Gson;
+import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.config.GsonConfig;
 import javax.management.Attribute;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -32,6 +34,9 @@ public class RestDocsTestSupport {
 
     @Autowired
     private Gson gson;
+
+    @MockBean
+    protected OauthUserArgumentResolver oauthUserArgumentResolver;
 
     protected static Attribute constraints(
         final String value
