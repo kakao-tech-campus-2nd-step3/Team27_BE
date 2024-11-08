@@ -7,9 +7,9 @@ import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
-import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.report.GeneralReport;
 import com.ktc.togetherPet.model.entity.report.MissingReport;
@@ -29,9 +29,10 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final MissingService missingService;
-    private final KakaoMapService kakaoMapService;
     private final ImageService imageService;
     private final UserService userService;
+    private final RegionService regionService;
+    private final BreedService breedService;
 
     @Transactional
     public void createReport(
@@ -46,31 +47,43 @@ public class ReportService {
             reportCreateRequestDTO.foundLongitude()
         );
 
-        ReportBase report = Optional.ofNullable(reportCreateRequestDTO.missingId())
-            .map(missingId -> (ReportBase) new MissingReport(
-                user,
-                reportCreateRequestDTO.foundDate(),
-                location,
-                kakaoMapService.getRegionCodeFromKakao(location),
-                reportCreateRequestDTO.description(),
-                missingService.findByMissingId(missingId)
-            ))
-            .orElseGet(() -> new GeneralReport(
-                user,
-                reportCreateRequestDTO.foundDate(),
-                location,
-                kakaoMapService.getRegionCodeFromKakao(location),
-                reportCreateRequestDTO.description()
-            ));
+        Region region = regionService.findByLocation(location);
+
+        ReportBase report = createConcreteReport(user, region, location, reportCreateRequestDTO);
 
         Optional.ofNullable(reportCreateRequestDTO.breed())
-            .ifPresent(breed -> report.setBreed(new Breed(breed)));
+            .ifPresent(breed -> report.setBreed(breedService.findBreedByName(breed)));
 
         Optional.ofNullable(reportCreateRequestDTO.gender())
             .ifPresent(report::setGender);
 
         long reportId = reportRepository.save(report).getId();
         imageService.saveImages(reportId, REPORT, files);
+    }
+
+    private ReportBase createConcreteReport(
+        User user,
+        Region region,
+        Location location,
+        ReportCreateRequestDTO reportCreateRequestDTO
+    ) {
+        if (reportCreateRequestDTO.missingId() == null) {
+            return new GeneralReport(
+                user,
+                reportCreateRequestDTO.foundDate(),
+                location,
+                region,
+                reportCreateRequestDTO.description()
+            );
+        }
+        return new MissingReport(
+            user,
+            reportCreateRequestDTO.foundDate(),
+            location,
+            region,
+            reportCreateRequestDTO.description(),
+            missingService.findByMissingId(reportCreateRequestDTO.missingId())
+        );
     }
 
     public List<ReportResponseDTO> getReceivedReports(OauthUserDTO oauthUserDTO) {
@@ -94,9 +107,9 @@ public class ReportService {
 
     public List<ReportResponseDTO> getReportsByLocation(double latitude, double longitude) {
         Location location = new Location(latitude, longitude);
-        long regionCode = kakaoMapService.getRegionCodeFromKakao(location);
+        Region region = regionService.findByLocation(location);
 
-        return reportRepository.findAllByRegionCode(regionCode)
+        return reportRepository.findAllByRegion(region)
             .stream()
             .map(report -> new ReportResponseDTO(
                     report.getId(),

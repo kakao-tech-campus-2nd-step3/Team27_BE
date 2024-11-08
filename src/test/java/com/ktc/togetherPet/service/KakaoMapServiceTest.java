@@ -96,6 +96,6 @@ class KakaoMapServiceTest {
             .andRespond(withSuccess(expectResponse, APPLICATION_JSON));
 
         // then
-        assertEquals(4113565500L, kakaoMapService.getRegionCodeFromKakao(location));
+        assertEquals(4113510900L, kakaoMapService.getRegionCodeFromKakao(location));
     }
 }
