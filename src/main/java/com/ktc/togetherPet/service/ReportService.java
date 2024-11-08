@@ -7,7 +7,6 @@ import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.report.ReportCreateRequestDTO;
 import com.ktc.togetherPet.model.dto.report.ReportDetailResponseDTO;
 import com.ktc.togetherPet.model.dto.report.ReportResponseDTO;
-import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.Region;
@@ -33,6 +32,7 @@ public class ReportService {
     private final ImageService imageService;
     private final UserService userService;
     private final RegionService regionService;
+    private final BreedService breedService;
 
     @Transactional
     public void createReport(
@@ -47,31 +47,43 @@ public class ReportService {
             reportCreateRequestDTO.foundLongitude()
         );
 
-        ReportBase report = Optional.ofNullable(reportCreateRequestDTO.missingId())
-            .map(missingId -> (ReportBase) new MissingReport(
-                user,
-                reportCreateRequestDTO.foundDate(),
-                location,
-                regionService.findByLocation(location),
-                reportCreateRequestDTO.description(),
-                missingService.findByMissingId(missingId)
-            ))
-            .orElseGet(() -> new GeneralReport(
-                user,
-                reportCreateRequestDTO.foundDate(),
-                location,
-                regionService.findByLocation(location),
-                reportCreateRequestDTO.description()
-            ));
+        Region region = regionService.findByLocation(location);
+
+        ReportBase report = createConcreteReport(user, region, location, reportCreateRequestDTO);
 
         Optional.ofNullable(reportCreateRequestDTO.breed())
-            .ifPresent(breed -> report.setBreed(new Breed(breed)));
+            .ifPresent(breed -> report.setBreed(breedService.findBreedByName(breed)));
 
         Optional.ofNullable(reportCreateRequestDTO.gender())
             .ifPresent(report::setGender);
 
         long reportId = reportRepository.save(report).getId();
         imageService.saveImages(reportId, REPORT, files);
+    }
+
+    private ReportBase createConcreteReport(
+        User user,
+        Region region,
+        Location location,
+        ReportCreateRequestDTO reportCreateRequestDTO
+    ) {
+        if (reportCreateRequestDTO.missingId() == null) {
+            return new GeneralReport(
+                user,
+                reportCreateRequestDTO.foundDate(),
+                location,
+                region,
+                reportCreateRequestDTO.description()
+            );
+        }
+        return new MissingReport(
+            user,
+            reportCreateRequestDTO.foundDate(),
+            location,
+            region,
+            reportCreateRequestDTO.description(),
+            missingService.findByMissingId(reportCreateRequestDTO.missingId())
+        );
     }
 
     public List<ReportResponseDTO> getReceivedReports(OauthUserDTO oauthUserDTO) {
