@@ -5,21 +5,24 @@
 :toc: left
 :toclevels: 2
 
-== 로그인
-
+== 사용자
+=== 로그인
 operation::oauth-controller-test/이미_존재하는_사용자[snippets="http-request,request-body,response-headers"]
 
-=== 이미 존재하는 사용자
+==== 이미 존재하는 사용자
 
 operation::oauth-controller-test/이미_존재하는_사용자[snippets="http-request,http-response"]
 
-=== 존재하지 않는 사용자
+==== 존재하지 않는 사용자
 
 operation::oauth-controller-test/존재하지_않는_사용자[snippets="http-request,http-response"]
 
-=== 잘못된 이메일
+==== 잘못된 이메일
 
 operation::oauth-controller-test/잘못된_이메일[snippets="http-request,http-response"]
+
+=== 정보 가져오기
+operation::user-controller-test/토큰을_바탕으로_사용자_정보_받아오기[snippets="http-request,http-response,request-headers,response-body"]
 
 == 실종
 
