@@ -2,6 +2,7 @@ package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.exception.ErrorMessage.MISSING_NOT_FOUND;
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.PET;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
@@ -220,10 +221,10 @@ class MissingServiceTest {
         when(expectMissing.get(1).getId())
             .thenReturn(2L);
 
-        when(imageService.getRepresentativeImageById(MISSING, expectMissing.get(0).getId()))
+        when(imageService.getRepresentativeImageById(PET, givenPet.getFirst().getId()))
             .thenReturn(expectImageUrl1);
 
-        when(imageService.getRepresentativeImageById(MISSING, expectMissing.get(1).getId()))
+        when(imageService.getRepresentativeImageById(PET, givenPet.get(1).getId()))
             .thenReturn(expectImageUrl2);
 
         // then
@@ -239,10 +240,10 @@ class MissingServiceTest {
             .findAllByRegionAndIsMissingIsTrue(givenRegion);
 
         verify(imageService, times(1))
-            .getRepresentativeImageById(MISSING, expectMissing.get(0).getId());
+            .getRepresentativeImageById(PET, expectMissing.get(0).getId());
 
         verify(imageService, times(1))
-            .getRepresentativeImageById(MISSING, expectMissing.get(1).getId());
+            .getRepresentativeImageById(PET, expectMissing.get(1).getId());
     }
 
     @Test
