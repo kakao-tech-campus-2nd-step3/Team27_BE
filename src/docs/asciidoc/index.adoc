@@ -65,3 +65,17 @@ operation::report-controller-test/제보_상세_정보_확인[snippets="path-par
 === 사용자와 펫 정보 등록
 
 operation::register-controller-test/사용자와_펫_정보_등록[snippets="request-headers,request-parts,request-part-PetRegisterDTO-fields,http-request,http-response"]
+
+== 산책
+
+=== 산책 정보 등록
+
+operation::walk-controller-test/산책_정보_등록[snippets="request-headers,request-fields,http-request,response-fields,http-response"]
+
+=== 산책 정보 가져오기
+
+operation::walk-controller-test/산책_정보_가져오기[snippets="request-headers,http-request,response-fields,http-response"]
+
+=== 산책 경로 정보 리스트 가져오기
+
+operation::walk-controller-test/날짜별_경로_및_정보_가져오기[snippets="request-headers,http-request,response-fields,http-response"]
