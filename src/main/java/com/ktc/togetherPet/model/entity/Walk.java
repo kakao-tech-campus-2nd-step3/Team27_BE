@@ -24,6 +24,7 @@ public class Walk {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @ManyToOne(targetEntity = Pet.class)
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
