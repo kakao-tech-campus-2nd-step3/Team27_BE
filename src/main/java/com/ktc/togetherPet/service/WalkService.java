@@ -1,6 +1,5 @@
 package com.ktc.togetherPet.service;
 
-import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.walk.CalorieResponseDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkInformationDTO;
@@ -11,7 +10,6 @@ import com.ktc.togetherPet.model.entity.Path;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.Walk;
-import com.ktc.togetherPet.repository.UserRepository;
 import com.ktc.togetherPet.repository.WalkRepository;
 import com.ktc.togetherPet.util.WalkCalculator;
 import jakarta.transaction.Transactional;
@@ -26,14 +24,12 @@ public class WalkService {
 
     private final WalkRepository walkRepository;
     private final PetService petService;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final PathService pathService;
 
     @Transactional
     public CalorieResponseDTO createWalk(OauthUserDTO oauthUserDTO, WalkRequestDTO walkRequestDTO) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
+        User user = userService.findUserByEmail(oauthUserDTO.email());
 
         Pet pet = petService.findPetById(user.getPet().getId());
 
@@ -57,16 +53,16 @@ public class WalkService {
     }
 
     public WalkResponseDTO getWalkInformation(OauthUserDTO oauthUserDTO) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
+        User user = userService.findUserByEmail(oauthUserDTO.email());
 
-        // todo: 한 번에 데이터 받는 방법 탐색. 현재는 여러 번 쿼리를 날리는 방식으로 구현
+        /** deprecated
         Long todayWalkCount = walkRepository.getTodayWalkCount(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now());
         Double averageWalkCount = walkRepository.getAverageWalkCount(user.getPet().getId()).orElse(0.0);
         Double todayWalkTime = walkRepository.getTodayWalkTime(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now()).orElse(0.0);
-        Double averageWalkTime = walkRepository.getAverageWalkTime(user.getPet().getId()).orElse(0.0);
+        Double averageWalkTime = walkRepository.getAv ㅁerageWalkTime(user.getPet().getId()).orElse(0.0);
         Double todayWalkDistance = walkRepository.getTodayWalkDistance(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now()).orElse(0.0);
         Double averageWalkDistance = walkRepository.getAverageWalkDistance(user.getPet().getId()).orElse(0.0);
+
 
         WalkInformationDTO walkInformation = new WalkInformationDTO(
             todayWalkCount,
@@ -76,6 +72,9 @@ public class WalkService {
             todayWalkDistance,
             averageWalkDistance
         );
+         **/
+
+        WalkInformationDTO walkInformation = walkRepository.getWalkStatistics(user.getPet().getId());
 
         int flagValue = WalkCalculator.calculateFlag(walkInformation);
 
@@ -83,8 +82,7 @@ public class WalkService {
     }
 
     public List<WalkPathByDateResponseDTO> getWalkPathByDate(OauthUserDTO oauthUserDTO, LocalDateTime date) {
-        User user = userRepository.findByEmail(oauthUserDTO.email())
-            .orElseThrow(CustomException::invalidUserException);
+        User user = userService.findUserByEmail(oauthUserDTO.email());
 
         List<Walk> walkList = walkRepository.getWalksByDate(user.getPet().getId(), date.toLocalDate().atStartOfDay(), date.toLocalDate().plusDays(1).atStartOfDay());
 
@@ -95,7 +93,7 @@ public class WalkService {
                 walk.getDistance(),
                 walk.getWalkTime(),
                 walk.getWalkDate(),
-                walk.getWalkDate().plusSeconds(walk.getWalkTime())
+                walk.getWalkDate().plusSeconds(walk.getWalkTime() / 1000)
             )).toList();
     }
 }
