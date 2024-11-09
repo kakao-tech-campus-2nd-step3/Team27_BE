@@ -9,6 +9,7 @@ import com.ktc.togetherPet.model.dto.missing.MissingPetRequestDTO;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.MissingRepository;
@@ -26,7 +27,7 @@ public class MissingService {
     private final UserService userService;
     private final PetRepository petRepository;
     private final BreedService breedService;
-    private final KakaoMapService kakaoMapService;
+    private final RegionService regionService;
     private final ImageService imageService;
 
     public void registerMissingPet(OauthUserDTO oauthUserDTO, MissingPetRequestDTO missingPetDTO) {
@@ -55,7 +56,7 @@ public class MissingService {
                 true,
                 missingPetDTO.lostTime(),
                 location,
-                kakaoMapService.getRegionCodeFromKakao(location),
+                regionService.findByLocation(location),
                 missingPetDTO.description()
             )
         );
@@ -65,9 +66,9 @@ public class MissingService {
         double latitude,
         double longitude
     ) {
-        long regionCode = kakaoMapService.getRegionCodeFromKakao(new Location(latitude, longitude));
+        Region region = regionService.findByLocation(new Location(latitude, longitude));
 
-        return missingRepository.findAllByRegionCodeAndIsMissingIsTrue(regionCode)
+        return missingRepository.findAllByRegionAndIsMissingIsTrue(region)
             .stream()
             .map(missing -> new MissingPetNearByResponseDTO(
                 missing.getId(),
@@ -101,5 +102,9 @@ public class MissingService {
     public Missing findByPet(Pet pet) {
         return missingRepository.findByPetAndIsMissingIsTrue(pet)
             .orElseThrow(CustomException::missingNotFound);
+    }
+
+    public long countByRegionId(long regionId) {
+        return missingRepository.countByRegion_IdAndIsMissingTrue(regionId);
     }
 }

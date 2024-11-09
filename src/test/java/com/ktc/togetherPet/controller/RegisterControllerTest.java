@@ -16,7 +16,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ktc.togetherPet.annotation.OauthUserArgumentResolver;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.pet.PetRegisterRequestDTO;
 import com.ktc.togetherPet.service.RegisterService;
@@ -33,9 +32,6 @@ class RegisterControllerTest extends RestDocsTestSupport {
 
     @MockBean
     private RegisterService registerService;
-
-    @MockBean
-    private OauthUserArgumentResolver oauthUserArgumentResolver;
 
     @Test
     @DisplayName("사용자와 펫 정보 등록 테스트/registerPetUser")

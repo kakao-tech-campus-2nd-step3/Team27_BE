@@ -11,18 +11,13 @@ public record LocationFromKakaoResponseDTO(
     MetaDTO meta,
     List<Documents> documents
 ) {
-
-    public String getAdministrative3rdDepthName() {
-        return getAdministrativeDocuments().region3depthName();
+    public long getLegalCode() {
+        return Long.parseLong(getLegalDocuments().code());
     }
 
-    public long getAdministrativeCode() {
-        return Long.parseLong(getAdministrativeDocuments().code());
-    }
-
-    private Documents getAdministrativeDocuments() {
+    private Documents getLegalDocuments() {
         for (Documents docs : documents) {
-            if (docs.isRegionTypeH()) {
+            if (docs.isRegionTypeB()) {
                 return docs;
             }
         }

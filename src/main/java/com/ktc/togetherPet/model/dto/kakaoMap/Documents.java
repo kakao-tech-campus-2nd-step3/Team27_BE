@@ -25,7 +25,7 @@ record Documents(
     double y
 ) {
 
-    public boolean isRegionTypeH() {
-        return regionType.equals("H");
+    public boolean isRegionTypeB() {
+        return regionType.equals("B");
     }
 }

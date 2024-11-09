@@ -48,9 +48,13 @@ public enum ErrorMessage {
     // Walk 관련 문제 -20800 ~ -20899
     WALK_NOT_FOUND(-20801, "해당 산책 정보를 찾을 수 없습니다."),
 
+    // Region 관련 문제 -20900 ~ -20999
+    REGION_NOT_FOUND(-20901, "해당 지역 정보를 찾을 수 없습니다."),
+
     // 서버 내부 문제 -30000 ~ -39999
     // 파일처리 관련 문제 -30000 ~ -30099
-    IO_EXCEPTION(-30001, "파일 처리 중 오류가 발생했습니다.");
+    IO_EXCEPTION(-30001, "파일 처리 중 오류가 발생했습니다."),
+    JSON_PROCESSING_EXCEPTION(-30002, "전송한 웹소켓 데이터 형식이 잘못되었습니다.");
 
     private final int code;
     private final String message;

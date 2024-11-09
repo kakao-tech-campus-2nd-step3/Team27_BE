@@ -2,6 +2,7 @@ package com.ktc.togetherPet.model.entity.report;
 
 import static lombok.AccessLevel.PROTECTED;
 
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.vo.Location;
 import jakarta.persistence.DiscriminatorValue;
@@ -19,9 +20,9 @@ public class GeneralReport extends ReportBase {
         User user,
         LocalDateTime timestamp,
         Location location,
-        long regionCode,
+        Region region,
         String description
     ) {
-        super(user, timestamp, location, regionCode, description);
+        super(user, timestamp, location, region, description);
     }
 }

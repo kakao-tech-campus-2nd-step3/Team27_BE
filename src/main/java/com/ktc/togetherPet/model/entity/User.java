@@ -35,6 +35,7 @@ public class User {
     private String name;
 
     @Setter
+    @Getter
     @ManyToOne(targetEntity = Region.class)
     @JoinColumn(name = "region_id", nullable = true)
     private Region region;

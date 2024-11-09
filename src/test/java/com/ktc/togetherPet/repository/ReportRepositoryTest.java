@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.ktc.togetherPet.model.entity.Breed;
 import com.ktc.togetherPet.model.entity.Missing;
 import com.ktc.togetherPet.model.entity.Pet;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.report.GeneralReport;
 import com.ktc.togetherPet.model.entity.report.MissingReport;
@@ -38,8 +39,12 @@ class ReportRepositoryTest {
     @Autowired
     private MissingRepository missingRepository;
 
+    @Autowired
+    private RegionRepository regionRepository;
+
     private Missing givenMissing;
     private List<ReportBase> givenReport;
+    private List<Region> givenRegion;
 
     @BeforeEach
     void setUp() {
@@ -58,12 +63,29 @@ class ReportRepositoryTest {
             new User("test3@email.com")
         );
 
+        givenRegion = List.of(
+            new Region(
+                1L,
+                "testProvince1",
+                "testDistrict1",
+                "testNeighborhood1"
+            ),
+            new Region(
+                2L,
+                "testProvince2",
+                "testDistrict2",
+                "testNeighborhood2"
+            )
+        );
+
+        regionRepository.saveAll(givenRegion);
+
         givenMissing = new Missing(
             givenPet,
             true,
             LocalDateTime.of(2024, 10, 17, 19, 39, 11),
             new Location(15D, 15D),
-            1L,
+            givenRegion.getFirst(),
             "testMissingDescription"
         );
 
@@ -72,7 +94,7 @@ class ReportRepositoryTest {
                 givenUser.get(0),
                 LocalDateTime.of(2024, 10, 17, 19, 19, 11),
                 new Location(15D, 15D),
-                1L,
+                givenRegion.getFirst(),
                 "testDescription1",
                 givenMissing
             ),
@@ -80,28 +102,28 @@ class ReportRepositoryTest {
                 givenUser.get(0),
                 LocalDateTime.of(2024, 10, 17, 19, 20, 22),
                 new Location(15D, 15D),
-                1L,
+                givenRegion.getFirst(),
                 "testDescription2"
             ),
             new GeneralReport(
                 givenUser.get(0),
                 LocalDateTime.of(2024, 10, 15, 11, 11, 11),
                 new Location(17D, 17D),
-                1L,
+                givenRegion.getFirst(),
                 "testDescription3"
             ),
             new GeneralReport(
                 givenUser.get(1),
                 LocalDateTime.of(2024, 10, 17, 19, 20, 33),
                 new Location(30D, 30D),
-                2L,
+                givenRegion.get(1),
                 "testDescription4"
             ),
             new MissingReport(
                 givenUser.get(1),
                 LocalDateTime.of(2024, 10, 17, 19, 20, 33),
                 new Location(30D, 30D),
-                1L,
+                givenRegion.getFirst(),
                 "testDescription5",
                 givenMissing
             )
@@ -136,7 +158,6 @@ class ReportRepositoryTest {
     @DisplayName("지역 코드를 기반으로 실종 정보가 없는 임의의 제보를 가져오는 테스트/findAllByRegionCodeAndMissingNull")
     void 지역_코드를_기반으로_실종_정보가_없는_임의의_제보를_가져오기() {
         // given
-        long regionCode = 1L;
         List<ReportBase> expect = List.of(
             givenReport.get(1),
             givenReport.get(2)
@@ -146,7 +167,7 @@ class ReportRepositoryTest {
         reportRepository.saveAll(givenReport);
 
         // then
-        List<GeneralReport> actual = reportRepository.findAllByRegionCode(regionCode);
+        List<GeneralReport> actual = reportRepository.findAllByRegion(givenRegion.getFirst());
 
         assertEquals(expect, actual);
     }

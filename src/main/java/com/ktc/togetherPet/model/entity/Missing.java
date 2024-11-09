@@ -43,8 +43,9 @@ public class Missing {
     @Embedded
     private Location location;
 
-    @Column(name = "region_code", nullable = false)
-    private long regionCode;
+    @ManyToOne(targetEntity = Region.class)
+    @JoinColumn(name = "region", nullable = false)
+    private Region region;
 
     @Getter
     @Column(name = "description", nullable = true)
@@ -55,14 +56,14 @@ public class Missing {
         Boolean isMissing,
         LocalDateTime lostTime,
         Location location,
-        long regionCode,
+        Region region,
         String description
     ) {
         this.pet = pet;
         this.isMissing = isMissing;
         this.lostTime = lostTime;
         this.location = location;
-        this.regionCode = regionCode;
+        this.region = region;
         this.description = description;
     }
 

@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.repository;
 
 import com.ktc.togetherPet.model.entity.Missing;
+import com.ktc.togetherPet.model.entity.Region;
 import com.ktc.togetherPet.model.entity.report.GeneralReport;
 import com.ktc.togetherPet.model.entity.report.MissingReport;
 import com.ktc.togetherPet.model.entity.report.ReportBase;
@@ -16,6 +17,6 @@ public interface ReportRepository extends JpaRepository<ReportBase, Long> {
     @Query("SELECT r FROM MissingReport r WHERE r.missing = :missing")
     List<MissingReport> findAllByMissing(@Param("missing") Missing missing);
 
-    @Query("SELECT r FROM GeneralReport r WHERE r.regionCode = :regionCode")
-    List<GeneralReport> findAllByRegionCode(long regionCode);
+    @Query("SELECT r FROM GeneralReport r WHERE r.region = :region")
+    List<GeneralReport> findAllByRegion(Region region);
 }
