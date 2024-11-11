@@ -17,12 +17,12 @@ public record WalkResponseDTO(
     public WalkResponseDTO(int flagValue, WalkInformationDTO walkInformationDTO) {
         this(
             flagValue,
-            walkInformationDTO.getTodayWalkCount(),
-            walkInformationDTO.getAverageWalkCount().longValue(),
-            walkInformationDTO.getTodayWalkDistance(),
-            walkInformationDTO.getAverageWalkDistance(),
-            walkInformationDTO.getTodayWalkTime().longValue(),
-            walkInformationDTO.getAverageWalkTime().longValue()
+            walkInformationDTO.todayWalkCount(),
+            walkInformationDTO.averageWalkCount().longValue(),
+            walkInformationDTO.todayWalkDistance(),
+            walkInformationDTO.averageWalkDistance(),
+            walkInformationDTO.todayWalkTime().longValue(),
+            walkInformationDTO.averageWalkTime().longValue()
         );
     }
 }

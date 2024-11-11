@@ -23,6 +23,7 @@ import com.ktc.togetherPet.model.dto.walk.WalkRequestDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkResponseDTO;
 import com.ktc.togetherPet.service.WalkService;
 import com.ktc.togetherPet.testConfig.RestDocsTestSupport;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -156,7 +157,7 @@ class WalkControllerTest extends RestDocsTestSupport {
     @DisplayName("날짜별 산책 경로 정보 가져오기 테스트/getWalkPathListByDate")
     void 날짜별_경로_및_정보_가져오기() throws Exception {
         // given
-        LocalDateTime testDate = LocalDateTime.now();
+        LocalDate testDate = LocalDate.now();
 
         List<WalkPathByDateResponseDTO> actual = List.of(
             new WalkPathByDateResponseDTO(

@@ -14,32 +14,28 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "walk")
 @NoArgsConstructor(access = PROTECTED)
 public class Walk {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     @ManyToOne(targetEntity = Pet.class)
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
 
-    @Getter
     @Column(nullable = false)
     private Float distance;
 
-    @Getter
-    @Column(nullable = false)
-    private LocalDateTime walkDate;
-
-    @Getter
     @Column(nullable = false)
     private long walkTime;
+
+    @Column(nullable = false)
+    private LocalDateTime walkDate;
 
     public Walk(
         Pet pet,

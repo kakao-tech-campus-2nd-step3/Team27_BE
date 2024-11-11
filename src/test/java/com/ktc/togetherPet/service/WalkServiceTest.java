@@ -19,6 +19,7 @@ import com.ktc.togetherPet.model.entity.Path;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.Walk;
+import com.ktc.togetherPet.model.entity.WalkStatistic;
 import com.ktc.togetherPet.model.vo.Location;
 import com.ktc.togetherPet.repository.WalkRepository;
 import com.ktc.togetherPet.util.WalkCalculator;
@@ -46,6 +47,9 @@ class WalkServiceTest {
 
     @Mock
     private PathService pathService;
+
+    @Mock
+    private WalkStatisticService walkStatisticService;
 
     @InjectMocks
     private WalkService walkService;
@@ -91,7 +95,7 @@ class WalkServiceTest {
             .save(any(Walk.class));
 
         verify(pathService, times(1))
-            .saveAll(anyList());
+            .saveAll(anyList(), any(Walk.class));
 
         assertEquals(WalkCalculator.calculateCalorie(walkRequestDTO.totalWalkDistance()), response.calorie());
     }
@@ -102,33 +106,42 @@ class WalkServiceTest {
         // given
         OauthUserDTO oauthUserDTO = new OauthUserDTO("testUser@example.com");
 
-        WalkInformationDTO walkInformation = mock(WalkInformationDTO.class);
-        when(walkInformation.getTodayWalkCount()).thenReturn(2L);
-        when(walkInformation.getAverageWalkCount()).thenReturn(1.5);
-        when(walkInformation.getTodayWalkTime()).thenReturn(3600.0);
-        when(walkInformation.getAverageWalkTime()).thenReturn(3000.0);
-        when(walkInformation.getTodayWalkDistance()).thenReturn(1700.0);
-        when(walkInformation.getAverageWalkDistance()).thenReturn(1400.0);
+        List<Walk> walkList = List.of(
+            new Walk(givenPet, 1000.0F, LocalDateTime.now(), 3600L),
+            new Walk(givenPet, 2000.0F, LocalDateTime.now().plusHours(1), 4800L)
+        );
 
-        int expectedFlag = WalkCalculator.calculateFlag(walkInformation);
+        WalkStatistic walkStatistic = new WalkStatistic(walkList.get(0));
 
         when(userService.findUserByEmail(oauthUserDTO.email())).thenReturn(givenUser);
-        when(walkRepository.getWalkStatistics(givenUser.getPet().getId())).thenReturn(walkInformation);
+        when(walkRepository.getWalksByDate(givenUser.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay())).thenReturn(walkList);
+        when(walkStatisticService.getWalkStatisticByPetId(givenUser.getPet().getId())).thenReturn(walkStatistic);
+
+        WalkInformationDTO walkInformation = new WalkInformationDTO(
+            (long) walkList.size(),
+            (double) walkList.size() / walkStatistic.getWalkDay(),
+            walkList.stream().mapToDouble(Walk::getWalkTime).sum(),
+            (double) walkStatistic.getTotalWalkTime() / walkStatistic.getWalkCount(),
+            walkList.stream().mapToDouble(Walk::getDistance).sum(),
+            (double) walkStatistic.getTotalDistance() / walkStatistic.getWalkCount()
+        );
+        int expectedFlag = WalkCalculator.calculateFlag(walkInformation);
 
         // when
         WalkResponseDTO response = walkService.getWalkInformation(oauthUserDTO);
 
         // then
         verify(userService, times(1)).findUserByEmail(oauthUserDTO.email());
-        verify(walkRepository, times(1)).getWalkStatistics(givenUser.getPet().getId());
+        verify(walkRepository, times(1)).getWalksByDate(givenUser.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay());
+        verify(walkStatisticService, times(1)).getWalkStatisticByPetId(givenUser.getPet().getId());
 
         assertEquals(expectedFlag, response.flagValue());
-        assertEquals(walkInformation.getAverageWalkCount().longValue(), response.avgWalkCount());
-        assertEquals(walkInformation.getTodayWalkCount(), response.totalCount());
-        assertEquals(walkInformation.getAverageWalkTime().longValue(), response.avgWalkTime());
-        assertEquals(walkInformation.getTodayWalkTime().longValue(), response.totalWalkTime());
-        assertEquals(walkInformation.getAverageWalkDistance(), response.avgWalkDistance());
-        assertEquals(walkInformation.getTodayWalkDistance(), response.totalWalkDistance());
+        assertEquals(walkInformation.averageWalkCount().longValue(), response.avgWalkCount());
+        assertEquals(walkInformation.todayWalkCount(), response.totalCount());
+        assertEquals(walkInformation.averageWalkTime().longValue(), response.avgWalkTime());
+        assertEquals(walkInformation.todayWalkTime().longValue(), response.totalWalkTime());
+        assertEquals(walkInformation.averageWalkDistance(), response.avgWalkDistance());
+        assertEquals(walkInformation.todayWalkDistance(), response.totalWalkDistance());
     }
 
     @Test
@@ -159,7 +172,7 @@ class WalkServiceTest {
         when(pathService.findPathByWalkId(walk2.getId())).thenReturn(List.of(new LocationDTO(paths2.get(0).getLocation().getLatitude(), paths2.get(0).getLocation().getLongitude())));
 
         // when
-        List<WalkPathByDateResponseDTO> response = walkService.getWalkPathByDate(oauthUserDTO, date);
+        List<WalkPathByDateResponseDTO> response = walkService.getWalkPathByDate(oauthUserDTO, date.toLocalDate());
 
         // then
         verify(userService, times(1)).findUserByEmail(oauthUserDTO.email());
