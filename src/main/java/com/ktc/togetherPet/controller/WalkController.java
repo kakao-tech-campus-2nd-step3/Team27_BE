@@ -8,6 +8,7 @@ import com.ktc.togetherPet.model.dto.walk.WalkPathByDateResponseDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkRequestDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkResponseDTO;
 import com.ktc.togetherPet.service.WalkService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class WalkController {
         @OauthUser OauthUserDTO oauthUserDTO,
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         @RequestParam(required = true)
-        LocalDateTime date
+        LocalDate date
     ) {
         return CustomResponse.ok(
             walkService.getWalkPathByDate(oauthUserDTO, date)
