@@ -1,6 +1,7 @@
 package com.ktc.togetherPet.service;
 
 import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.MISSING;
+import static com.ktc.togetherPet.model.entity.ImageRelation.ImageEntityType.PET;
 
 import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.missing.MissingPetDetailResponseDTO;
@@ -75,7 +76,7 @@ public class MissingService {
                 missing.getPet().getId(),
                 missing.getLocation().getLatitude(),
                 missing.getLocation().getLongitude(),
-                imageService.getRepresentativeImageById(MISSING, missing.getId())
+                imageService.getRepresentativeImageById(PET, missing.getPet().getId())
             )).toList();
     }
 
