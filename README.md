@@ -1,68 +1,240 @@
-# Team27_BE
+# 🐶 함께 찾는 반려동물, Together Pet
+![image](https://github.com/user-attachments/assets/0a98c2d7-bced-4846-9193-adba2231770b)
 
-27조 백엔드
 
-## 코드리뷰 가이드
+## 목차
+- [프로젝트 소개 및 기획 의도](#프로젝트-소개-및-기획-의도)
+- [팀원 구성](#팀원-구성)
+- [배포된 인스턴스 주소](#배포된-인스턴스-주소)
+- [ERD](#erd)
+- [서버 아키텍처](#서버-아키텍처)
+- [개발 문서](#개발-문서)
+- [프로젝트 브랜치 전략](#프로젝트-브랜치-전략)
+- [프로젝트 구조](#프로젝트-구조)
+- [프로젝트 주요 기능](#프로젝트-주요-기능)
 
+
+## 프로젝트 소개 및 기획 의도
+Together Pet은 잃어버린 반려동물의 제보나, 발견한 실종동물의 정보를 쉽게 공유할 수 있는 서비스입니다.
+
+매년 반려동물 양육가구가 증가하는 만큼, 유실/유기 동물도 매년 증가하고 있습니다.
+<br>하지만 잃어버린 반려동물을 찾는 과정은 정말 쉽지 않습니다. 유기 동물 보호소를 찾아 다니거나 sns, 전단지를 통해 기약 없이 제보를 기다리는 수 밖에 없습니다.
+
+Together Pet은 동물들의 위치 정보를 훨씬 쉽고 빠르게 공유할 수 있는 창구를 제공합니다. 
+<br>유기동물을 발견한 사람들은 발견한 동물에 대한 정보를 쉽게 많은 사람들에게 공유하거나 주인에게 제보할 수 있고, 이를 통해 반려동물을 잃어버린 주인은 더욱 빠르고 쉽게 반려동물과 재회할 수 있도록 서비스를 기획하였습니다.
+
+
+## 팀원 구성
+
+<div align="center">
+
+|                                                     **이현기**                                                     |                                                     **박규현**                                                      |                                                     **정호성**                                                      |
+|:---------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------:|
+|<img src="https://github.com/user-attachments/assets/df8f872f-6dd4-47fd-934c-10aede3eafb2" height=150 width=150> | <img src="https://github.com/user-attachments/assets/e9b8e98a-0975-40ca-9107-22b9128c5226" height=150 width=150> | <img src="https://github.com/user-attachments/assets/284fda5a-90da-4687-8f00-f3e41a40bc21" height=150 width=150> |
+|                                                   **BE_테크리더**                                                   |                                                   **BE_타임키퍼**                                                    |                                                **BE_리액셔너, 리마인더**                                                 |
+
+</div>
+
+
+## 배포된 인스턴스 주소
+- 인스턴스 주소 : https://together-pet.live
+- Restdocs 주소(API 명세서) : https://together-pet.live/docs/index.html
+
+
+## ERD
+![image](https://github.com/user-attachments/assets/7581c761-3477-41ed-a46b-dc5dedc9a17f)
+
+
+## 서버 아키텍처
+
+### 자바, 스프링 버전
 ```
-코드리뷰란 주차 별 Master branch 에서 Review branch로 받아온 업데이트 내용을 담당 멘토님이 확인 후 리뷰하는 프로그램입니다.
-
-코드리뷰는 Step3 기간 동안 총 6회 진행됩니다.
+Java 21, Spring 3.3.3 
 ```
 
-1️⃣ 업데이트 된 Review 브랜치에 특히 코드리뷰 받고 싶은 부분, 개발 질문 등을 포함하여 readme 파일 기재 후 PR
+<br>
 
-* Review branch는 **조 내 Admin(조장 or 테크리더)**이 **금요일 자정까지 pr**해야 함
+### 아키텍처
+![image](https://github.com/user-attachments/assets/893c7327-84c4-4b2f-944b-87c69f7eeb9c)
 
-2️⃣ pr을 한 뒤, **테크리더는 슬랙 채널에서 멘토님에게 pr을 했음을 @태깅하여 안내**
 
-3️⃣ 해당 내용 바탕으로 코드 리뷰 서면으로 주말간 진행
+## 🔨개발 문서
+- 와이어프레임
+- [API 명세서](https://quickest-asterisk-75d.notion.site/2381b2d578374384bb23d6764b540969?p=6d3b77b528b14cfa8b7dc8cd81d95872&pm=s)
 
-### 1. KTC Step 3 Github 워크 플로우
 
-![](https://quickest-asterisk-75d.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F3ef8dbd9-414c-4cf5-813d-32ecb943cc67%2F1c31cc8b-572d-489e-8d91-0f03256383b8%2F%25EB%25A0%2588%25ED%258F%25AC%25EC%25A7%2580%25ED%2586%25A0%25EB%25A6%25AC_%25EC%259A%25B4%25EC%2598%2581-001.png?table=block&id=1ff4373d-03f6-41a8-9f47-35c9f0ed5f4a&spaceId=3ef8dbd9-414c-4cf5-813d-32ecb943cc67&width=2000&userId=&cache=v2)
+## 🛠 프로젝트 사용 기술
+![개발기술](https://github.com/user-attachments/assets/b9462a05-6ddd-4001-9869-689ae1f51054)
 
-### 2. 27조 BE Github 워크플로우
 
-![](https://file.notion.so/f/f/3ef8dbd9-414c-4cf5-813d-32ecb943cc67/822bb9d2-059f-40ab-b783-0b3583f0c051/image.png?table=block&id=17baad15-c64b-40d0-a8bf-8a4bd70be422&spaceId=3ef8dbd9-414c-4cf5-813d-32ecb943cc67&expirationTimestamp=1726826400000&signature=595SMdlc2zCb_Pe_6zog650S9eplq7DqAG82pG2P2S8&downloadName=image.png)
+## 프로젝트 브랜치 전략
+![image](https://github.com/user-attachments/assets/0b00dde1-7cc4-4689-b640-7bb5842bddb1)
 
-![](https://file.notion.so/f/f/3ef8dbd9-414c-4cf5-813d-32ecb943cc67/c8f314f1-8cfa-4e17-b88b-36942639e860/image.png?table=block&id=64755b80-5050-44cd-af56-5d5a480403db&spaceId=3ef8dbd9-414c-4cf5-813d-32ecb943cc67&expirationTimestamp=1726912800000&signature=KTt11_9vy5MHWI3X0-oMkE-tG0Of71m4hh31e63kYxI&downloadName=image.png)
 
 ## 프로젝트 구조
+```
+TEAM27_BE
+├─src
+│  ├─docs
+│  │  └─asciidoc
+│  ├─main
+│  │  ├─java
+│  │  │  └─com
+│  │  │      └─ktc
+│  │  │          └─togetherPet
+│  │  │              ├─annotation
+│  │  │              ├─apiResponse
+│  │  │              ├─config
+│  │  │              │  ├─initializer
+│  │  │              │  └─property
+│  │  │              ├─controller
+│  │  │              ├─exception
+│  │  │              ├─handler
+│  │  │              ├─jwtUtil
+│  │  │              ├─model
+│  │  │              │  ├─dto
+│  │  │              │  │  ├─kakaoMap
+│  │  │              │  │  ├─missing
+│  │  │              │  │  ├─oauth
+│  │  │              │  │  ├─pet
+│  │  │              │  │  ├─report
+│  │  │              │  │  ├─user
+│  │  │              │  │  └─walk
+│  │  │              │  ├─entity
+│  │  │              │  └─vo
+│  │  │              ├─repository
+│  │  │              ├─service
+│  │  │              └─util
+│  │  └─resources
+│  │      ├─firebase
+│  │      ├─static
+│  │      │  └─docs
+│  │      └─templates
+│  └─test
+│      ├─java
+│      │  └─com
+│      │      └─ktc
+│      │          └─togetherPet
+│      │              ├─controller
+│      │              ├─model
+│      │              │  ├─entity
+│      │              │  └─vo
+│      │              ├─repository
+│      │              ├─service
+│      │              └─testConfig
+│      └─resources
+│          └─org
+│              └─springframwork
+│                  └─restdocs
+│                      └─templates
+```
 
-### API 명세서
 
-| 기능                                                                                                   | 분류 키워드 | 설명                                                        | API PATH                             | HTTP Method |
-| ------------------------------------------------------------------------------------------------------ | ----------- | ----------------------------------------------------------- | ------------------------------------ | ----------- |
-| [OAuth 로그인](https://www.notion.so/OAuth-f34e1ff68c3942509ad4a8723f5f38df?pvs=4)                     | `로그인`    | OAuth를 통한 로그인을 한다.                                 | /api/login/{provider}                | `GET`       |
-| [반려동물 정보 등록](https://www.notion.so/cf1cd4f7c1fa47b5b3828c6c04f14df1?pvs=4)                     | `로그인`    | 맨 처음 회원가입시,
-반려동물의 정보를 등록한다.        | /api/pet                             | `POST`      |
-| [사용자 정보 등록](https://www.notion.so/411271dbc3bc45548a50ae8fea9bace2?pvs=4)                       | `같이찾기`  | 맨 처음 회원가입시,
-사용자의 정보를 등록한다.          | /api/member                          | `POST`      |
-| [실종신고](https://www.notion.so/bdc11c8f48d44a02ac97a53fea21fa43?pvs=4)                               | `같이찾기`  | 애완동물을 실종 신고한다.                                   | /api/missing                         | `POST`      |
-| [근처 실종 동물 나열](https://www.notion.so/0643c7dd9f544513a264cce25442f5ff?pvs=4)                    | `같이찾기`  | 사용자 근방에 있는 실종 신고를 가져온다.                    | /api/missing?region={region}         | `GET`       |
-| [실종 동물 세부사항 확인](https://www.notion.so/158f788a4a4b4cc498181bfd02ab101e?pvs=4)                | `같이찾기`  | 실종 신고의 세부 사항을 가져온다.                           | /api/missing/{missing\_id}           | `GET`       |
-| [제보 확인](https://www.notion.so/18a37b653f0e49aa942a541cd0fb2b9e?pvs=4)                              | `같이찾기`  | 자신에게 온 실종 제보를 가져온다.                           | /api/missing/report                  | `GET`       |
-| [제보 세부사항 확인](https://www.notion.so/926553777f314203bc30023293e9462a?pvs=4)                     | `같이찾기`  | 자신에게 온 실종 제보의 세부사항을 가져온다.                | /api/missing/report/{report\_id}     | `GET`       |
-| [실종 의심 동물 실종 신고](https://www.notion.so/e1f891f1f44c4bee82905a1239230316?pvs=4)               | `같이찾기`  | 실종 상태로 의심되는 동물을 실종 신고한다.                  | /api/missing/suspect                 | `POST`      |
-| [실종 의심 동물 실종 신고 나열](https://www.notion.so/d27c0c4e2da64dc29a2f397bea40d87a?pvs=4)          | `같이찾기`  | 실종 상태로 의심되는 실종 신고를 가져온다.                  | /api/missing/suspect?region={region} | `GET`       |
-| [실종 의심 동물 실종 신고 세부사항 확인](https://www.notion.so/a6c34c07fe9b45e6849f08662b7592b9?pvs=4) | `같이찾기`  | 실종 상태로 의심되는 실종 신고의
-세부 사항을 가져온다. | /api/missing/suspect/{missing\_id}   | `GET`       |
+## 프로젝트 주요 기능
 
-### ERD
+### [Oauth 인증]
+| 초기화면 |
+|----------|
+|![splash](https://user-images.githubusercontent.com/112460466/210172920-aef402ed-5aef-4d4a-94b9-2b7147fd8389.gif)|
+- Kakao Oauth를 활용하여 사용자가 Kakao 계정으로 회원가입 및 로그인을 할 수 있습니다.
+  - 카카오 인증 후 프론트에서 사용자의 이메일을 전송받아 이메일의 형식을 검증합니다.
+  - 이메일이 USER 데이터베이스에 존재하지 않을 경우 회원가입을, 존재할 경우 로그인을 수행합니다.
+  - 이메일을 토대로 JWT를 이용해 생성한 access token을 전송합니다.
+  - access token은 이후 API 요청 시 사용자를 검증하기 위해 사용됩니다.
+  
+<br>
 
-![](https://file.notion.so/f/f/3ef8dbd9-414c-4cf5-813d-32ecb943cc67/e66e695a-15a6-41a8-9441-9434f4546b59/image.png?table=block&id=7c5e68b9-fec5-48b6-a25c-fb89faf01ba2&spaceId=3ef8dbd9-414c-4cf5-813d-32ecb943cc67&expirationTimestamp=1726912800000&signature=XwQhO62kwISd_kH0hEUa5BhNfPndY21xYgB6IBUxs-w&downloadName=image.png)
+### [사용자 및 반려동물 정보 입력]
+| 회원가입 |
+|----------|
+|![join](https://user-images.githubusercontent.com/112460466/210173571-490f5beb-5791-4a4a-8c5e-510cdcb5f1fe.gif)|
+- 회원가입의 경우, 사용자의 정보와 반려동물 정보를 입력받아 저장할 수 있습니다.
+  - 사용자의 정보는 닉네임, 거주 지역을 입력받습니다.
+  - 반려동물의 정보는 이름, 개월수, 종, 중성화 여부, 상세 특징을 입력받습니다.
 
-[see on ERD Cloud](https://www.erdcloud.com/d/fMF9FFPdSnexqPGjN)
+<br>
 
-## Week3 진행사항
+### [사용자 및 반려동물 정보 가져오기]
+| 로그인 |
+|-----------------------------------------------------------------------------------------------------------------|
+| ![join](https://user-images.githubusercontent.com/112460466/210173571-490f5beb-5791-4a4a-8c5e-510cdcb5f1fe.gif) |
+- 로그인의 경우, 사용자의 정보 및 반려동물의 정보를 가져올 수 있습니다.
+  - 사용자의 정보는 사용자의 닉네임을 가져옵니다.
+  - 반려동물의 정보는 반려동물 이름, 반려동물 사진, 반려동물의 개월수를 가져옵니다.
 
-### Issue Template 작성([b529d2f](https://github.com/kakao-tech-campus-2nd-step3/Team27_BE/commit/b529d2f056b96e93491b53739f0a98e9cb70ff70))
+<br>
 
-### Entity 생성([5c2a6a7](https://github.com/kakao-tech-campus-2nd-step3/Team27_BE/commit/5c2a6a7a550c9bb44b606eeccc666598a30d2b82))
+### [실종 제보 조회, 상세보기]
+| 실종 제보 조회, 상세보기 |
+|----------|
+|![login](https://user-images.githubusercontent.com/112460466/210177956-c716414e-01c2-4c1e-b1f7-6562b9b7a857.gif)|
+- 현재 자신의 위치 주변의 실종 제보들을 조회할 수 있습니다.
+  - 자신의 위치를 기반으로 주변의 실종 제보들을 확인할 수 있습니다.
+  - 화면에 보이는 실종 제보 위치 아이콘을 클릭할 경우 해당 제보의 상세 내용을 확인할 수 있습니다. 
 
-### 프로젝트 구조 결정([262347b](https://github.com/kakao-tech-campus-2nd-step3/Team27_BE/commit/262347b2e0a5892cc6dfac271a50cc084d721a8d))
+<br>
 
-# 해결해야할 문제 (멘토님께 질문사항)
+### [실종동물 제보]
+| 실종동물 제보                                                                                                               |
+|-----------------------------------------------------------------------------------------------------------------------|
+| ![setProfile](https://user-images.githubusercontent.com/112460466/210173749-2da6c9af-eb93-4eea-9663-1a03e19299ec.gif) |
+- 실종된 자신의 애완동물에 대한 정보를 입력하여 제보할 수 있습니다.
+  - 애완동물의 정보는 이름, 성별, 개월수, 종, 중성화 여부, 실종 시간, 실종 위치, 상세 설명을 입력받을 수 있습니다.
 
-* [ ] MySQL과 액추에이터의 의존성을 추가해도 되는가?
+<br>
+
+### [실종 의심 동물 목격 제보 조회, 상세보기]
+| 실종 의심 동물 목격 제보 조회, 상세보기 |
+|----------|
+|![login](https://user-images.githubusercontent.com/112460466/210177956-c716414e-01c2-4c1e-b1f7-6562b9b7a857.gif)|
+- 현재 자신의 위치 주변의 실종 의심 동물 목격 제보들을 조회할 수 있습니다.
+  - 자신의 위치를 기반으로 주변의 실종 의심 동물 목격 제보들을 확인할 수 있습니다.
+  - 화면에 보이는 실종 의심 동물 목격 제보 위치 아이콘을 클릭할 경우 해당 제보의 상세 내용을 확인할 수 있습니다.
+
+<br>
+
+### [실종 의심 동물 목격 제보]
+| 실종 의심 동물 목격 제보 |
+|----------|
+|![logout](https://user-images.githubusercontent.com/112460466/210178009-11225733-7af5-4b8b-aa1c-fe264af01797.gif)|
+- 사용자가 목격한 실종 의심 동물에 대한 정보를 입력하여 제보할 수 있습니다.
+  - 목격한 실종 의심 동물의 정보는 색깔, 종, 성별, 설명을 적을 수 있습니다.
+  - 실종 의심 동물에 대한 사진을 업로드하여 등록할 수 있습니다.
+
+<br>
+
+### [실종 제보자에게 실종 의심 동물 목격 제보]
+| 실종 제보자에게 실종 의심 동물 목격 제보 |
+|----------|
+|![tab](https://user-images.githubusercontent.com/112460466/210178028-3185f944-6ac1-468a-94ba-b32cdc5e380e.gif)|
+- 실종 제보에서 해당 제보자에게 자신이 목격한 실종 의심 동물에 대한 정보를 제보할 수 있습니다.
+  - 실종 제보 위치 아이콘에서 제보하기를 클릭할 경우 제보할 수 있습니다.
+  - 목격한 실종 의심 동물의 정보는 색깔, 종, 성별, 설명을 적을 수 있습니다.
+  - 실종 의심 동물에 대한 사진을 업로드하여 등록할 수 있습니다.
+
+<br>
+
+### [산책 정보 조회]
+| 산책 정보 조회 |
+|---------------------------------------------------------------------------------------------------------------|
+| ![tab](https://user-images.githubusercontent.com/112460466/210178028-3185f944-6ac1-468a-94ba-b32cdc5e380e.gif) |
+- 지금까지 한 산책에 대한 정보들을 조회할 수 있습니다.
+  - 산책에 대한 각 정보는 산책 경로의 (위도,경도) 리스트, 산책 중 이동 거리, 산책 시작 시간, 산책 종료 시간, 산책 중 소요 시간을 담고 있습니다.
+
+<br>
+
+### [산책 통계 조회]
+| 산책 통계 조회 |
+|----------------------------------------------------------------------------------------------------------------|
+| ![tab](https://user-images.githubusercontent.com/112460466/210178028-3185f944-6ac1-468a-94ba-b32cdc5e380e.gif) |
+- 해당 날짜의 산책에 대한 통계를 조회할 수 있습니다.
+  - 산책 통계에 대한 정보는 해당 날짜 산책 여부, 해당 날짜 산책 횟수, 해당 날짜 산책 총 산책 거리, 해당 날짜 산책 총 산책 시간, 전체 평균 산책 시간을 담고 있습니다.
+
+<br>
+
+### [산책 등록]
+| 산책 등록 |
+|----------------------------------------------------------------------------------------------------------------|
+| ![tab](https://user-images.githubusercontent.com/112460466/210178028-3185f944-6ac1-468a-94ba-b32cdc5e380e.gif) |
+- 산책 후 결과에 대한 정보를 서버에 등록할 수 있습니다.
+  - 산책에 대한 정보는 산책 경로의 (위도,경도) 리스트, 산책 중 이동 거리, 산책 중 소요 시간을 담습니다.
