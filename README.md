@@ -1,8 +1,8 @@
 # 🐶 함께 찾는 반려동물, Together Pet
 ![image](https://github.com/user-attachments/assets/0a98c2d7-bced-4846-9193-adba2231770b)
+<br><br>
 
-
-## 목차
+## 📖목차
 - [프로젝트 소개 및 기획 의도](#프로젝트-소개-및-기획-의도)
 - [팀원 구성](#팀원-구성)
 - [배포된 인스턴스 주소](#배포된-인스턴스-주소)
@@ -12,9 +12,9 @@
 - [프로젝트 브랜치 전략](#프로젝트-브랜치-전략)
 - [프로젝트 구조](#프로젝트-구조)
 - [프로젝트 주요 기능](#프로젝트-주요-기능)
+<br><br>
 
-
-## 프로젝트 소개 및 기획 의도
+## 🎯프로젝트 소개 및 기획 의도
 Together Pet은 잃어버린 반려동물의 제보나, 발견한 실종동물의 정보를 쉽게 공유할 수 있는 서비스입니다.
 
 매년 반려동물 양육가구가 증가하는 만큼, 유실/유기 동물도 매년 증가하고 있습니다.
@@ -22,9 +22,10 @@ Together Pet은 잃어버린 반려동물의 제보나, 발견한 실종동물�
 
 Together Pet은 동물들의 위치 정보를 훨씬 쉽고 빠르게 공유할 수 있는 창구를 제공합니다. 
 <br>유기동물을 발견한 사람들은 발견한 동물에 대한 정보를 쉽게 많은 사람들에게 공유하거나 주인에게 제보할 수 있고, 이를 통해 반려동물을 잃어버린 주인은 더욱 빠르고 쉽게 반려동물과 재회할 수 있도록 서비스를 기획하였습니다.
+<br><br>
 
 
-## 팀원 구성
+## 👥팀원 구성
 
 <div align="center">
 
@@ -34,18 +35,22 @@ Together Pet은 동물들의 위치 정보를 훨씬 쉽고 빠르게 공유할 
 |                                                   **BE_테크리더**                                                   |                                                   **BE_타임키퍼**                                                    |                                                **BE_리액셔너, 리마인더**                                                 |
 
 </div>
+<br><br>
 
 
-## 배포된 인스턴스 주소
+## 🔗배포된 인스턴스 주소
 - 인스턴스 주소 : https://together-pet.live
 - Restdocs 주소(API 명세서) : https://together-pet.live/docs/index.html
+- 테스스 문서 주소(테스트 결과) : https://together-pet.live/docs/test/index.html
+<br><br>
 
 
 ## ERD
 ![image](https://github.com/user-attachments/assets/7581c761-3477-41ed-a46b-dc5dedc9a17f)
+<br><br>
 
 
-## 서버 아키텍처
+## 🖥️서버 아키텍처
 
 ### 자바, 스프링 버전
 ```
@@ -56,22 +61,26 @@ Java 21, Spring 3.3.3
 
 ### 아키텍처
 ![image](https://github.com/user-attachments/assets/893c7327-84c4-4b2f-944b-87c69f7eeb9c)
+<br><br>
 
 
 ## 🔨개발 문서
 - 와이어프레임
 - [API 명세서](https://quickest-asterisk-75d.notion.site/2381b2d578374384bb23d6764b540969?p=6d3b77b528b14cfa8b7dc8cd81d95872&pm=s)
+<br><br>
 
 
-## 🛠 프로젝트 사용 기술
+## 🛠️프로젝트 사용 기술
 ![개발기술](https://github.com/user-attachments/assets/b9462a05-6ddd-4001-9869-689ae1f51054)
+<br><br>
 
 
-## 프로젝트 브랜치 전략
+## 🌱프로젝트 브랜치 전략
 ![image](https://github.com/user-attachments/assets/0b00dde1-7cc4-4689-b640-7bb5842bddb1)
+<br><br>
 
 
-## 프로젝트 구조
+## 📊프로젝트 구조
 ```
 TEAM27_BE
 ├─src
@@ -128,9 +137,10 @@ TEAM27_BE
 │                  └─restdocs
 │                      └─templates
 ```
+<br><br>
 
 
-## 프로젝트 주요 기능
+## 🚀프로젝트 주요 기능
 
 ### [Oauth 인증]
 | 초기화면 |
