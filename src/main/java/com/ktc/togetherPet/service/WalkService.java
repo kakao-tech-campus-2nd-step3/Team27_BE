@@ -1,5 +1,8 @@
 package com.ktc.togetherPet.service;
 
+import static com.ktc.togetherPet.exception.CustomException.walkNotFoundException;
+
+import com.ktc.togetherPet.exception.CustomException;
 import com.ktc.togetherPet.model.dto.oauth.OauthUserDTO;
 import com.ktc.togetherPet.model.dto.walk.CalorieResponseDTO;
 import com.ktc.togetherPet.model.dto.walk.WalkInformationDTO;
@@ -10,10 +13,13 @@ import com.ktc.togetherPet.model.entity.Path;
 import com.ktc.togetherPet.model.entity.Pet;
 import com.ktc.togetherPet.model.entity.User;
 import com.ktc.togetherPet.model.entity.Walk;
+import com.ktc.togetherPet.model.entity.WalkStatistic;
 import com.ktc.togetherPet.repository.WalkRepository;
 import com.ktc.togetherPet.util.WalkCalculator;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +32,7 @@ public class WalkService {
     private final PetService petService;
     private final UserService userService;
     private final PathService pathService;
+    private final WalkStatisticService walkStatisticService;
 
     @Transactional
     public CalorieResponseDTO createWalk(OauthUserDTO oauthUserDTO, WalkRequestDTO walkRequestDTO) {
@@ -41,9 +48,8 @@ public class WalkService {
         );
 
         walkRepository.save(walk);
-
-        List<Path> paths = pathService.createPathList(walkRequestDTO.locationList(), walk);
-        pathService.saveAll(paths);
+        walkStatisticService.saveOrUpdateWalkStatistic(walk);
+        pathService.saveAll(walkRequestDTO.locationList(), walk);
 
         CalorieResponseDTO calorieResponseDTO = new CalorieResponseDTO(
             WalkCalculator.calculateCalorie(walkRequestDTO.totalWalkDistance())
@@ -55,36 +61,39 @@ public class WalkService {
     public WalkResponseDTO getWalkInformation(OauthUserDTO oauthUserDTO) {
         User user = userService.findUserByEmail(oauthUserDTO.email());
 
-        /** deprecated
-        Long todayWalkCount = walkRepository.getTodayWalkCount(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now());
-        Double averageWalkCount = walkRepository.getAverageWalkCount(user.getPet().getId()).orElse(0.0);
-        Double todayWalkTime = walkRepository.getTodayWalkTime(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now()).orElse(0.0);
-        Double averageWalkTime = walkRepository.getAv ㅁerageWalkTime(user.getPet().getId()).orElse(0.0);
-        Double todayWalkDistance = walkRepository.getTodayWalkDistance(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now()).orElse(0.0);
-        Double averageWalkDistance = walkRepository.getAverageWalkDistance(user.getPet().getId()).orElse(0.0);
+        List<Walk> walkList = walkRepository.getWalksByDate(user.getPet().getId(), LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay());
 
+        if(walkList.isEmpty()) {
+            WalkInformationDTO walkInformation = new WalkInformationDTO(
+                0L,0.0,0.0,0.0,0.0,0.0
+            );
+            return new WalkResponseDTO(0, walkInformation);
+        }
 
-        WalkInformationDTO walkInformation = new WalkInformationDTO(
-            todayWalkCount,
-            averageWalkCount,
-            todayWalkTime,
-            averageWalkTime,
-            todayWalkDistance,
-            averageWalkDistance
+        WalkStatistic walkStatistic = walkStatisticService.getWalkStatisticByPetId(walkList.get(0).getPet().getId());
+
+        WalkInformationDTO walkInformationDTO = new WalkInformationDTO(
+            (long)walkList.size(),
+            (double)walkList.size() / walkStatistic.getWalkDay(),
+            walkList.stream().mapToDouble(Walk::getWalkTime).sum(),
+            (double)walkStatistic.getTotalWalkTime() / walkStatistic.getWalkCount(),
+            walkList.stream().mapToDouble(Walk::getDistance).sum(),
+            (double)walkStatistic.getTotalDistance() / walkStatistic.getWalkCount()
         );
-         **/
 
-        WalkInformationDTO walkInformation = walkRepository.getWalkStatistics(user.getPet().getId());
+        int flagValue = WalkCalculator.calculateFlag(walkInformationDTO);
 
-        int flagValue = WalkCalculator.calculateFlag(walkInformation);
-
-        return new WalkResponseDTO(flagValue, walkInformation);
+        return new WalkResponseDTO(flagValue, walkInformationDTO);
     }
 
-    public List<WalkPathByDateResponseDTO> getWalkPathByDate(OauthUserDTO oauthUserDTO, LocalDateTime date) {
+    public List<WalkPathByDateResponseDTO> getWalkPathByDate(OauthUserDTO oauthUserDTO, LocalDate date) {
         User user = userService.findUserByEmail(oauthUserDTO.email());
 
-        List<Walk> walkList = walkRepository.getWalksByDate(user.getPet().getId(), date.toLocalDate().atStartOfDay(), date.toLocalDate().plusDays(1).atStartOfDay());
+        List<Walk> walkList = walkRepository.getWalksByDate(user.getPet().getId(), date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+
+        if(walkList.isEmpty()) {
+            throw walkNotFoundException();
+        }
 
         return walkList
             .stream()
