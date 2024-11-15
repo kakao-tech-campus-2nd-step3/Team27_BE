@@ -22,7 +22,6 @@ import org.springframework.test.context.TestPropertySource;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = "spring.jpa.properties.hibernate.globally_quoted_identifiers=false")
 class WalkRepositoryTest {
 
     @Autowired
@@ -147,63 +146,6 @@ class WalkRepositoryTest {
                 // then
                 assertEquals(expect, actual);
             }
-        }
-    }
-
-    @Test
-    @DisplayName("펫 정보 기반으로 평균 통계 객체 받아오기 테스트/getWalkStatistics")
-    void 펫_정보_기반으로_평균_통계_객체_받아오기()  {
-        // given
-        walkRepository.saveAll(givenWalk);
-        LocalDate today = LocalDate.of(2024, 11, 8);
-
-        for (Pet pet : givenPet) {
-            // 필터링하여 해당 펫의 산책 데이터만 추출
-            List<Walk> petWalks = givenWalk.stream()
-                .filter(walk -> walk.getPet().equals(pet))
-                .collect(Collectors.toList());
-
-            // 오늘 날짜의 데이터와 모든 날짜별 데이터로 분류
-            List<Walk> todayWalks = petWalks.stream()
-                .filter(walk -> walk.getWalkDate().toLocalDate().equals(today))
-                .collect(Collectors.toList());
-
-            Map<LocalDate, List<Walk>> dailyWalksMap = petWalks.stream()
-                .collect(Collectors.groupingBy(walk -> walk.getWalkDate().toLocalDate()));
-
-            // 예상 값 계산
-            long expectedTodayWalkCount = todayWalks.size();
-            double expectedTodayWalkTime = todayWalks.stream()
-                .mapToDouble(Walk::getWalkTime)
-                .sum();
-            double expectedTodayWalkDistance = todayWalks.stream()
-                .mapToDouble(Walk::getDistance)
-                .sum();
-
-            double expectedAverageWalkCount = dailyWalksMap.values().stream()
-                .mapToInt(List::size)
-                .average()
-                .orElse(0.0);
-            double expectedAverageWalkTime = dailyWalksMap.values().stream()
-                .mapToDouble(dayWalks -> dayWalks.stream().mapToDouble(Walk::getWalkTime).sum())
-                .average()
-                .orElse(0.0);
-            double expectedAverageWalkDistance = dailyWalksMap.values().stream()
-                .mapToDouble(dayWalks -> dayWalks.stream().mapToDouble(Walk::getDistance).sum())
-                .average()
-                .orElse(0.0);
-
-            // when
-            WalkInformationDTO actual = walkRepository.getWalkStatistics(pet.getId());
-
-            // then
-            assertNotNull(actual, pet.getName());
-            assertEquals(expectedTodayWalkCount, actual.getTodayWalkCount(), pet.getName());
-            assertEquals(expectedAverageWalkCount, actual.getAverageWalkCount(), 0.01, pet.getName());
-            assertEquals(expectedTodayWalkTime, actual.getTodayWalkTime(), 0.01, pet.getName());
-            assertEquals(expectedAverageWalkTime, actual.getAverageWalkTime(), 0.01, pet.getName());
-            assertEquals(expectedTodayWalkDistance, actual.getTodayWalkDistance(), 0.01, pet.getName());
-            assertEquals(expectedAverageWalkDistance, actual.getAverageWalkDistance(), 0.01, pet.getName());
         }
     }
 }

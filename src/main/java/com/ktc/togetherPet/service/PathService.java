@@ -15,14 +15,12 @@ public class PathService {
 
     private final PathRepository pathRepository;
 
-    public void saveAll(List<Path> paths) {
-        pathRepository.saveAll(paths);
-    }
-
-    public List<Path> createPathList(List<LocationDTO> locationList, Walk walk) {
-        return locationList.stream()
+    public void saveAll(List<LocationDTO> locationList, Walk walk) {
+        List<Path> paths = locationList.stream()
             .map(locationDTO -> new Path(new Location(locationDTO.latitude(), locationDTO.longitude()), walk))
             .toList();
+
+        pathRepository.saveAll(paths);
     }
 
     public List<LocationDTO> findPathByWalkId(Long walkId) {
